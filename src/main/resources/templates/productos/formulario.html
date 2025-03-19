@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    th:replace="~{layout :: layout(${producto.id} ? 'Editar Producto' : 'Nuevo Producto', ~{::section})}">
+<body>
+    <section>
+        <h1 class="mb-4" th:text="${producto.id} ? 'Editar Producto' : 'Nuevo Producto'">Producto</h1>
+        
+        <form th:action="@{/productos/guardar}" method="post" th:object="${producto}">
+            <input type="hidden" th:field="*{id}" />
+            <input type="hidden" th:field="*{fechaCreacion}" />
+            
+            <div class="mb-3">
+                <label for="nombre" class="form-label">Nombre</label>
+                <input type="text" class="form-control" id="nombre" th:field="*{nombre}" required>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
+            </div>
+            
+            <div class="mb-3">
+                <label for="descripcion" class="form-label">Descripción</label>
+                <textarea class="form-control" id="descripcion" th:field="*{descripcion}" rows="3"></textarea>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('descripcion')}" th:errors="*{descripcion}"></div>
+            </div>
+            
+            <div class="mb-3">
+                <label for="precio" class="form-label">Precio</label>
+                <div class="input-group">
+                    <span class="input-group-text">$</span>
+                    <input type="number" class="form-control" id="precio" th:field="*{precio}" step="0.01" min="0" required>
+                </div>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('precio')}" th:errors="*{precio}"></div>
+            </div>
+            
+            <div class="mb-3 form-check" th:if="${producto.id}">
+                <input type="checkbox" class="form-check-input" id="activo" th:field="*{activo}">
+                <label class="form-check-label" for="activo">Activo</label>
+            </div>
+            
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">Guardar</button>
+                <a th:href="@{/productos}" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </section>
+</body>
+</html>
