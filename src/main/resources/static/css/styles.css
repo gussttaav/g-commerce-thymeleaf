@@ -1,0 +1,244 @@
+/* Base theme variables */
+:root {
+    --primary-color: #0d6efd;
+    --secondary-color: #6c757d;
+    --success-color: #198754;
+    --danger-color: #dc3545;
+    --light-bg: #f8f9fa;
+    --dark-bg: #212529;
+    --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --text-color: #212529;
+    --border-radius: 8px;
+    --transition-speed: 0.3s;
+}
+
+/* Dark theme variables */
+[data-bs-theme="dark"] {
+    --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+    --text-color: #f8f9fa;
+}
+
+/* General styles */
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    transition: background-color var(--transition-speed) ease;
+}
+
+main {
+    flex: 1;
+}
+
+/* Navigation */
+.navbar {
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    transition: background-color var(--transition-speed) ease;
+}
+
+.navbar-brand {
+    font-weight: 600;
+}
+
+.brand-text {
+    letter-spacing: -1px;
+}
+
+.nav-link {
+    position: relative;
+    padding: 0.5rem 1rem;
+    transition: color var(--transition-speed) ease;
+}
+
+.nav-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0.5rem;
+    right: 0.5rem;
+    height: 2px;
+    background-color: var(--primary-color);
+    border-radius: 2px;
+}
+
+/* Theme toggle and cart buttons */
+#themeToggle,
+#cartButton {
+    background: none;
+    border: none;
+    padding: 0.5rem;
+    font-size: 1.25rem;
+    color: inherit;
+    transition: transform var(--transition-speed) ease;
+}
+
+#themeToggle {
+    color: white;  /* Always white since navbar is dark */
+}
+
+#themeToggle:hover,
+#cartButton:hover {
+    transform: scale(1.1);
+}
+
+/* Product cards */
+.card {
+    transition: transform 0.2s, box-shadow 0.2s;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--card-shadow);
+    border: none;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+.card-title {
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+}
+
+.card-text {
+    color: var(--bs-secondary-color);
+    font-size: 0.9rem;
+}
+
+/* Product quantity controls */
+.quantity-controls {
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.quantity-btn {
+    width: 28px;
+    height: 32px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color var(--transition-speed) ease;
+}
+
+.quantity-input {
+    border-left: 0;
+    border-right: 0;
+    text-align: center;
+    width: 40px;
+    min-width: 40px;
+    padding-left: 0px;
+    padding-right: 0px;
+    appearance: textfield;
+}
+
+.quantity-input::-webkit-inner-spin-button, 
+.quantity-input::-webkit-outer-spin-button { 
+    -webkit-appearance: none;
+    margin: 0; 
+}
+
+.input-group.input-group-sm {
+    width: 120px !important;
+    max-width: 120px;
+}
+
+.add-to-cart-btn {
+    border-radius: 4px;
+    height: 32px;
+    width: 32px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.15s ease, background-color var(--transition-speed) ease;
+}
+
+.add-to-cart-btn:hover {
+    transform: scale(1.1);
+}
+
+.btn-clicked {
+    transform: scale(0.9);
+}
+
+/* Price tag */
+.price-tag {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+/* Pagination */
+.pagination {
+    gap: 0.5rem;
+}
+
+.page-link {
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    font-weight: 500;
+    transition: all var(--transition-speed) ease;
+}
+
+.pagination-info {
+    font-size: 0.9rem;
+    color: var(--secondary-color);
+}
+
+.page-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.page-link.active {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.page-item:first-child .page-link,
+.page-item:last-child .page-link {
+    width: 40px;
+    height: 40px;
+}
+
+.loading-spinner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.toast-container {
+    position: fixed;
+    top: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1050;
+}
+
+/* Responsive tables */
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 768px) {
+    .table td, .table th {
+        white-space: nowrap;
+        min-width: 100px;
+    }
+}

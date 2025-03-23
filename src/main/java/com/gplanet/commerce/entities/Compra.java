@@ -8,9 +8,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -37,13 +34,6 @@ public class Compra {
     private LocalDateTime fecha;
     private BigDecimal total;
     
-    @JsonManagedReference
-    @OneToMany(mappedBy = "compra", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "compra")
     private List<CompraProducto> productos = new ArrayList<>();
-
-    // Helper method to manage bidirectional relationship
-    public void addCompraProducto(CompraProducto compraProducto) {
-        productos.add(compraProducto);
-        compraProducto.setCompra(this);
-    }
 }
