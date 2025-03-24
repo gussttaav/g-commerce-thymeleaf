@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    th:replace="~{layout :: layout('Inicio', ~{::section})}">
+<body>
+    <section>
+        <div class="row justify-content-center" id="registerForm">
+            <div class="col-12 col-sm-8 col-md-6 col-lg-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="text-center">Register</h3>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/usuarios/registro}" th:object="${usuario}" method="post">
+                            <div class="mb-3">
+                                <label for="nombre" class="form-label">Name</label>
+                                <input type="text" class="form-control" id="nombre" th:field="*{nombre}" required>
+                                <div class="text-danger" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" th:field="*{email}" required>
+                                <div class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Password</label>
+                                <input type="password" class="form-control" id="password" th:field="*{password}" required>
+                                <div class="text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                            </div>
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary">Register</button>
+                                <a th:href="@{/usuarios/login}" class="btn btn-link">
+                                    Already have an account? Login here
+                                </a>
+                            </div>
+                        </form>
+                        <div class="alert alert-danger" th:if="${registroError}" th:text="${registroError}" role="alert">
+                            Registration failed. Please try again.
+                        </div>
+                        <div class="alert alert-success" th:if="${registroExitoso}" th:text="${registroExitoso}" role="alert">
+                            Registration failed. Please try again.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

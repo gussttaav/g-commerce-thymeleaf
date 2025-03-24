@@ -280,7 +280,7 @@ class CartComponent {
         // Cart modal buttons
         document.getElementById('proceedToCheckoutBtn')?.addEventListener('click', () => {
             bootstrap.Modal.getInstance(document.getElementById('cartModal')).hide();
-            //purchaseComponent.showCheckoutModal();
+            window.location.href = '/usuarios/login';
         });
 
         // Event delegation for cart item controls
