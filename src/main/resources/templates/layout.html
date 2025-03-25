@@ -10,7 +10,10 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
-<body>
+<body th:attr="data-toast-type=${toastType} ?: _, data-toast-message=${toastMessage} ?: _">
+
+    <div class="toast-container position-fixed bottom-0 end-0 p-3"></div>
+
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
             <a class="navbar-brand d-flex align-items-center" th:href="@{/}">
@@ -68,16 +71,6 @@
     </nav>
 
     <main class="container my-4">
-        <div th:if="${mensaje}" class="alert alert-success alert-dismissible fade show">
-            <span th:text="${mensaje}"></span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-        
-        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
-            <span th:text="${error}"></span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-        
         <div th:replace="${content}">
             <!-- Contenido específico de cada página -->
         </div>
@@ -137,5 +130,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script th:src="@{/js/theme.utils.js}"></script>
     <script th:src="@{/js/cart.js}"></script>
+    <script th:src="@{/js/ui.utils.js}"></script>
 </body>
 </html>

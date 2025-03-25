@@ -66,6 +66,7 @@ class CartComponent {
      */
     addProduct(product, quantity) {
         if (quantity < 1) {
+            UiUtils.showError('Quantity must be greater than 0');
             throw new Error('Quantity must be greater than 0');
         }
 
@@ -84,6 +85,8 @@ class CartComponent {
 
         this.saveCartToStorage();
         this.updateCartCount();
+
+        UiUtils.showSuccess(`Added ${quantity} ${product.nombre} to cart`);
     }
 
     /**
