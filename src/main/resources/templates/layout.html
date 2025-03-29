@@ -20,10 +20,42 @@
                 <img th:src="@{/img/logo.svg}" alt="Logo" width="30" height="30" class="me-2">
                 G-commerce
             </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Navigation Links (Visible only if authenticated) -->
+            <div class="collapse navbar-collapse" sec:authorize="isAuthenticated()">
+                <ul class="navbar-nav me-auto">
+
+                    <!-- Links visible only to users with the ROLE_USER -->
+                    <li class="nav-item" sec:authorize="hasRole('USER')">
+                        <a class="nav-link" th:href="@{/}" 
+                           th:classappend="${activePage == 'productos'} ? 'active'">Products</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="hasRole('USER')">
+                        <a class="nav-link" th:href="@{/compras/listar}"
+                           th:classappend="${activePage == 'compras'} ? 'active'">My Purchases</a>
+                    </li>
+
+                    <!-- Links visible only to users with the ROLE_ADMIN -->
+                    <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                        <a class="nav-link" th:href="@{/}"
+                           th:classappend="${activePage == 'adminProductos'} ? 'active'">Manage Products</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                        <a class="nav-link" href="#"
+                           th:classappend="${activePage == 'adminUsuarios'} ? 'active'">Manage Users</a>
+                    </li>
+                </ul>
+            </div>
+
             <div class="d-flex align-items-center">
                 <a href="#" class="text-light text-decoration-none position-relative me-3" id="cartButton">
                     <i class="bi bi-cart3 fs-4"></i>
-                    <span class="position-absolute top-1 start-100 translate-middle badge rounded-pill bg-danger" id="cartCount">
+                    <span class="position-absolute top-1 start-100 translate-middle badge rounded-pill bg-danger" id="cartCount"
+                          th:attr="data-cart-empty=${compraExitosa != null ? compraExitosa : false}">
                         0
                     </span>
                 </a>
@@ -106,6 +138,26 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Continue Shopping</button>
                     <button type="button" class="btn btn-primary" id="proceedToCheckoutBtn">Proceed to Checkout</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div class="modal fade" id="checkoutModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm Purchase</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="purchaseDetails"></div>
+                    <h5 class="mt-3">Total: $<span id="purchaseTotal">0</span></h5>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="confirmPurchaseBtn">Confirm Purchase</button>
                 </div>
             </div>
         </div>

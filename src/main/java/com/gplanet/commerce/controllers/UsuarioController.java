@@ -1,5 +1,6 @@
 package com.gplanet.commerce.controllers;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.gplanet.commerce.dtos.ActualizacionUsuarioDTO;
 import com.gplanet.commerce.dtos.CambioPasswdDTO;
@@ -135,5 +137,11 @@ public class UsuarioController {
         }
 
         return "usuarios/password";
+    }
+
+    @GetMapping("/authenticated")
+    @ResponseBody
+    public ResponseEntity<Boolean> checkAuthentication(Authentication authentication) {
+        return ResponseEntity.ok(authentication != null && authentication.isAuthenticated());
     }
 }

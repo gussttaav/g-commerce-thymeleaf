@@ -24,6 +24,12 @@ class CartComponent {
      * @private
      */
     loadCartFromStorage() {
+        const clearCart = document.querySelector('span[data-cart-empty]');
+        if (clearCart && clearCart.dataset.cartEmpty === 'true') {
+            this.clear();
+            return;
+        }
+
         const storedCart = localStorage.getItem('cartItems');
         if (storedCart) {
             try {
@@ -280,10 +286,20 @@ class CartComponent {
      * @private
      */
     initializeEventListeners() {
-        // Cart modal buttons
-        document.getElementById('proceedToCheckoutBtn')?.addEventListener('click', () => {
-            bootstrap.Modal.getInstance(document.getElementById('cartModal')).hide();
-            window.location.href = '/usuarios/login';
+        document.getElementById('proceedToCheckoutBtn')?.addEventListener('click', async () => {
+            try {
+                const response = await fetch('/usuarios/authenticated');
+                const isAuthenticated = await response.json();
+
+                if (isAuthenticated) {
+                    this.showCheckoutModal();
+                } else {
+                    window.location.href = '/usuarios/login';
+                }
+            } catch (error) {
+                console.error('Authentication check failed:', error);
+                window.location.href = '/usuarios/login';
+            }
         });
 
         // Event delegation for cart item controls
@@ -330,6 +346,77 @@ class CartComponent {
                 }
             }
         });
+
+        // Prepare a hidden form for checkout submission
+        this.prepareCheckoutForm();
+    }
+
+    prepareCheckoutForm() {
+        // Create a hidden form if it doesn't exist
+        let checkoutForm = document.getElementById('checkoutForm');
+        if (!checkoutForm) {
+            checkoutForm = document.createElement('form');
+            checkoutForm.id = 'checkoutForm';
+            checkoutForm.method = 'POST';
+            checkoutForm.action = '/compras/nueva';
+            document.body.appendChild(checkoutForm);
+        }
+
+        // Add event listener to confirm purchase button
+        document.getElementById('confirmPurchaseBtn')?.addEventListener('click', () => {
+            if (this.selectedProducts.size === 0) {
+                UiUtils.showError('Your cart is empty');
+                return;
+            }
+
+            // Clear existing form inputs
+            checkoutForm.innerHTML = '';
+
+            // Add cart items as hidden inputs following the DTO structure
+            this.selectedProducts.forEach((item, productId) => {
+                // Producto ID input
+                const productIdInput = document.createElement('input');
+                productIdInput.type = 'hidden';
+                productIdInput.name = 'productos[' + (Array.from(this.selectedProducts.keys()).indexOf(productId)) + '].productoId';
+                productIdInput.value = productId;
+                checkoutForm.appendChild(productIdInput);
+
+                // Cantidad input
+                const cantidadInput = document.createElement('input');
+                cantidadInput.type = 'hidden';
+                cantidadInput.name = 'productos[' + (Array.from(this.selectedProducts.keys()).indexOf(productId)) + '].cantidad';
+                cantidadInput.value = item.quantity;
+                checkoutForm.appendChild(cantidadInput);
+            });
+
+            // Submit the form
+            checkoutForm.submit();
+        });
+    }
+
+    showCheckoutModal() {
+        const detailsContainer = document.getElementById('purchaseDetails');
+        const totalElement = document.getElementById('purchaseTotal');
+
+        if(detailsContainer === null || totalElement === null){
+            return;
+        }
+        
+        detailsContainer.innerHTML = '';
+        this.selectedProducts.forEach(item => {
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'mb-2';
+            itemDiv.innerHTML = `
+                <div class="d-flex justify-content-between">
+                    <span>${item.nombre} x ${item.quantity}</span>
+                    <span>$${(item.precio * item.quantity).toFixed(2)}</span>
+                </div>
+            `;
+            detailsContainer.appendChild(itemDiv);
+        });
+
+        totalElement.textContent = this.calculateTotal().toFixed(2);
+        new bootstrap.Modal(document.getElementById('checkoutModal')).show();
     }
 
     /**
