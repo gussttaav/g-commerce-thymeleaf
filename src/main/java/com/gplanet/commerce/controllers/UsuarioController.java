@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.gplanet.commerce.dtos.ActualizacionUsuarioDTO;
-import com.gplanet.commerce.dtos.CambioPasswdDTO;
-import com.gplanet.commerce.dtos.UsuarioDTO;
+import com.gplanet.commerce.dtos.usuario.ActualizacionUsuarioDTO;
+import com.gplanet.commerce.dtos.usuario.CambioPasswdDTO;
+import com.gplanet.commerce.dtos.usuario.UsuarioDTO;
 import com.gplanet.commerce.entities.Usuario;
 import com.gplanet.commerce.exceptions.EmailAlreadyExistsException;
 import com.gplanet.commerce.exceptions.InvalidPasswordException;

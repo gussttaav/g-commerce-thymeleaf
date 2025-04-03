@@ -1,55 +1,88 @@
 package com.gplanet.commerce.services;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.gplanet.commerce.dtos.producto.ProductStatus;
+import com.gplanet.commerce.dtos.producto.ProductoDTO;
+import com.gplanet.commerce.dtos.producto.ProductoMapper;
+import com.gplanet.commerce.dtos.producto.ProductoResponseDTO;
 import com.gplanet.commerce.entities.Producto;
+import com.gplanet.commerce.exceptions.ResourceNotFoundException;
 import com.gplanet.commerce.repositories.ProductoRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ProductoService {
     
+    private final ProductoMapper productoMapper;
     private final ProductoRepository productoRepository;
     
-    @Transactional(readOnly = true)
-    public List<Producto> findAllProductos() {
-        return productoRepository.findAll();
+    public List<ProductoResponseDTO> listarProductos(ProductStatus status) {
+        
+        log.debug("Listing products with status: {}", status);
+        
+        List<Producto> productos = switch (status) {
+            case ACTIVE -> productoRepository.findByActivoTrue();
+            case INACTIVE -> productoRepository.findByActivoFalse();
+            case ALL -> productoRepository.findAll();
+        };
+        
+        // Map to DTOs
+        return productos.stream()
+                        .map(productoMapper::toProductoResponseDTO)
+                        .toList();
     }
-    
-    @Transactional(readOnly = true)
-    public List<Producto> findAllActiveProductos() {
-        return productoRepository.findByActivoTrue();
-    }
-    
-    @Transactional(readOnly = true)
-    public Optional<Producto> findProductoById(Long id) {
-        return productoRepository.findById(id);
-    }
-    
+
     @Transactional
-    public Producto saveProducto(Producto producto) {
-        return productoRepository.save(producto);
+    public void updateProductStatus(Long id, boolean active) {
+        log.info("Updating product status with ID: {}", id);
+        Producto producto = productoRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado"));
+        
+        producto.setActivo(active);
+        productoRepository.save(producto);
+        
+        log.info("Status of the products successfully changed - ID: {}", id);
     }
-    
+
     @Transactional
-    public void deleteProducto(Long id) {
-        productoRepository.deleteById(id);
+    public ProductoResponseDTO crearProducto(ProductoDTO productoDTO) {
+        log.info("Creating new product: {}", productoDTO.getNombre());
+        Producto producto = productoMapper.toProducto(productoDTO);
+        producto.setActivo(true);
+        producto.setFechaCreacion(LocalDateTime.now());
+        
+        Producto savedProducto = productoRepository.save(producto);
+        log.info("Product created with ID: {}", savedProducto.getId());
+        return productoMapper.toProductoResponseDTO(savedProducto);
     }
-    
+
+
     @Transactional
-    public boolean toggleProductStatus(Long id) {
-        Optional<Producto> optionalProducto = productoRepository.findById(id);
-        if (optionalProducto.isPresent()) {
-            Producto producto = optionalProducto.get();
-            producto.setActivo(!producto.isActivo());
-            productoRepository.save(producto);
-            return true;
-        }
-        return false;
+    public ProductoResponseDTO actualizarProducto(Long id, ProductoDTO productoDTO) {
+        log.info("Updating product with ID: {}", id);
+        Producto producto = productoRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado"));
+        
+        productoMapper.updateProductoFromDTO(productoDTO, producto);
+        Producto updatedProducto = productoRepository.save(producto);
+        
+        log.info("Product successfully updated - ID: {}", updatedProducto.getId());
+        return productoMapper.toProductoResponseDTO(updatedProducto);
+    }
+
+    public ProductoResponseDTO findById(Long id) {
+        Producto producto = productoRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado"));
+        
+        return productoMapper.toProductoResponseDTO(producto);
     }
 }

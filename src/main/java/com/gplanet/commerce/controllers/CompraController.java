@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.gplanet.commerce.dtos.CompraDTO;
-import com.gplanet.commerce.dtos.CompraResponseDTO;
+import com.gplanet.commerce.dtos.compra.CompraDTO;
+import com.gplanet.commerce.dtos.compra.CompraResponseDTO;
 import com.gplanet.commerce.services.CompraService;
 import com.gplanet.commerce.utilities.ToastUtil;
 

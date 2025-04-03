@@ -1,4 +1,4 @@
-package com.gplanet.commerce.dtos;
+package com.gplanet.commerce.dtos.compra;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;

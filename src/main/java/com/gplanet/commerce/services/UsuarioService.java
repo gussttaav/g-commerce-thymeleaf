@@ -8,10 +8,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.gplanet.commerce.dtos.ActualizacionUsuarioDTO;
-import com.gplanet.commerce.dtos.CambioPasswdDTO;
-import com.gplanet.commerce.dtos.UsuarioAdminDTO;
-import com.gplanet.commerce.dtos.UsuarioDTO;
+import com.gplanet.commerce.dtos.usuario.ActualizacionUsuarioDTO;
+import com.gplanet.commerce.dtos.usuario.CambioPasswdDTO;
+import com.gplanet.commerce.dtos.usuario.UsuarioAdminDTO;
+import com.gplanet.commerce.dtos.usuario.UsuarioDTO;
 import com.gplanet.commerce.entities.Usuario;
 import com.gplanet.commerce.exceptions.EmailAlreadyExistsException;
 import com.gplanet.commerce.exceptions.InvalidPasswordException;

@@ -7,10 +7,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.gplanet.commerce.dtos.CompraDTO;
-import com.gplanet.commerce.dtos.CompraMapper;
-import com.gplanet.commerce.dtos.CompraProductoDTO;
-import com.gplanet.commerce.dtos.CompraResponseDTO;
+import com.gplanet.commerce.dtos.compra.CompraDTO;
+import com.gplanet.commerce.dtos.compra.CompraMapper;
+import com.gplanet.commerce.dtos.compra.CompraProductoDTO;
+import com.gplanet.commerce.dtos.compra.CompraResponseDTO;
 import com.gplanet.commerce.entities.Compra;
 import com.gplanet.commerce.entities.CompraProducto;
 import com.gplanet.commerce.entities.Producto;

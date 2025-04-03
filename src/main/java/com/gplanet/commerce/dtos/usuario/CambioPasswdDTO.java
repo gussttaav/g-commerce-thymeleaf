@@ -1,4 +1,4 @@
-package com.gplanet.commerce.dtos;
+package com.gplanet.commerce.dtos.usuario;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;

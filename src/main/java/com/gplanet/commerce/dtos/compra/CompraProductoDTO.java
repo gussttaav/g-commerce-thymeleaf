@@ -1,4 +1,4 @@
-package com.gplanet.commerce.dtos;
+package com.gplanet.commerce.dtos.compra;
 
 import jakarta.validation.constraints.Positive;
 import lombok.Data;
