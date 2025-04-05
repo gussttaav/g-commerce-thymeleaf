@@ -12,13 +12,17 @@ import com.gplanet.commerce.dtos.usuario.ActualizacionUsuarioDTO;
 import com.gplanet.commerce.dtos.usuario.CambioPasswdDTO;
 import com.gplanet.commerce.dtos.usuario.UsuarioAdminDTO;
 import com.gplanet.commerce.dtos.usuario.UsuarioDTO;
+import com.gplanet.commerce.dtos.usuario.UsuarioMapper;
+import com.gplanet.commerce.dtos.usuario.UsuarioResponseDTO;
 import com.gplanet.commerce.entities.Usuario;
 import com.gplanet.commerce.exceptions.EmailAlreadyExistsException;
 import com.gplanet.commerce.exceptions.InvalidPasswordException;
 import com.gplanet.commerce.exceptions.PasswordMismatchException;
+import com.gplanet.commerce.exceptions.ResourceNotFoundException;
 import com.gplanet.commerce.repositories.UsuarioRepository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * Service class that handles user-related operations including registration,
@@ -32,6 +36,7 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class UsuarioService {
     
+    private final UsuarioMapper usuarioMapper;
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -41,7 +46,7 @@ public class UsuarioService {
      * @param usuarioDTO Data transfer object containing user registration information
      */
     @Transactional
-    public void registrarUsuario(UsuarioDTO usuarioDTO){
+    public UsuarioResponseDTO registrarUsuario(UsuarioDTO usuarioDTO){
         log.info("Registering new user with email: {}", usuarioDTO.getEmail());
 
         if(usuarioRepository.existsByEmail(usuarioDTO.getEmail())){
@@ -55,14 +60,16 @@ public class UsuarioService {
         usuario.setPassword(passwordEncoder.encode(usuarioDTO.getPassword()));
 
         if(usuarioDTO instanceof UsuarioAdminDTO){
-            usuario.setRol(Usuario.Role.ADMIN);
+            usuario.setRol(((UsuarioAdminDTO) usuarioDTO).getRol());
         }else{
             usuario.setRol(Usuario.Role.USER);
         }
         usuario.setFechaCreacion(LocalDateTime.now());
             
-        usuarioRepository.save(usuario);
+        Usuario savedUsuario = usuarioRepository.save(usuario);
         log.info("User registered successfully: {}", usuarioDTO.getEmail());
+
+        return usuarioMapper.toUsuarioResponseDTO(savedUsuario);
     }
 
     public Usuario buscarPorEmail(String email){
@@ -97,7 +104,7 @@ public class UsuarioService {
         log.info("Profile updated successfully for user: {}", usuario.getEmail());
     }
 
-        /**
+    /**
      * Changes a user's password after validating current password.
      * 
      * @param email Email of the user
@@ -131,5 +138,54 @@ public class UsuarioService {
         usuario.setPassword(passwordEncoder.encode(contraseñaDTO.getNewPassword()));
         usuarioRepository.save(usuario);
         log.info("Password successfully changed for user: {}", email);
+    }
+
+    public List<UsuarioResponseDTO> listarUsuarios() {
+        log.debug("Listing users");
+        
+        // Get all users
+        List<Usuario> usuarios = usuarioRepository.findAll();
+        
+        // Map to DTOs
+        List<UsuarioResponseDTO> result = usuarios.stream()
+                                            .map(usuarioMapper::toUsuarioResponseDTO)
+                                            .toList();
+        log.debug("Found {} users", 
+                result.size());
+                
+        return result;
+    }
+
+    @Transactional
+    public UsuarioResponseDTO cambiarRol(Long userId) {
+        log.info("Changing rolefor user ID: {}", userId);
+        Usuario usuario = usuarioRepository.findById(userId)
+            .orElseThrow(() -> new ResourceNotFoundException(
+                "No existe ningún usuario con el ID proporcionado"
+            ));
+        
+        usuario.setRol(
+            usuario.getRol().equals(Usuario.Role.ADMIN) 
+            ? Usuario.Role.USER : Usuario.Role.ADMIN
+        );
+
+        Usuario savedUser = usuarioRepository.save(usuario);
+        log.info("Role successfully updated for user ID: {}", userId);
+
+        return usuarioMapper.toUsuarioResponseDTO(savedUser);
+    }
+
+    /**
+     * Retrieves a user's profile information.
+     * 
+     * @param email Email of the user
+     * @return UsuarioResponseDTO containing the user's information
+     * @throws UsernameNotFoundException if user is not found
+     */
+    public UsuarioResponseDTO obtenerPerfil(String email) {
+        log.debug("Retrieving profile for user: {}", email);
+        Usuario usuario = usuarioRepository.findByEmail(email)
+            .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
+        return usuarioMapper.toUsuarioResponseDTO(usuario);
     }
 }

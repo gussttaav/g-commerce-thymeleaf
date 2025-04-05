@@ -1,5 +1,7 @@
 package com.gplanet.commerce.controllers;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -7,6 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -14,11 +17,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.gplanet.commerce.dtos.usuario.ActualizacionUsuarioDTO;
 import com.gplanet.commerce.dtos.usuario.CambioPasswdDTO;
+import com.gplanet.commerce.dtos.usuario.UsuarioAdminDTO;
 import com.gplanet.commerce.dtos.usuario.UsuarioDTO;
+import com.gplanet.commerce.dtos.usuario.UsuarioResponseDTO;
 import com.gplanet.commerce.entities.Usuario;
 import com.gplanet.commerce.exceptions.EmailAlreadyExistsException;
 import com.gplanet.commerce.exceptions.InvalidPasswordException;
 import com.gplanet.commerce.exceptions.PasswordMismatchException;
+import com.gplanet.commerce.exceptions.ResourceNotFoundException;
 import com.gplanet.commerce.services.UsuarioService;
 import com.gplanet.commerce.utilities.ToastUtil;
 
@@ -143,5 +149,50 @@ public class UsuarioController {
     @ResponseBody
     public ResponseEntity<Boolean> checkAuthentication(Authentication authentication) {
         return ResponseEntity.ok(authentication != null && authentication.isAuthenticated());
+    }
+
+    @GetMapping("/admin/listar")
+    public String listarUsuarios(Model model) {
+        List<UsuarioResponseDTO> usuarios = usuarioService.listarUsuarios();
+        model.addAttribute("activePage", "adminUsuarios");
+        model.addAttribute("usuarios", usuarios);
+        return "usuarios/lista";
+    }
+
+    @PostMapping("/admin/change-role/{id}")
+    public String cambiarRol(@PathVariable Long id, Model model) {
+        try{
+            UsuarioResponseDTO updatedUser = usuarioService.cambiarRol(id);
+            model.addAttribute("usuario", updatedUser);
+            ToastUtil.success(model, "User role updated successfully");
+            return "usuarios/lista-usuario-row :: usuario-row";
+        } 
+        catch(ResourceNotFoundException e){
+            ToastUtil.error(model, "User not found!");
+            return "empty :: empty";
+        } 
+        catch (Exception e) {
+            ToastUtil.error(model, "Error updating user role. Please try again!");
+            return "empty :: empty";
+        }
+    }
+
+    @GetMapping("/admin/registrar")
+    public String showAddUserModal(Model model) {
+        return "usuarios/nuevo-modal :: userModal";
+    }
+
+    @PostMapping("/admin/registrar")
+    public String createUser(@Valid UsuarioAdminDTO usuarioDTO, Model model) {
+        try {
+            UsuarioResponseDTO newUser = usuarioService.registrarUsuario(usuarioDTO);
+            model.addAttribute("usuario", newUser);
+            ToastUtil.success(model, "User created successfully");
+            return "usuarios/lista-usuario-row :: usuario-row";
+        } catch (Exception e) {
+            log.error("Error creating user", e);
+            ToastUtil.error(model, "Error creating user: " + e.getMessage());
+            return "empty :: empty";
+        }
     }
 }

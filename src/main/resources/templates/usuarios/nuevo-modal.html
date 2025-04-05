@@ -1,0 +1,51 @@
+<!-- usuarios/nuevo-modal.html -->
+<div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true" th:fragment="userModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="userModalLabel">Add Admin User</h5>
+                <button type="button" class="btn-close" aria-label="Close" 
+                        onclick="UiUtils.closeModal('userModal', 'modalContainer')">
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="userForm"
+                      th:action="@{/usuarios/admin/registrar}"
+                      method="post"
+                      th:attr="hx-post=@{/usuarios/admin/registrar}"
+                      hx-target="tbody"
+                      hx-swap="afterbegin"
+                      hx-on::after-request="UiUtils.closeModal('userModal', 'modalContainer')">
+                    
+                    <div class="mb-3">
+                        <label for="userName" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="userName" name="nombre" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="newUserEmail" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="newUserEmail" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="userPassword" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="userPassword" name="password" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="userRole" class="form-label">Role</label>
+                        <select class="form-select" id="userRole" name="rol" required>
+                            <option value="USER" selected>USER</option>
+                            <option value="ADMIN">ADMIN</option>
+                        </select>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary"
+                                onclick="UiUtils.closeModal('userModal', 'modalContainer')">
+                            Cancel
+                        </button>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

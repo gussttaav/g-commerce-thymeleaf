@@ -1,0 +1,25 @@
+<tr th:fragment="usuario-row(usuario)">
+    <td th:text="${usuario.nombre}"></td>
+    <td th:text="${usuario.email}"></td>
+    <td class="user-role" th:text="${usuario.rol}"></td>
+    <td th:text="${#temporals.format(usuario.fechaCreacion, 'yyyy-MM-dd HH:mm:ss')}"></td>
+    <td>
+        <button class="btn btn-sm btn-outline-danger"
+            th:attr="hx-post=@{/usuarios/admin/change-role/{id}(id=${usuario.id})}"
+            hx-target="closest tr"
+            hx-swap="outerHTML">
+            Change Role
+        </button>
+    </td>
+
+    <!-- Toast trigger script -->
+    <script th:inline="javascript">
+        (function() {
+            const toastMessage = /*[[${toastMessage}]]*/ null;
+            const toastType = /*[[${toastType}]]*/ null;
+            if (toastMessage && toastType) {
+                setTimeout(() => UiUtils.showToast(toastMessage, toastType), 50);
+            }
+        })();
+    </script>
+</tr>

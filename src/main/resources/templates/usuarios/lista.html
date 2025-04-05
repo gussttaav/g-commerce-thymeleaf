@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    th:replace="~{layout :: layout('Users', ~{::section})}">
+<body>
+    <section>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Manage Users</h2>
+            <button class="btn btn-primary"
+                    th:attr="hx-get=@{/usuarios/admin/registrar}"
+                    hx-target="#modalContainer"
+                    hx-trigger="click"
+                    hx-swap="innerHTML">
+
+                <i class="bi bi-plus-circle"></i> Add Admin User
+            </button>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Created At</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="usuario : ${usuarios}" 
+                        th:insert="~{usuarios/lista-usuario-row :: usuario-row(usuario=${usuario})}">
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="modalContainer"></div>
+
+        <!-- Initialize modal functionality -->
+        <script>
+            UiUtils.setupModalListeners({
+                'userModal': 'modalContainer'
+            });
+        </script>
+
+    </section>
+</body>
+</html>
