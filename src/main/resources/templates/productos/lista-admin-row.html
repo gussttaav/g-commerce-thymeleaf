@@ -1,0 +1,37 @@
+<tr th:fragment="producto-row(producto)" th:data-product-id="${producto.id}">
+    <td th:text="${producto.nombre}">Product Name</td>
+    <td th:text="${producto.descripcion ?: 'No description'}">Product Description</td>
+    <td th:text="'$' + ${#numbers.formatDecimal(producto.precio, 1, 2)}">$0.00</td>
+    <td>
+        <div class="form-check form-switch">
+            <input type="checkbox" class="form-check-input" 
+                th:checked="${producto.activo}"
+                th:attr="hx-post=@{/productos/admin/toggle-status/{id}(id=${producto.id})}"
+                hx-trigger="change"
+                hx-target="closest tr"
+                hx-swap="outerHTML">
+        </div>
+    </td>
+    <td>
+        <div class="btn-group">
+            <button class="btn btn-sm btn-outline-primary"
+                    th:attr="hx-get=@{/productos/{id}(id=${producto.id})}"
+                    hx-target="#modalContainer"
+                    hx-trigger="click"
+                    hx-swap="innerHTML">
+                <i class="bi bi-pencil"></i>
+            </button>
+        </div>
+    </td>
+
+    <!-- Toast trigger script -->
+    <script th:inline="javascript">
+        (function() {
+            const toastMessage = /*[[${toastMessage}]]*/ null;
+            const toastType = /*[[${toastType}]]*/ null;
+            if (toastMessage && toastType) {
+                setTimeout(() => UiUtils.showToast(toastMessage, toastType), 50);
+            }
+        })();
+    </script>
+</tr>

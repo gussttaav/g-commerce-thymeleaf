@@ -1,21 +1,22 @@
 package com.gplanet.commerce.controllers;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import java.util.List;
+
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
+import com.gplanet.commerce.dtos.producto.ProductStatus;
 import com.gplanet.commerce.dtos.producto.ProductoDTO;
 import com.gplanet.commerce.dtos.producto.ProductoResponseDTO;
 import com.gplanet.commerce.exceptions.ResourceNotFoundException;
 import com.gplanet.commerce.services.ProductoService;
+import com.gplanet.commerce.utilities.ToastUtil;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 
@@ -26,54 +27,79 @@ public class ProductoController {
 
     private final ProductoService productoService;
 
-    @PutMapping("/{id}/status")
-    public ResponseEntity<String> toggleStatus(
-                @PathVariable Long id, 
-                @RequestParam Boolean activo){
+    @GetMapping("/admin/listar")
+    public String listarProductos(Model model) {
+        List<ProductoResponseDTO> productos = productoService.listarProductos(ProductStatus.ALL);
+        model.addAttribute("productos", productos);
+        model.addAttribute("activePage", "adminProductos");
+        return "productos/lista-admin";
+    }
+
+    @PostMapping("/admin/toggle-status/{id}")
+    public String toggleStatus(@PathVariable Long id, Model model){
         try {
-            productoService.updateProductStatus(id, activo);
-            return ResponseEntity.ok("Product status updated successfully.");
+            ProductoResponseDTO updatedProduct = productoService.toggleProductStatus(id);
+            model.addAttribute("producto", updatedProduct);
+            ToastUtil.success(model, "Product status updated successfully.");
+            return "productos/lista-admin-row :: producto-row";
         } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product not found.");
+            ToastUtil.error(model, "Product not found.");
+            return "empty :: empty";
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error updating product status.");
+            ToastUtil.error(model, "An error occurred while updating the product status.");
+            return "empty :: empty";
         }
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProductoResponseDTO> getProductById(@PathVariable Long id) {
+    public String getProductById(@PathVariable Long id, Model model) {
         try {
             ProductoResponseDTO producto = productoService.findById(id);
-            return ResponseEntity.ok(producto);
+            model.addAttribute("producto", producto);
+            return "productos/producto-modal :: producto-modal";
         } catch (ResourceNotFoundException e) {
-            return ResponseEntity.notFound().build();
+            ToastUtil.error(model, "Product not found.");
+            return "empty :: empty";
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            ToastUtil.error(model, "An error occurred while retrieving the product.");
+            return "empty :: empty";
         }
     }
 
-    @PostMapping("/crear")
-    public ResponseEntity<ProductoResponseDTO> crearProducto(@RequestBody ProductoDTO productoDTO) {
+    @GetMapping("/admin/crear")
+    public String showAddProductModal(Model model) {
+        return "productos/producto-modal :: producto-modal";
+    }
+
+    @PostMapping("/admin/crear")
+    public String crearProducto(@Valid ProductoDTO productoDTO, Model model) {
         try {
             ProductoResponseDTO createdProduct = productoService.crearProducto(productoDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).body(createdProduct);
+            model.addAttribute("producto", createdProduct);
+            ToastUtil.success(model, "Product created successfully.");
+            return "productos/lista-admin-row :: producto-row";
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            ToastUtil.error(model, "Error creating product! Please try again.");
+            return "empty :: empty";
         }
     }
 
-    @PutMapping("/actualizar/{id}")
-    public ResponseEntity<ProductoResponseDTO> actualizarProducto(
+    @PostMapping("/admin/actualizar/{id}")
+    public String actualizarProducto(
                 @PathVariable Long id, 
-                @RequestBody ProductoDTO productoDTO) {
+                @Valid ProductoDTO productoDTO,
+                Model model) {
         try {
             ProductoResponseDTO updatedProduct = productoService.actualizarProducto(id, productoDTO);
-            return ResponseEntity.ok(updatedProduct);
+            model.addAttribute("producto", updatedProduct);
+            ToastUtil.success(model, "Product updated successfully.");
+            return "productos/lista-admin-row :: producto-row";
         } catch (ResourceNotFoundException e) {
-            return ResponseEntity.notFound().build();
+            ToastUtil.error(model, "Product not found.");
+            return "empty :: empty";
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            ToastUtil.error(model, "Error updating product! Please try again.");
+            return "empty :: empty";
         }
     }
 }

@@ -1,0 +1,92 @@
+<!-- productos/producto-modal.html -->
+<div class="modal fade" id="productModal" tabindex="-1" th:fragment="producto-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="productModalTitle">
+                    <span th:if="${producto != null && producto.id != null}">Edit Product</span>
+                    <span th:unless="${producto != null && producto.id != null}">Add Product</span>
+                </h5>
+                <button type="button" class="btn-close" aria-label="Close" 
+                        onclick="UiUtils.closeModal('productModal', 'modalContainer')">
+                </button>
+            </div>
+            <div class="modal-body">
+                
+                <!-- For updating existing product -->
+                <form th:if="${producto != null && producto.id != null}" 
+                        th:action="@{/productos/admin/actualizar/{id}(id=${producto.id})}"
+                        method="post"
+                        th:attr="hx-post=@{/productos/admin/actualizar/{id}(id=${producto.id})}, 
+                                 hx-target='tr[data-product-id=\'' + ${producto.id} + '\']'"
+                        hx-swap="outerHTML" 
+                        hx-on::after-request="UiUtils.closeModal('productModal', 'modalContainer')">
+
+                    <input type="hidden" name="id" th:value="${producto.id}">
+                    <div class="mb-3">
+                        <label for="productName" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="productName" name="nombre" 
+                                th:value="${producto.nombre}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="productDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="productDescription" name="descripcion" 
+                                    rows="3" th:text="${producto.descripcion}"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="productPrice" class="form-label">Price</label>
+                        <input type="number" class="form-control" id="productPrice" name="precio" 
+                                step="0.01" th:value="${producto.precio}" required>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="productActive" name="activo" 
+                                    th:checked="${producto != null ? producto.activo : true}">
+                            <label for="productActive" class="form-check-label">Active</label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" 
+                                onclick="UiUtils.closeModal('productModal', 'modalContainer')">
+                            Cancel
+                        </button>
+                        <button type="submit" class="btn btn-primary" id="saveProductButton">Save</button>
+                    </div>
+                </form>
+
+                <!-- For creating new product -->
+                <form th:unless="${producto != null && producto.id != null}" 
+                        th:action="@{/productos/admin/crear}"
+                        method="post"
+                        th:attr="hx-post=@{/productos/admin/crear}" 
+                        hx-target="tbody" 
+                        hx-swap="afterbegin"
+                        hx-on::after-request="UiUtils.closeModal('productModal', 'modalContainer')">
+
+                    <input type="checkbox" id="productActive" name="activo" checked="checked" hidden>
+                    <div class="mb-3">
+                        <label for="productName" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="productName" name="nombre" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="productDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="productDescription" 
+                                  name="descripcion" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="productPrice" class="form-label">Price</label>
+                        <input type="number" class="form-control" id="productPrice" 
+                                name="precio" step="0.01" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" 
+                                onclick="UiUtils.closeModal('productModal', 'modalContainer')">
+                            Cancel
+                        </button>
+                        <button type="submit" class="btn btn-primary" id="saveProductButton">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

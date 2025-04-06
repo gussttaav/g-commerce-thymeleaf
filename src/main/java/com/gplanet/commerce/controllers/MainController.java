@@ -29,8 +29,7 @@ public class MainController {
         // Check if user is authenticated
         if (authentication != null && authentication.isAuthenticated()) {
             if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
-                model.addAttribute("activePage", "adminProductos");
-                productos = productoService.listarProductos(ProductStatus.ALL);
+                return "redirect:/productos/admin/listar";
             }
             else if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_USER"))) {
                 model.addAttribute("activePage", "productos");

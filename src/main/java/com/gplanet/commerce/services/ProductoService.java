@@ -42,15 +42,16 @@ public class ProductoService {
     }
 
     @Transactional
-    public void updateProductStatus(Long id, boolean active) {
+    public ProductoResponseDTO toggleProductStatus(Long id) {
         log.info("Updating product status with ID: {}", id);
         Producto producto = productoRepository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado"));
+            .orElseThrow(() -> new ResourceNotFoundException("Product not found!"));
         
-        producto.setActivo(active);
-        productoRepository.save(producto);
+        producto.setActivo(!producto.isActivo());
+        Producto updatedProduct = productoRepository.save(producto);
         
         log.info("Status of the products successfully changed - ID: {}", id);
+        return productoMapper.toProductoResponseDTO(updatedProduct);
     }
 
     @Transactional
