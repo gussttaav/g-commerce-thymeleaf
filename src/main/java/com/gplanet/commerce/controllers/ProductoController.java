@@ -1,14 +1,15 @@
 package com.gplanet.commerce.controllers;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import com.gplanet.commerce.dtos.pagination.PaginatedResponse;
 import com.gplanet.commerce.dtos.producto.ProductStatus;
 import com.gplanet.commerce.dtos.producto.ProductoDTO;
 import com.gplanet.commerce.dtos.producto.ProductoResponseDTO;
@@ -29,9 +30,14 @@ public class ProductoController {
 
     @GetMapping("/admin/listar")
     public String listarProductos(Model model) {
-        List<ProductoResponseDTO> productos = productoService.listarProductos(ProductStatus.ALL);
-        model.addAttribute("productos", productos);
+        Page<ProductoResponseDTO> productosPage = productoService.listarProductos(
+            ProductStatus.ALL, "", 0, 10, "nombre", "ASC");
+        PaginatedResponse<ProductoResponseDTO> paginatedResponse = PaginatedResponse.fromPage(productosPage);
+
+        model.addAttribute("productos", productosPage.getContent());
+        model.addAttribute("pagination", paginatedResponse);
         model.addAttribute("activePage", "adminProductos");
+        
         return "productos/lista-admin";
     }
 
@@ -64,6 +70,27 @@ public class ProductoController {
             ToastUtil.error(model, "An error occurred while retrieving the product.");
             return "empty :: empty";
         }
+    }
+
+    @PostMapping("/filtrar")
+    public String filterProducts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "") String search,
+            @RequestParam(defaultValue = "nombre") String sort,
+            @RequestParam(defaultValue = "ASC") String direction,
+            Model model) {
+        
+        // Get filtered and paginated products
+        Page<ProductoResponseDTO> productosPage = productoService.listarProductos(
+            ProductStatus.ACTIVE, search, page, size, sort, direction);
+        
+        PaginatedResponse<ProductoResponseDTO> paginatedResponse = PaginatedResponse.fromPage(productosPage);
+        
+        model.addAttribute("productos", productosPage.getContent());
+        model.addAttribute("pagination", paginatedResponse);
+        
+        return "productos/user-grid :: user-grid";
     }
 
     @GetMapping("/admin/crear")

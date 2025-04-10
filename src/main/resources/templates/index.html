@@ -3,31 +3,50 @@
     th:replace="~{layout :: layout('Inicio', ~{::section})}">
 <body>
     <section>
-        <div class="row g-4" th:if="${not #lists.isEmpty(productos)}"
-                sec:authorize="!isAuthenticated() or hasRole('USER')">
-            <div class="col-md-4 mb-4" th:each="producto : ${productos}">
-                <div class="card h-100">
-                    <div class="card-body d-flex flex-column">
-                        <h5 class="card-title" th:text="${producto.nombre}">Product Name</h5>
-                        <p class="card-text flex-grow-1" th:text="${producto.descripcion}">Product Description</p>
-                        <div class="d-flex justify-content-between align-items-center mt-3">
-                            <h6 class="price-tag mb-0" th:text="'$' + ${#numbers.formatDecimal(producto.precio, 1, 2)}">$0.00</h6>
-                            <div class="input-group input-group-sm">
-                                <button class="btn btn-outline-secondary quantity-btn" data-action="decrease">-</button>
-                                <input type="number" class="form-control text-center quantity-input" value="1" min="1" max="99" readonly>
-                                <button class="btn btn-outline-secondary quantity-btn" data-action="increase">+</button>
-                                <button class="btn btn-primary add-to-cart-btn" th:data-product-id="${producto.id}">
-                                    <i class="bi bi-cart-plus"></i>
-                                </button>
-                            </div>
+        <form id="productFilterForm" class="card mb-4" 
+              hx-post="/productos/filtrar" 
+              hx-target="#productGridContainer" 
+              hx-trigger="submit, change from:select, keyup from:input[name='search'] delay:500"
+              sec:authorize="!isAuthenticated() or hasRole('USER')">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-3">
+                        <select class="form-select" id="pageSize" name="size" hx-trigger="change">
+                            <option value="10" selected>10 per page</option>
+                            <option value="20">20 per page</option>
+                            <option value="50">50 per page</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" id="sortField" name="sort" hx-trigger="change">
+                            <option value="nombre" selected>Name</option>
+                            <option value="precio">Price</option>
+                            <option value="fechaCreacion">Creation Date</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <select class="form-select" id="sortDirection" name="direction" hx-trigger="change">
+                            <option value="ASC" selected>Ascending</option>
+                            <option value="DESC">Descending</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <input type="search" class="form-control" id="search" name="search"
+                                   placeholder="Find products..." aria-label="Find products">
+                            <button class="btn btn-outline-secondary" type="submit">
+                                <i class="bi bi-search"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        
-        <div class="alert alert-info" th:if="${#lists.isEmpty(productos)}">
-            No products found.
+        </form>
+
+        <!-- Product Grid Container -->
+        <div id="productGridContainer" sec:authorize="!isAuthenticated() or hasRole('USER')">
+            <!-- Include the product grid fragment -->
+            <div th:replace="~{productos/user-grid :: user-grid}"></div>
         </div>
 
     </section>

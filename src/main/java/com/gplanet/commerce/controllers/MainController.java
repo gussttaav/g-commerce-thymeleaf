@@ -2,8 +2,7 @@ package com.gplanet.commerce.controllers;
 
 import lombok.RequiredArgsConstructor;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Controller;
@@ -11,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.gplanet.commerce.dtos.pagination.PaginatedResponse;
 import com.gplanet.commerce.dtos.producto.ProductStatus;
 import com.gplanet.commerce.dtos.producto.ProductoResponseDTO;
 import com.gplanet.commerce.services.ProductoService;
@@ -24,8 +24,7 @@ public class MainController {
     @GetMapping("/")
     public String home(Authentication authentication, Model model,
                        @RequestParam(required = false) Boolean compraExitosa) {
-        List<ProductoResponseDTO> productos = null;
-
+        
         // Check if user is authenticated
         if (authentication != null && authentication.isAuthenticated()) {
             if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
@@ -36,15 +35,18 @@ public class MainController {
                 if(compraExitosa != null){
                     model.addAttribute("compraExitosa", compraExitosa);
                 }
-                productos = productoService.listarProductos(ProductStatus.ACTIVE);
             }
         }
 
-        if(productos == null){
-            productos = productoService.listarProductos(ProductStatus.ACTIVE);
-        }
-
-        model.addAttribute("productos", productos);
+        // Initial product loading with default values
+        Page<ProductoResponseDTO> productosPage = productoService.listarProductos(
+            ProductStatus.ACTIVE, "", 0, 10, "nombre", "ASC");
+        
+        PaginatedResponse<ProductoResponseDTO> paginatedResponse = PaginatedResponse.fromPage(productosPage);
+        
+        model.addAttribute("productos", productosPage.getContent());
+        model.addAttribute("pagination", paginatedResponse);
+        
         return "index";
     }
 }
