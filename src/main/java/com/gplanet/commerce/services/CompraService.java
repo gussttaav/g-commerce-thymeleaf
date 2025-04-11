@@ -3,6 +3,10 @@ package com.gplanet.commerce.services;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,8 +26,6 @@ import com.gplanet.commerce.repositories.UsuarioRepository;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Service class that handles purchase-related operations including
@@ -50,30 +52,36 @@ public class CompraService {
      * @param size The page size
      * @param sort The field to sort by
      * @param direction The sort direction (ASC or DESC)
+     * @return Page of CompraResponseDTO containing paginated purchase information
      * @throws UsernameNotFoundException if user is not found
      */
     @Transactional(readOnly = true)
-    public List<CompraResponseDTO> listarCompras(String email) {
-        log.debug("Listing purchases for user: {}", 
-                email);
+    public Page<CompraResponseDTO> listarCompras(String email, int page, int size, String sort, String direction) {
+        log.debug("Listing purchases for user: {} with pagination - page: {}, size: {}, sort: {}, direction: {}", 
+                email, page, size, sort, direction);
         
         Usuario usuario = usuarioRepository.findByEmail(email)
             .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
             
+        // Create Pageable object with sort direction
+        Sort.Direction sortDirection = Sort.Direction.fromString(direction);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, sort));
+        
         // Get paginated result based on user role
-        List<Compra> compras;
+        Page<Compra> comprasPage;
         if (usuario.getRol() == Usuario.Role.ADMIN) {
-            compras = compraRepository.findAll();
+            comprasPage = compraRepository.findAll(pageable);
         } else {
-            compras = compraRepository.findByUsuario(usuario);
+            comprasPage = compraRepository.findByUsuario(usuario, pageable);
         }
         
         // Map to DTOs
-        List<CompraResponseDTO> result = compras.stream()
-            .map(compraMapper::toCompraResponseDTO)
-            .collect(Collectors.toList());
+        Page<CompraResponseDTO> result = comprasPage.map(compraMapper::toCompraResponseDTO);
         
-        log.debug("Found {} purchases", result.size());
+        log.debug("Found {} purchases on page {} of {}", 
+                result.getNumberOfElements(), 
+                result.getNumber() + 1,  // +1 for human-readable page number
+                result.getTotalPages());
                 
         return result;
     }

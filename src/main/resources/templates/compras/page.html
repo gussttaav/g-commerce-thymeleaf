@@ -1,0 +1,121 @@
+<div th:fragment="compras-page">
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Products</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="compra : ${compras}">
+                    <td th:text="${#temporals.format(compra.fecha, 'dd/MM/yyyy HH:mm')}"></td>
+                    <td>
+                        <ul class="list-unstyled">
+                            <li th:each="producto : ${compra.productos}">
+                                <span th:text="${producto.productoNombre}"></span> x 
+                                <span th:text="${producto.cantidad}"></span> - 
+                                $<span th:text="${producto.subtotal}"></span>
+                            </li>
+                        </ul>
+                    </td>
+                    <td>$<span th:text="${compra.total}"></span></td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(compras)}">
+                    <td colspan="3" class="text-center">You haven't made any purchases yet.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination Controls -->
+    <div class="d-flex justify-content-between align-items-center mt-4" th:if="${pagination != null}">
+        <div class="pagination-info">
+            <span th:text="${pagination.pageSize * pagination.pageNumber + 1} + '-' + 
+                            ${pagination.pageSize * (pagination.pageNumber + 1) > pagination.totalElements ? 
+                            pagination.totalElements : pagination.pageSize * (pagination.pageNumber + 1)}">0-0</span> 
+            of <span th:text="${pagination.totalElements}">0</span> purchases
+        </div>
+        <nav>
+            <ul class="pagination mb-0">
+                <!-- Previous Page Button -->
+                <li class="page-item" th:classappend="${pagination.pageNumber == 0 ? 'disabled' : ''}">
+                    <button class="page-link" 
+                            hx-post="/compras/filtrar"
+                            hx-include="#purchaseFilterForm"
+                            hx-target="#purchasesTableContainer"
+                            name="page"
+                            th:attr="value=${pagination.pageNumber - 1}"
+                            th:disabled="${pagination.pageNumber == 0}">
+                        <i class="bi bi-chevron-left"></i>
+                    </button>
+                </li>
+                
+                <!-- Page Numbers -->
+                <li class="page-item d-none d-sm-block">
+                    <div class="btn-group" id="pageNumbersGroup">
+                        <!-- Generate page number buttons -->
+                        <th:block th:with="totalPages=${pagination.totalPages}">
+                            <!-- Show first page -->
+                            <button th:if="${pagination.pageNumber > 2}" 
+                                    class="btn btn-outline-primary" 
+                                    th:classappend="${pagination.pageNumber == 0 ? 'active' : ''}"
+                                    hx-post="/compras/filtrar"
+                                    hx-include="#purchaseFilterForm"
+                                    hx-target="#purchasesTableContainer"
+                                    th:attr="data-page=0">1</button>
+                                    
+                            <!-- Show ellipsis if needed -->
+                            <button th:if="${pagination.pageNumber > 3}" 
+                                    class="btn btn-outline-primary disabled">...</button>
+                            
+                            <!-- Show pages around current page -->
+                            <th:block th:each="i : ${#numbers.sequence(
+                                T(java.lang.Math).max(0, pagination.pageNumber - 1), 
+                                T(java.lang.Math).min(pagination.totalPages - 1, pagination.pageNumber + 1)
+                            )}">
+                            <button class="btn btn-outline-primary" 
+                                    th:classappend="${pagination.pageNumber == i ? 'active' : ''}"
+                                    th:text="${i + 1}"
+                                    hx-post="/compras/filtrar"
+                                    hx-include="#purchaseFilterForm"
+                                    hx-target="#purchasesTableContainer"
+                                    name="page"
+                                    th:attr="value=${i}">  <!-- Use value instead of data-page -->
+                            </button>
+                            </th:block>
+                            
+                            <!-- Show ellipsis if needed -->
+                            <button th:if="${pagination.pageNumber < pagination.totalPages - 4}" 
+                                    class="btn btn-outline-primary disabled">...</button>
+                            
+                            <!-- Show last page if not already shown -->
+                            <button th:if="${pagination.pageNumber < pagination.totalPages - 3 && pagination.totalPages > 1}" 
+                                    class="btn btn-outline-primary" 
+                                    th:classappend="${pagination.pageNumber == pagination.totalPages - 1 ? 'active' : ''}"
+                                    hx-post="/compras/filtrar"
+                                    hx-include="#purchaseFilterForm"
+                                    hx-target="#purchasesTableContainer"
+                                    th:text="${pagination.totalPages}"
+                                    th:attr="data-page=${pagination.totalPages - 1}"></button>
+                        </th:block>
+                    </div>
+                </li>
+                
+                <!-- Next Page Button -->
+                <li class="page-item" th:classappend="${pagination.isLastPage ? 'disabled' : ''}">
+                    <button class="page-link" 
+                            hx-post="/compras/filtrar"
+                            hx-include="#purchaseFilterForm"
+                            hx-target="#purchasesTableContainer"
+                            name="page"
+                            th:attr="value=${pagination.pageNumber + 1}"
+                            th:disabled="${pagination.isLastPage}">
+                        <i class="bi bi-chevron-right"></i>
+                    </button>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>

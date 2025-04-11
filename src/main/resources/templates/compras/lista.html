@@ -6,34 +6,34 @@
         <div class="container mt-4">
             <h2>Purchase History</h2>
             
-            <div class="table-responsive">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Products</th>
-                            <th>Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="compra : ${compras}">
-                            <td th:text="${#temporals.format(compra.fecha, 'dd/MM/yyyy HH:mm')}"></td>
-                            <td>
-                                <ul class="list-unstyled">
-                                    <li th:each="producto : ${compra.productos}">
-                                        <span th:text="${producto.productoNombre}"></span> x 
-                                        <span th:text="${producto.cantidad}"></span> - 
-                                        $<span th:text="${producto.subtotal}"></span>
-                                    </li>
-                                </ul>
-                            </td>
-                            <td>$<span th:text="${compra.total}"></span></td>
-                        </tr>
-                        <tr th:if="${#lists.isEmpty(compras)}">
-                            <td colspan="3" class="text-center">You haven't made any purchases yet.</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <form id="purchaseFilterForm" class="card mb-4" 
+              hx-post="/compras/filtrar" 
+              hx-target="#purchasesTableContainer" 
+              hx-trigger="submit, change from:select"
+              sec:authorize="isAuthenticated() and hasRole('USER')">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-3">
+                            <select class="form-select" id="pageSize" name="size" hx-trigger="change">
+                                <option value="10" selected>10 per page</option>
+                                <option value="20">20 per page</option>
+                                <option value="50">50 per page</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="sortDirection" name="direction" hx-trigger="change">
+                                <option value="DESC">Most recent first</option>
+                                <option value="ASC">Oldest first</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            
+            <!-- Purchases Table Container -->
+            <div id="purchasesTableContainer" sec:authorize="isAuthenticated() and hasRole('USER')">
+                <!-- Include the purchases table fragment -->
+                <div th:replace="~{compras/page :: compras-page}"></div>
             </div>
         </div>
     </section>

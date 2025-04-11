@@ -1,8 +1,8 @@
 package com.gplanet.commerce.controllers;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,10 +12,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.gplanet.commerce.dtos.compra.CompraDTO;
 import com.gplanet.commerce.dtos.compra.CompraResponseDTO;
+import com.gplanet.commerce.dtos.pagination.PaginatedResponse;
 import com.gplanet.commerce.services.CompraService;
 import com.gplanet.commerce.utilities.ToastUtil;
 
@@ -61,9 +63,32 @@ public class CompraController {
 
     @GetMapping("/listar")
     public String listarCompras(Authentication authentication, Model model) {
-        List<CompraResponseDTO> compras = compraService.listarCompras(authentication.getName());
+        Page<CompraResponseDTO> comprasPage = compraService.listarCompras(
+            authentication.getName(), 0, 10, "fecha", "DESC");
+        PaginatedResponse<CompraResponseDTO> paginatedResponse = PaginatedResponse.fromPage(comprasPage);
+
         model.addAttribute("activePage", "compras");
-        model.addAttribute("compras", compras);
+        model.addAttribute("compras", comprasPage.getContent());
+        model.addAttribute("pagination", paginatedResponse);
         return "compras/lista";
+    }
+
+    @PostMapping("/filtrar")
+    public String filterProducts(
+            Authentication authentication,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "fecha") String sort,
+            @RequestParam(defaultValue = "DESC") String direction,
+            Model model) {
+        
+        Page<CompraResponseDTO> comprasPage = compraService.listarCompras(
+            authentication.getName(), page, size, sort, direction);
+        PaginatedResponse<CompraResponseDTO> paginatedResponse = PaginatedResponse.fromPage(comprasPage);
+
+        model.addAttribute("compras", comprasPage.getContent());
+        model.addAttribute("pagination", paginatedResponse);
+        
+        return "compras/page :: compras-page";
     }
 }
