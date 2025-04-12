@@ -1,0 +1,31 @@
+<div th:fragment="usuario-page">
+
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Created At</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="usuario : ${usuarios}" 
+                    th:insert="~{usuarios/lista-usuario-row :: usuario-row(usuario=${usuario})}">
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination Controls -->
+    <div th:replace="~{pagination :: paginationControls(
+            ${pagination}, 
+            '/usuarios/admin/filtrar', 
+            '#usersFilterForm', 
+            '#usersTableContainer',
+            'users')}">
+    </div>
+
+</div>

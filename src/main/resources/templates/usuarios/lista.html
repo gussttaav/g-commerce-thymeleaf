@@ -15,23 +15,42 @@
             </button>
         </div>
 
-        <div class="table-responsive">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Role</th>
-                        <th>Created At</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="usuario : ${usuarios}" 
-                        th:insert="~{usuarios/lista-usuario-row :: usuario-row(usuario=${usuario})}">
-                    </tr>
-                </tbody>
-            </table>
+        <form id="usersFilterForm" class="card mb-4"
+              hx-post="/usuarios/admin/filtrar" 
+              hx-target="#usersTableContainer" 
+              hx-trigger="submit, change from:select"
+              sec:authorize="isAuthenticated() and hasRole('ADMIN')">
+
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-3">
+                        <select class="form-select" id="userPageSize" name="size" hx-trigger="change">
+                            <option value="10" selected>10 per page</option>
+                            <option value="20">20 per page</option>
+                            <option value="50">50 per page</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" id="userSortField" name="sort" hx-trigger="change">
+                            <option value="email" selected>Email</option>
+                            <option value="nombre">Name</option>
+                            <option value="fechaCreacion">Creation Date</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" id="userSortDirection" name="direction" hx-trigger="change">
+                            <option value="ASC" selected>Ascending</option>
+                            <option value="DESC">Descending</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <!-- Users Table Container -->
+        <div id="usersTableContainer" sec:authorize="isAuthenticated() and hasRole('ADMIN')">
+            <!-- Include the users page fragment -->
+            <div th:replace="~{usuarios/lista-usuario-page :: usuario-page}"></div>
         </div>
 
         <div id="modalContainer"></div>

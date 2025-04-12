@@ -1,7 +1,6 @@
 package com.gplanet.commerce.controllers;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.gplanet.commerce.dtos.pagination.PaginatedResponse;
 import com.gplanet.commerce.dtos.usuario.ActualizacionUsuarioDTO;
 import com.gplanet.commerce.dtos.usuario.CambioPasswdDTO;
 import com.gplanet.commerce.dtos.usuario.UsuarioAdminDTO;
@@ -153,10 +153,30 @@ public class UsuarioController {
 
     @GetMapping("/admin/listar")
     public String listarUsuarios(Model model) {
-        List<UsuarioResponseDTO> usuarios = usuarioService.listarUsuarios();
+        Page<UsuarioResponseDTO> usuariosPage = usuarioService.listarUsuarios(0, 10, "nombre", "ASC");
+        PaginatedResponse<UsuarioResponseDTO> paginatedResponse = PaginatedResponse.fromPage(usuariosPage);
+
         model.addAttribute("activePage", "adminUsuarios");
-        model.addAttribute("usuarios", usuarios);
+        model.addAttribute("usuarios", usuariosPage.getContent());
+        model.addAttribute("pagination", paginatedResponse);
         return "usuarios/lista";
+    }
+
+    @PostMapping("/admin/filtrar")
+    public String filtrarUsuarios(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "nombre") String sort,
+            @RequestParam(defaultValue = "ASC") String direction,
+            Model model) {
+        
+        Page<UsuarioResponseDTO> usuariosPage = usuarioService.listarUsuarios(
+            page, size, sort, direction);
+        PaginatedResponse<UsuarioResponseDTO> paginatedResponse = PaginatedResponse.fromPage(usuariosPage);
+
+        model.addAttribute("usuarios", usuariosPage.getContent());
+        model.addAttribute("pagination", paginatedResponse);
+        return "usuarios/lista-usuario-page :: usuario-page";
     }
 
     @PostMapping("/admin/change-role/{id}")

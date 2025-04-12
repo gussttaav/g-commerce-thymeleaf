@@ -1,0 +1,74 @@
+<!-- fragments/pagination.html -->
+<div th:fragment="paginationControls(pagination, hxPost, hxInclude, hxTarget, itemName)">
+    <div class="d-flex justify-content-between align-items-center mt-4" th:if="${pagination != null}">
+        <div class="pagination-info">
+            <span th:text="${pagination.pageSize * pagination.pageNumber + 1} + '-' + 
+                            ${pagination.pageSize * (pagination.pageNumber + 1) > pagination.totalElements ? 
+                            pagination.totalElements : pagination.pageSize * (pagination.pageNumber + 1)}">0-0</span> 
+            of <span th:text="${pagination.totalElements}">0</span> <span th:text="${itemName}">items</span>
+        </div>
+        <nav>
+            <ul class="pagination mb-0">
+                <!-- Previous Page Button -->
+                <li class="page-item" th:classappend="${pagination.pageNumber == 0 ? 'disabled' : ''}">
+                    <button class="page-link" 
+                            th:attr="hx-post=${hxPost}, hx-include=${hxInclude}, hx-target=${hxTarget}, value=${pagination.pageNumber - 1}"
+                            name="page"
+                            th:disabled="${pagination.pageNumber == 0}">
+                        <i class="bi bi-chevron-left"></i>
+                    </button>
+                </li>
+
+                <!-- Page Numbers -->
+                <li class="page-item d-none d-sm-block">
+                    <div class="btn-group" id="pageNumbersGroup">
+                        <th:block th:with="totalPages=${pagination.totalPages}">
+                            <button th:if="${pagination.pageNumber > 2}" 
+                                    class="btn btn-outline-primary"
+                                    name="page"
+                                    th:classappend="${pagination.pageNumber == 0 ? 'active' : ''}"
+                                    th:attr="hx-post=${hxPost}, hx-include=${hxInclude}, hx-target=${hxTarget}, value=0">
+                                1
+                            </button>
+                            <button th:if="${pagination.pageNumber > 3}" 
+                                    class="btn btn-outline-primary disabled">...</button>
+
+                            <th:block th:each="i : ${#numbers.sequence(
+                                T(java.lang.Math).max(0, pagination.pageNumber - 1), 
+                                T(java.lang.Math).min(pagination.totalPages - 1, pagination.pageNumber + 1)
+                            )}">
+                                <button class="btn btn-outline-primary"
+                                        th:classappend="${pagination.pageNumber == i ? 'active' : ''}"
+                                        th:text="${i + 1}"
+                                        name="page"
+                                        th:attr="hx-post=${hxPost}, hx-include=${hxInclude}, hx-target=${hxTarget}, value=${i}">
+                                </button>
+                            </th:block>
+
+                            <button th:if="${pagination.pageNumber < pagination.totalPages - 4}" 
+                                    class="btn btn-outline-primary disabled">...</button>
+
+                            <button th:if="${pagination.pageNumber < pagination.totalPages - 3 && pagination.totalPages > 1}" 
+                                    class="btn btn-outline-primary"
+                                    th:classappend="${pagination.pageNumber == pagination.totalPages - 1 ? 'active' : ''}"
+                                    th:text="${pagination.totalPages}"
+                                    name="page"
+                                    th:attr="hx-post=${hxPost}, hx-include=${hxInclude}, hx-target=${hxTarget}, value=${pagination.totalPages - 1}">
+                            </button>
+                        </th:block>
+                    </div>
+                </li>
+
+                <!-- Next Page Button -->
+                <li class="page-item" th:classappend="${pagination.isLastPage ? 'disabled' : ''}">
+                    <button class="page-link" 
+                            th:attr="hx-post=${hxPost}, hx-include=${hxInclude}, hx-target=${hxTarget}, value=${pagination.pageNumber + 1}"
+                            name="page"
+                            th:disabled="${pagination.isLastPage}">
+                        <i class="bi bi-chevron-right"></i>
+                    </button>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>

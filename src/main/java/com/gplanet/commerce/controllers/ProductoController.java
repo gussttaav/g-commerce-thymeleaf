@@ -93,6 +93,28 @@ public class ProductoController {
         return "productos/user-grid :: user-grid";
     }
 
+    @PostMapping("/admin/filtrar")
+    public String filterAdminProducts(
+            @RequestParam(defaultValue = "ALL") ProductStatus status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "") String search,
+            @RequestParam(defaultValue = "nombre") String sort,
+            @RequestParam(defaultValue = "ASC") String direction,
+            Model model) {
+        
+        // Get filtered and paginated products
+        Page<ProductoResponseDTO> productosPage = productoService.listarProductos(
+            status, search, page, size, sort, direction);
+        
+        PaginatedResponse<ProductoResponseDTO> paginatedResponse = PaginatedResponse.fromPage(productosPage);
+        
+        model.addAttribute("productos", productosPage.getContent());
+        model.addAttribute("pagination", paginatedResponse);
+        
+        return "productos/lista-admin-page :: producto-page";
+    }
+
     @GetMapping("/admin/crear")
     public String showAddProductModal(Model model) {
         return "productos/producto-modal :: producto-modal";
