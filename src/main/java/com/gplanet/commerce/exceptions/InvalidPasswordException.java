@@ -2,7 +2,8 @@ package com.gplanet.commerce.exceptions;
 
 /**
  * Exception thrown when a password validation fails.
- * This could be due to incorrect current password, weak password format, etc.
+ * This could be due to incorrect current password, weak password format,
+ * or when the new password matches the current one during a password change.
  * 
  * @author Gustavo
  * @version 1.0

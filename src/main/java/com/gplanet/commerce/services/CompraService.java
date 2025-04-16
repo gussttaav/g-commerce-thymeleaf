@@ -31,6 +31,10 @@ import java.time.LocalDateTime;
  * Service class that handles purchase-related operations including
  * creating new purchases and listing purchase history.
  * 
+ * This class provides functionality for managing purchases in the system,
+ * including creating new purchases and retrieving purchase history with
+ * role-based access control.
+ * 
  * @author Gustavo
  * @version 1.0
  */

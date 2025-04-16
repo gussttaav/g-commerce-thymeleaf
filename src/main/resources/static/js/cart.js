@@ -239,15 +239,14 @@ class CartComponent {
 
 
     setupProductPageListeners() {
-        // Add to cart buttons on product page
-        document.querySelectorAll('.add-to-cart-btn').forEach(button => {
-            button.addEventListener('click', e => {
-                const productId = parseInt(e.currentTarget.dataset.productId);
-                const card = e.currentTarget.closest('.card');
+        document.addEventListener('click', e => {
+            if (e.target.closest('.add-to-cart-btn')) {
+                const button = e.target.closest('.add-to-cart-btn');
+                const productId = parseInt(button.dataset.productId);
+                const card = button.closest('.card');
                 const quantityInput = card.querySelector('.quantity-input');
                 const quantity = parseInt(quantityInput.value);
                 
-                // Gather product data from the card
                 const product = {
                     id: productId,
                     nombre: card.querySelector('.card-title').textContent,
@@ -256,28 +255,20 @@ class CartComponent {
                 };
                 
                 this.addProduct(product, quantity);
-            });
-        });
-        
-        // Product quantity buttons
-        document.querySelectorAll('.quantity-btn').forEach(button => {
-            button.addEventListener('click', e => {
-                const input = e.currentTarget.parentElement.querySelector('.quantity-input');
+            }
+            
+            // Quantity buttons delegation
+            if (e.target.closest('.quantity-btn')) {
+                const button = e.target.closest('.quantity-btn');
+                const input = button.parentElement.querySelector('.quantity-input');
                 const currentValue = parseInt(input.value);
                 
-                if (e.currentTarget.dataset.action === 'increase') {
+                if (button.dataset.action === 'increase') {
                     input.value = currentValue + 1;
-                } else if (e.currentTarget.dataset.action === 'decrease' && currentValue > 1) {
+                } else if (button.dataset.action === 'decrease' && currentValue > 1) {
                     input.value = currentValue - 1;
                 }
-            });
-        });
-        
-        // Cart button
-        document.getElementById('cartButton')?.addEventListener('click', e => {
-            e.preventDefault();
-            const cartModal = new bootstrap.Modal(document.getElementById('cartModal'));
-            cartModal.show();
+            }
         });
     }
 
@@ -286,6 +277,13 @@ class CartComponent {
      * @private
      */
     initializeEventListeners() {
+        
+        document.getElementById('cartButton')?.addEventListener('click', e => {
+            e.preventDefault();
+            const cartModal = new bootstrap.Modal(document.getElementById('cartModal'));
+            cartModal.show();
+        });
+
         document.getElementById('proceedToCheckoutBtn')?.addEventListener('click', async () => {
             try {
                 const response = await fetch('/usuarios/authenticated');

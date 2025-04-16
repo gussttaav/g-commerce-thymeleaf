@@ -32,6 +32,14 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Controller class that handles user-related operations.
+ * Provides endpoints for user registration, authentication, profile management,
+ * and administrative user management.
+ * 
+ * @author Gustavo
+ * @version 1.0
+ */
 @Controller
 @RequestMapping("/usuarios")
 @RequiredArgsConstructor
@@ -40,6 +48,14 @@ public class UsuarioController {
 
     private final UsuarioService usuarioService;
 
+    /**
+     * Displays the login form page.
+     * 
+     * @param model Spring MVC model
+     * @param error Optional error parameter indicating login failure
+     * @param registroExitoso Optional parameter indicating successful registration
+     * @return View name for login page
+     */
     @GetMapping("/login")
     public String mostrarFormularioLogin(Model model, 
                     @RequestParam(required = false) String error,
@@ -55,12 +71,26 @@ public class UsuarioController {
         return "usuarios/login";
     }
 
+    /**
+     * Displays the user registration form.
+     * 
+     * @param model Spring MVC model
+     * @return View name for registration page
+     */
     @GetMapping("/registro")
     public String mostrarFormularioRegistro(Model model) {
         model.addAttribute("usuario", new UsuarioDTO());
         return "usuarios/registro";
     }
 
+    /**
+     * Processes user registration form submission.
+     * 
+     * @param usuarioDTO Data transfer object containing user registration information
+     * @param result Validation results for the registration data
+     * @param model Spring MVC model
+     * @return View name for registration success or error page
+     */
     @PostMapping("/registro")
     public String registrarUsuario(@Valid @ModelAttribute("usuario") UsuarioDTO usuarioDTO, 
                                   BindingResult result, 
@@ -83,6 +113,13 @@ public class UsuarioController {
         }
     }    
 
+    /**
+     * Displays the user profile page.
+     * 
+     * @param model Spring MVC model
+     * @param authentication Current user's authentication
+     * @return View name for profile page
+     */
     @GetMapping("/perfil")
     public String mostrarPerfil(Model model, Authentication authentication) {
         Usuario usuario = usuarioService.buscarPorEmail(authentication.getName());
@@ -93,6 +130,15 @@ public class UsuarioController {
         return "usuarios/perfil";
     }
 
+    /**
+     * Updates user profile information.
+     * 
+     * @param authentication Current user's authentication
+     * @param perfilDTO Data transfer object containing profile update information
+     * @param result Validation results for the profile data
+     * @param model Spring MVC model
+     * @return View name for profile page with success/error messages
+     */
     @PostMapping("/perfil")
     public String actualizarPerfil(Authentication authentication,
                                  @Valid @ModelAttribute("usuario") ActualizacionUsuarioDTO perfilDTO,
@@ -116,12 +162,28 @@ public class UsuarioController {
         return "usuarios/perfil";
     }
 
+    /**
+     * Displays the password change form.
+     * 
+     * @param model Spring MVC model
+     * @param authentication Current user's authentication
+     * @return View name for password change page
+     */
     @GetMapping("/password")
     public String mostrarFormularioCambioPassword(Model model, Authentication authentication) {
         model.addAttribute("cambioPasswd", new CambioPasswdDTO());
         return "usuarios/password";
     }
 
+    /**
+     * Processes password change request.
+     * 
+     * @param authentication Current user's authentication
+     * @param contraseñaDTO Data transfer object containing password change information
+     * @param result Validation results for the password data
+     * @param model Spring MVC model
+     * @return View name for password page with success/error messages
+     */
     @PostMapping("/password")
     public String cambiarContraseña(Authentication authentication,
                                   @Valid @ModelAttribute("cambioPasswd") CambioPasswdDTO contraseñaDTO,
@@ -145,12 +207,24 @@ public class UsuarioController {
         return "usuarios/password";
     }
 
+    /**
+     * Checks if the current user is authenticated.
+     * 
+     * @param authentication Current user's authentication
+     * @return ResponseEntity containing authentication status
+     */
     @GetMapping("/authenticated")
     @ResponseBody
     public ResponseEntity<Boolean> checkAuthentication(Authentication authentication) {
         return ResponseEntity.ok(authentication != null && authentication.isAuthenticated());
     }
 
+    /**
+     * Lists all users with pagination (admin only).
+     * 
+     * @param model Spring MVC model
+     * @return View name for user list page
+     */
     @GetMapping("/admin/listar")
     public String listarUsuarios(Model model) {
         Page<UsuarioResponseDTO> usuariosPage = usuarioService.listarUsuarios(0, 10, "nombre", "ASC");
@@ -162,6 +236,16 @@ public class UsuarioController {
         return "usuarios/lista";
     }
 
+    /**
+     * Filters and paginates user list (admin only).
+     * 
+     * @param page Page number (zero-based)
+     * @param size Items per page
+     * @param sort Sort field
+     * @param direction Sort direction
+     * @param model Spring MVC model
+     * @return Fragment name containing filtered results
+     */
     @PostMapping("/admin/filtrar")
     public String filtrarUsuarios(
             @RequestParam(defaultValue = "0") int page,
@@ -179,6 +263,13 @@ public class UsuarioController {
         return "usuarios/lista-usuario-page :: usuario-page";
     }
 
+    /**
+     * Toggles user role between ADMIN and USER (admin only).
+     * 
+     * @param id ID of the user whose role should be changed
+     * @param model Spring MVC model
+     * @return Fragment name containing updated user row or error message
+     */
     @PostMapping("/admin/change-role/{id}")
     public String cambiarRol(@PathVariable Long id, Model model) {
         try{
@@ -197,11 +288,24 @@ public class UsuarioController {
         }
     }
 
+    /**
+     * Shows the modal form for adding a new user (admin only).
+     * 
+     * @param model Spring MVC model
+     * @return Fragment name containing user modal form
+     */
     @GetMapping("/admin/registrar")
     public String showAddUserModal(Model model) {
         return "usuarios/nuevo-modal :: userModal";
     }
 
+    /**
+     * Creates a new user through admin interface.
+     * 
+     * @param usuarioDTO Data transfer object containing new user information
+     * @param model Spring MVC model
+     * @return Fragment name containing new user row or error message
+     */
     @PostMapping("/admin/registrar")
     public String createUser(@Valid UsuarioAdminDTO usuarioDTO, Model model) {
         try {

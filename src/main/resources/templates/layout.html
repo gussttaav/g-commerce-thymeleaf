@@ -19,42 +19,12 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
             <a class="navbar-brand d-flex align-items-center" th:href="@{/}">
-                <img th:src="@{/img/logo.svg}" alt="Logo" width="30" height="30" class="me-2">
+                <img th:src="@{/img/logo.svg}" alt="Logo" width="25" height="25" class="me-1">
                 G-commerce
             </a>
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <!-- Navigation Links (Visible only if authenticated) -->
-            <div class="collapse navbar-collapse" sec:authorize="isAuthenticated()">
-                <ul class="navbar-nav me-auto">
-
-                    <!-- Links visible only to users with the ROLE_USER -->
-                    <li class="nav-item" sec:authorize="hasRole('USER')">
-                        <a class="nav-link" th:href="@{/}" 
-                           th:classappend="${activePage == 'productos'} ? 'active'">Products</a>
-                    </li>
-                    <li class="nav-item" sec:authorize="hasRole('USER')">
-                        <a class="nav-link" th:href="@{/compras/listar}"
-                           th:classappend="${activePage == 'compras'} ? 'active'">My Purchases</a>
-                    </li>
-
-                    <!-- Links visible only to users with the ROLE_ADMIN -->
-                    <li class="nav-item" sec:authorize="hasRole('ADMIN')">
-                        <a class="nav-link" th:href="@{/}"
-                           th:classappend="${activePage == 'adminProductos'} ? 'active'">Manage Products</a>
-                    </li>
-                    <li class="nav-item" sec:authorize="hasRole('ADMIN')">
-                        <a class="nav-link" th:href="@{/usuarios/admin/listar}"
-                           th:classappend="${activePage == 'adminUsuarios'} ? 'active'">Manage Users</a>
-                    </li>
-                </ul>
-            </div>
-
-            <div class="d-flex align-items-center">
-                <a href="#" class="text-light text-decoration-none position-relative me-3" 
+            <div class="d-flex align-items-center order-lg-last">
+                <a href="#" class="text-light text-decoration-none position-relative me-2" 
                             id="cartButton" sec:authorize="!isAuthenticated() or hasRole('USER')">
                     <i class="bi bi-cart3 fs-4"></i>
                     <span class="position-absolute top-1 start-100 translate-middle badge rounded-pill bg-danger" id="cartCount"
@@ -101,6 +71,36 @@
                         </li>
                     </ul>
                 </div>
+            </div>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Navigation Links (Visible only if authenticated) -->
+            <div class="collapse navbar-collapse" id="navbarNav" sec:authorize="isAuthenticated()">
+                <ul class="navbar-nav me-auto">
+
+                    <!-- Links visible only to users with the ROLE_USER -->
+                    <li class="nav-item" sec:authorize="hasRole('USER')">
+                        <a class="nav-link" th:href="@{/}" 
+                           th:classappend="${activePage == 'productos'} ? 'active'">Products</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="hasRole('USER')">
+                        <a class="nav-link" th:href="@{/compras/listar}"
+                           th:classappend="${activePage == 'compras'} ? 'active'">My Purchases</a>
+                    </li>
+
+                    <!-- Links visible only to users with the ROLE_ADMIN -->
+                    <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                        <a class="nav-link" th:href="@{/}"
+                           th:classappend="${activePage == 'adminProductos'} ? 'active'">Manage Products</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                        <a class="nav-link" th:href="@{/usuarios/admin/listar}"
+                           th:classappend="${activePage == 'adminUsuarios'} ? 'active'">Manage Users</a>
+                    </li>
+                </ul>
             </div>
         </div>
     </nav>
@@ -168,7 +168,7 @@
         </div>
     </div>
 
-    <footer class="bg-dark text-light text-center mt-auto">
+    <footer class="bg-dark text-light text-center py-3">
         <div class="container">
             <p class="mb-1">© 2025 G-commerce. All rights reserved.</p>
             <p class="mb-1"><small>This application is for educational purposes only. The developer assumes no responsibility for any misuse or inaccuracies.</small></p>

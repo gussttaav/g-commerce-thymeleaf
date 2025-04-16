@@ -24,7 +24,13 @@ import com.gplanet.commerce.utilities.ToastUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-
+/**
+ * Controller class that handles purchase-related operations.
+ * Provides endpoints for creating new purchases and viewing purchase history.
+ * 
+ * @author Gustavo
+ * @version 1.0
+ */
 @Controller
 @RequestMapping("/compras")
 @RequiredArgsConstructor
@@ -32,6 +38,15 @@ public class CompraController {
 
     private final CompraService compraService;
 
+    /**
+     * Processes a new purchase request from a user.
+     * 
+     * @param compraDTO Purchase data transfer object containing purchase details
+     * @param bindingResult Validation results for the purchase data
+     * @param authentication Current user's authentication
+     * @param redirectAttributes Redirect attributes for toast messages
+     * @return Redirect URL with purchase status
+     */
     @PostMapping("/nueva")
     public String processPurchase(
             @Valid @ModelAttribute CompraDTO compraDTO,
@@ -61,6 +76,13 @@ public class CompraController {
         }
     }
 
+    /**
+     * Lists all purchases for the current user with pagination.
+     * 
+     * @param authentication Current user's authentication
+     * @param model Spring MVC model
+     * @return View name for purchase list
+     */
     @GetMapping("/listar")
     public String listarCompras(Authentication authentication, Model model) {
         Page<CompraResponseDTO> comprasPage = compraService.listarCompras(
@@ -73,6 +95,17 @@ public class CompraController {
         return "compras/lista";
     }
 
+    /**
+     * Filters and paginates purchase list based on provided parameters.
+     * 
+     * @param authentication Current user's authentication
+     * @param page Page number (zero-based)
+     * @param size Items per page
+     * @param sort Sort field
+     * @param direction Sort direction
+     * @param model Spring MVC model
+     * @return Fragment name containing filtered results
+     */
     @PostMapping("/filtrar")
     public String filterProducts(
             Authentication authentication,

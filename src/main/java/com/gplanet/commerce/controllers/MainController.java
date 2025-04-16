@@ -15,12 +15,28 @@ import com.gplanet.commerce.dtos.producto.ProductStatus;
 import com.gplanet.commerce.dtos.producto.ProductoResponseDTO;
 import com.gplanet.commerce.services.ProductoService;
 
+/**
+ * Main controller class that handles the application's home page
+ * and initial routing based on user role.
+ * 
+ * @author Gustavo
+ * @version 1.0
+ */
 @Controller
 @RequiredArgsConstructor
 public class MainController {
 
     private final ProductoService productoService;
     
+    /**
+     * Handles requests to the home page, redirecting based on user role
+     * and loading initial product list.
+     * 
+     * @param authentication Current user's authentication
+     * @param model Spring MVC model
+     * @param compraExitosa Optional parameter indicating purchase success when redirected
+     * @return View name for home page or redirect URL
+     */
     @GetMapping("/")
     public String home(Authentication authentication, Model model,
                        @RequestParam(required = false) Boolean compraExitosa) {

@@ -21,6 +21,13 @@ import com.gplanet.commerce.repositories.ProductoRepository;
 
 import java.time.LocalDateTime;
 
+/**
+ * Service class that handles product-related operations including creation, 
+ * updating, listing, and status management of products.
+ * 
+ * @author Gustavo
+ * @version 1.0
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -87,6 +94,13 @@ public class ProductoService {
         return productosPage.map(productoMapper::toProductoResponseDTO);
     }
 
+    /**
+     * Toggles the active status of a product.
+     * 
+     * @param id The ID of the product to toggle
+     * @return ProductoResponseDTO containing the updated product information
+     * @throws ResourceNotFoundException if the product is not found
+     */
     @Transactional
     public ProductoResponseDTO toggleProductStatus(Long id) {
         log.info("Updating product status with ID: {}", id);
@@ -100,6 +114,12 @@ public class ProductoService {
         return productoMapper.toProductoResponseDTO(updatedProduct);
     }
 
+    /**
+     * Creates a new product in the system.
+     * 
+     * @param productoDTO Data transfer object containing product information
+     * @return ProductoResponseDTO containing the created product information
+     */
     @Transactional
     public ProductoResponseDTO crearProducto(ProductoDTO productoDTO) {
         log.info("Creating new product: {}", productoDTO.getNombre());
@@ -113,6 +133,14 @@ public class ProductoService {
     }
 
 
+    /**
+     * Updates an existing product's information.
+     * 
+     * @param id The ID of the product to update
+     * @param productoDTO Data transfer object containing the new product information
+     * @return ProductoResponseDTO containing the updated product information
+     * @throws ResourceNotFoundException if the product is not found
+     */
     @Transactional
     public ProductoResponseDTO actualizarProducto(Long id, ProductoDTO productoDTO) {
         log.info("Updating product with ID: {}", id);
@@ -126,6 +154,13 @@ public class ProductoService {
         return productoMapper.toProductoResponseDTO(updatedProducto);
     }
 
+    /**
+     * Retrieves a product by its ID.
+     * 
+     * @param id The ID of the product to find
+     * @return ProductoResponseDTO containing the product information
+     * @throws ResourceNotFoundException if the product is not found
+     */
     public ProductoResponseDTO findById(Long id) {
         Producto producto = productoRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado"));

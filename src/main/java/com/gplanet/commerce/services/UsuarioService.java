@@ -31,6 +31,10 @@ import java.time.LocalDateTime;
  * Service class that handles user-related operations including registration,
  * authentication, profile updates, and password management.
  * 
+ * This class provides comprehensive user management functionality including
+ * user registration, profile updates, password changes, and role management.
+ * It also supports pagination for user listing operations.
+ * 
  * @author Gustavo
  * @version 1.0
  */
@@ -75,6 +79,13 @@ public class UsuarioService {
         return usuarioMapper.toUsuarioResponseDTO(savedUsuario);
     }
 
+    /**
+     * Finds a user by their email address.
+     * 
+     * @param email The email address to search for
+     * @return Usuario The found user entity
+     * @throws UsernameNotFoundException if no user is found with the given email
+     */
     public Usuario buscarPorEmail(String email){
         return usuarioRepository.findByEmail(email).orElseThrow(
             () -> new UsernameNotFoundException("User not found with email: " + email)
@@ -173,6 +184,13 @@ public class UsuarioService {
         return result;
     }
 
+    /**
+     * Changes the role of a user between ADMIN and USER.
+     * 
+     * @param userId The ID of the user whose role should be changed
+     * @return UsuarioResponseDTO containing the updated user information
+     * @throws ResourceNotFoundException if the user is not found
+     */
     @Transactional
     public UsuarioResponseDTO cambiarRol(Long userId) {
         log.info("Changing rolefor user ID: {}", userId);

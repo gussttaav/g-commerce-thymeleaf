@@ -19,6 +19,13 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
+/**
+ * Entity class representing a purchase in the system.
+ * Each purchase is associated with a user and contains one or more products.
+ *
+ * @author Gustavo
+ * @version 1.0
+ */
 @Getter
 @Setter
 @Entity
@@ -28,13 +35,26 @@ public class Compra {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
+    /**
+     * The user who made the purchase
+     */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
     
+    /**
+     * Timestamp when the purchase was made
+     */
     private LocalDateTime fecha;
+
+    /**
+     * Total amount of the purchase
+     */
     private BigDecimal total;
     
+    /**
+     * List of products included in this purchase
+     */
     @OneToMany(mappedBy = "compra", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CompraProducto> productos = new ArrayList<>();
 
