@@ -103,9 +103,12 @@ public class CompraService {
     @Transactional
     public void realizarCompra(String email, CompraDTO compraDTO) {
         log.info("Starting new purchase for user: {}", email);
+
+        // Find user by email
         Usuario usuario = usuarioRepository.findByEmail(email)
             .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
 
+        // Initialize Compra entity
         Compra compra = new Compra();
         compra.setUsuario(usuario);
         compra.setFecha(LocalDateTime.now());
@@ -113,24 +116,27 @@ public class CompraService {
 
         BigDecimal total = BigDecimal.ZERO;
 
-        for (CompraProductoDTO item : compraDTO.getProductos()) {
-            Producto producto = productoRepository.findById(item.getProductoId())
+        // Process each product in the purchase
+        for (CompraProductoDTO item : compraDTO.productos()) {
+            Producto producto = productoRepository.findById(item.productoId())
                 .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado"));
 
             CompraProducto compraProducto = new CompraProducto();
             compraProducto.setProducto(producto);
-            compraProducto.setCantidad(item.getCantidad());
-            compraProducto.setSubtotal(
-                producto.getPrecio().multiply(BigDecimal.valueOf(item.getCantidad()))
-            );
-            
+            compraProducto.setCantidad(item.cantidad());
+
+            BigDecimal subtotal = producto.getPrecio()
+                .multiply(BigDecimal.valueOf(item.cantidad()));
+
+            compraProducto.setSubtotal(subtotal);
             compra.addCompraProducto(compraProducto);
-            total = total.add(compraProducto.getSubtotal());
+
+            total = total.add(subtotal);
         }
 
-        compra.setTotal(total);        
+        compra.setTotal(total);
         Compra savedCompra = compraRepository.save(compra);
-        
+
         log.info("Purchase completed - ID: {}, Total: {}", savedCompra.getId(), savedCompra.getTotal());
     }
 }

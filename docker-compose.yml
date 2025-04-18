@@ -3,11 +3,11 @@ services:
     image: mysql:9
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_DATABASE: shopping
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_CHARSET: ${MYSQL_CHARSET}
-      MYSQL_COLLATION: ${MYSQL_COLLATION}
+      MYSQL_CHARSET: utf8mb4
+      MYSQL_COLLATION: utf8mb4_spanish_ci
     ports:
       - "3306:3306"
     volumes:

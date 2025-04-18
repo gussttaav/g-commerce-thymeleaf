@@ -2,7 +2,6 @@ package com.gplanet.commerce.dtos.compra;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
-import lombok.Data;
 import java.util.List;
 
 /**
@@ -12,14 +11,12 @@ import java.util.List;
  *
  * @author Gustavo
  * @version 1.0
+ *
+ * @param productos  The list of products to be purchased.
+ *                   Must contain at least one product.
  */
-@Data
-public class CompraDTO {
-    /**
-     * The list of products to be purchased.
-     * Must contain at least one product.
-     */
+public record CompraDTO(
     @NotEmpty(message = "Debe incluir al menos un producto")
     @Valid
-    private List<CompraProductoDTO> productos;
-}
+    List<CompraProductoDTO> productos
+) {}

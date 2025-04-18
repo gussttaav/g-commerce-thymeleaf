@@ -1,7 +1,6 @@
 package com.gplanet.commerce.dtos.compra;
 
 import jakarta.validation.constraints.Positive;
-import lombok.Data;
 
 /**
  * Data Transfer Object (DTO) for product purchase requests.
@@ -10,20 +9,14 @@ import lombok.Data;
  *
  * @author Gustavo
  * @version 1.0
+ *
+ * @param productoId  The ID of the product to be purchased. Must be a positive number.
+ * @param cantidad    The quantity of the product to purchase. Must be a positive number.
  */
-@Data
-public class CompraProductoDTO {
-    /**
-     * The ID of the product to be purchased.
-     * Must be a positive number.
-     */
+public record CompraProductoDTO(
     @Positive(message = "El ID del producto debe ser válido")
-    private Long productoId;
-    
-    /**
-     * The quantity of the product to purchase.
-     * Must be a positive number.
-     */
+    Long productoId,
+
     @Positive(message = "La cantidad debe ser mayor a 0")
-    private Integer cantidad;
-}
+    Integer cantidad
+) {}

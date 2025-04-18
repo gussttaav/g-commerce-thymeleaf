@@ -122,7 +122,7 @@ public class ProductoService {
      */
     @Transactional
     public ProductoResponseDTO crearProducto(ProductoDTO productoDTO) {
-        log.info("Creating new product: {}", productoDTO.getNombre());
+        log.info("Creating new product: {}", productoDTO.nombre());
         Producto producto = productoMapper.toProducto(productoDTO);
         producto.setActivo(true);
         producto.setFechaCreacion(LocalDateTime.now());

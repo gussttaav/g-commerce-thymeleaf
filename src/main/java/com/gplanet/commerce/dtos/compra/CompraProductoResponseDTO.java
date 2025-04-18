@@ -1,7 +1,6 @@
 package com.gplanet.commerce.dtos.compra;
 
 import java.math.BigDecimal;
-import lombok.Data;
 
 /**
  * Data Transfer Object (DTO) for product purchase details.
@@ -10,31 +9,17 @@ import lombok.Data;
  *
  * @author Gustavo
  * @version 1.0
+ *
+ * @param id              The unique identifier of the product.
+ * @param productoNombre  The name of the purchased product.
+ * @param precioUnitario  The unit price of the product at the time of purchase.
+ * @param cantidad        The quantity of the product purchased.
+ * @param subtotal        The subtotal for this product (unit price * quantity).
  */
-@Data
-public class CompraProductoResponseDTO {
-    /**
-     * The unique identifier of the product.
-     */
-    private Long id;
-
-    /**
-     * The name of the purchased product.
-     */
-    private String productoNombre;
-
-    /**
-     * The unit price of the product at the time of purchase.
-     */
-    private BigDecimal precioUnitario;
-
-    /**
-     * The quantity of the product purchased.
-     */
-    private Integer cantidad;
-
-    /**
-     * The subtotal for this product (unit price * quantity).
-     */
-    private BigDecimal subtotal;
-}
+public record CompraProductoResponseDTO(
+    Long id,
+    String productoNombre,
+    BigDecimal precioUnitario,
+    Integer cantidad,
+    BigDecimal subtotal
+) {}

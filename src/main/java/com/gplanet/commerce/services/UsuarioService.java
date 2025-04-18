@@ -94,8 +94,8 @@ public class UsuarioService {
 
     /**
      * Updates a user's profile information.
-     * 
-     * @param email Current email of the user
+     *
+     * @param email     Current email of the user
      * @param perfilDTO Data transfer object containing new profile information
      * @throws UsernameNotFoundException if user is not found
      */
@@ -105,15 +105,15 @@ public class UsuarioService {
         Usuario usuario = usuarioRepository.findByEmail(email)
             .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
 
-        String nuevoEmail = perfilDTO.getNuevoEmail();
-        if(!email.equals(perfilDTO.getNuevoEmail()) && usuarioRepository.existsByEmail(nuevoEmail)){
+        String nuevoEmail = perfilDTO.nuevoEmail();
+        if (!email.equals(nuevoEmail) && usuarioRepository.existsByEmail(nuevoEmail)) {
             log.warn("Updating profile failed, email already exists: {}", nuevoEmail);
             throw new EmailAlreadyExistsException(nuevoEmail);
         }
 
-        usuario.setEmail(perfilDTO.getNuevoEmail());
-        usuario.setNombre(perfilDTO.getNombre());
-        
+        usuario.setEmail(perfilDTO.nuevoEmail());
+        usuario.setNombre(perfilDTO.nombre());
+
         usuarioRepository.save(usuario);
         log.info("Profile updated successfully for user: {}", usuario.getEmail());
     }
