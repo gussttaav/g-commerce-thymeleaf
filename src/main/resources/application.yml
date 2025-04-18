@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: commerce
+  datasource:
+    url: jdbc:mysql://${MYSQL_HOST:localhost:3306}/shopping?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+    username: ${MYSQL_USER}
+    password: ${MYSQL_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
