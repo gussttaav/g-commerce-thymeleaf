@@ -76,17 +76,6 @@ The application will be available at `http://localhost:8080`
 | `MYSQL_PASSWORD` | Database password | - | Yes |
 | `MYSQL_HOST` | Database host name and port | localhost:3306 | No |
 
-## 🖥️ Default Credentials
-
-After starting the application, you can log in using:
-
-- **Admin User**:
-  - Email: The value of `ADMIN_EMAIL` (default: admin@example.com)
-  - Password: The value of `ADMIN_PASSWORD` (default: admin)
-
-- **Regular User**:
-  - You can register a new user via the registration page
-
 
 ## 📦 Docker Image Details
 

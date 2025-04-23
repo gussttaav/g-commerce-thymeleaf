@@ -4,7 +4,7 @@
 <body>
     <section>
         <form id="productFilterForm" class="card mb-4" 
-              hx-post="/productos/filtrar" 
+              hx-get="/productos/filtrar" 
               hx-target="#productGridContainer" 
               hx-trigger="submit, change from:select, keyup from:input[name='search'] delay:500"
               sec:authorize="!isAuthenticated() or hasRole('USER')">

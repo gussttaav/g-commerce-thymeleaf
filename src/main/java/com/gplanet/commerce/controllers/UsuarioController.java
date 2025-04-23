@@ -246,7 +246,7 @@ public class UsuarioController {
      * @param model Spring MVC model
      * @return Fragment name containing filtered results
      */
-    @PostMapping("/admin/filtrar")
+    @GetMapping("/admin/filtrar")
     public String filtrarUsuarios(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,

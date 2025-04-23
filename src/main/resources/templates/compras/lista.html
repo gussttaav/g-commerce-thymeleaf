@@ -7,7 +7,7 @@
             <h2>Purchase History</h2>
             
             <form id="purchaseFilterForm" class="card mb-4" 
-              hx-post="/compras/filtrar" 
+              hx-get="/compras/filtrar" 
               hx-target="#purchasesTableContainer" 
               hx-trigger="submit, change from:select"
               sec:authorize="isAuthenticated() and hasRole('USER')">

@@ -36,7 +36,6 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(authz -> authz
                 .requestMatchers("/css/**", "/js/**", "/img/**").permitAll()
                 .requestMatchers("/", "/usuarios/registro", "/usuarios/login", 
@@ -59,9 +58,8 @@ public class SecurityConfig {
                 .permitAll()
             )
             .exceptionHandling(ex -> ex
-                .accessDeniedPage("/acceso-denegado")
-            )
-            .httpBasic(httpBasic -> httpBasic.realmName("MyAppRealm"));
+                .accessDeniedPage("/usuarios/login")
+            );
         
         return http.build();
     }

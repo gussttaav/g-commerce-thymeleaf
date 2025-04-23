@@ -106,7 +106,7 @@ public class CompraController {
      * @param model Spring MVC model
      * @return Fragment name containing filtered results
      */
-    @PostMapping("/filtrar")
+    @GetMapping("/filtrar")
     public String filterProducts(
             Authentication authentication,
             @RequestParam(defaultValue = "0") int page,

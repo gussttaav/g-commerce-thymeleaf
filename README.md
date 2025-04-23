@@ -39,7 +39,7 @@ This project is based on the original [G-commerce backend](https://github.com/gu
 
 - **Security Features**
   - Spring Security integration
-  - Basic authentication
+  - Form-Based authentication
   - CSRF protection
   - Input validation
   - User role enforcement

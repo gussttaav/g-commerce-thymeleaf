@@ -16,7 +16,7 @@
             </div>
 
             <form id="productsAdminFilterForm" class="card mb-4"
-                  hx-post="/productos/admin/filtrar" 
+                  hx-get="/productos/admin/filtrar" 
                   hx-target="#adminProductsTableContainer" 
                   hx-trigger="submit, change from:select, keyup from:input[name='search'] delay:500"
                   sec:authorize="isAuthenticated() and hasRole('ADMIN')">

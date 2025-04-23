@@ -110,7 +110,7 @@ public class ProductoController {
      * @param model Spring MVC model
      * @return Fragment name containing filtered product grid
      */
-    @PostMapping("/filtrar")
+    @GetMapping("/filtrar")
     public String filterProducts(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -143,7 +143,7 @@ public class ProductoController {
      * @param model Spring MVC model
      * @return Fragment name containing filtered product table
      */
-    @PostMapping("/admin/filtrar")
+    @GetMapping("/admin/filtrar")
     public String filterAdminProducts(
             @RequestParam(defaultValue = "ALL") ProductStatus status,
             @RequestParam(defaultValue = "0") int page,

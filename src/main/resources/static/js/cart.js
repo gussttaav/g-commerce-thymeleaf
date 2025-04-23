@@ -350,6 +350,9 @@ class CartComponent {
     }
 
     prepareCheckoutForm() {
+        // Obtain CSRF token afrom meta tag
+        const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+
         // Create a hidden form if it doesn't exist
         let checkoutForm = document.getElementById('checkoutForm');
         if (!checkoutForm) {
@@ -369,6 +372,13 @@ class CartComponent {
 
             // Clear existing form inputs
             checkoutForm.innerHTML = '';
+
+            // Add CSRF token
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = '_csrf';
+            csrfInput.value = csrfToken;
+            checkoutForm.appendChild(csrfInput);
 
             // Add cart items as hidden inputs following the DTO structure
             this.selectedProducts.forEach((item, productId) => {

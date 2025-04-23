@@ -17,7 +17,7 @@
             </div>
 
             <form id="usersFilterForm" class="card mb-4"
-                hx-post="/usuarios/admin/filtrar" 
+                hx-get="/usuarios/admin/filtrar" 
                 hx-target="#usersTableContainer" 
                 hx-trigger="submit, change from:select"
                 sec:authorize="isAuthenticated() and hasRole('ADMIN')">
