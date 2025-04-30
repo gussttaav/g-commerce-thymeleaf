@@ -307,7 +307,13 @@ public class UsuarioController {
      * @return Fragment name containing new user row or error message
      */
     @PostMapping("/admin/registrar")
-    public String createUser(@Valid UsuarioAdminDTO usuarioDTO, Model model) {
+    public String createUser(@Valid @ModelAttribute UsuarioAdminDTO usuarioDTO, BindingResult result, Model model) {
+        if(result.hasErrors()){
+            log.error("Error creating user! {}", result.getAllErrors());
+            ToastUtil.error(model, "Error creating user!");
+            return "empty :: empty";
+        }
+
         try {
             UsuarioResponseDTO newUser = usuarioService.registrarUsuario(usuarioDTO);
             model.addAttribute("usuario", newUser);
@@ -315,7 +321,7 @@ public class UsuarioController {
             return "usuarios/lista-usuario-row :: usuario-row";
         } catch (Exception e) {
             log.error("Error creating user", e);
-            ToastUtil.error(model, "Error creating user: " + e.getMessage());
+            ToastUtil.error(model, "Error creating user!");
             return "empty :: empty";
         }
     }

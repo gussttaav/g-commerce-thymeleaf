@@ -2,7 +2,7 @@
 
 A full-stack e-commerce web application built with **Spring Boot**, **Thymeleaf**, and **HTMX**. This project combines backend services and frontend presentation in a single monolithic application, providing a seamless user experience without the need for a separate frontend application.
 
-This project is based on the original [G-commerce backend](https://github.com/gussttaav/g-commerce-springboot-api) and [G-commerce frontend](https://github.com/gussttaav/g-commerce-front-web-no-framework) projects, combining them into a unified application.
+This project is based on the original [G-commerce backend api](https://github.com/gussttaav/g-commerce-springboot-api) and [G-commerce frontend](https://github.com/gussttaav/g-commerce-front-web-no-framework) projects, combining them into a unified application.
 
 
 ## 🚀 Features
@@ -48,7 +48,7 @@ This project is based on the original [G-commerce backend](https://github.com/gu
 
 - **Backend**
   - Java 21
-  - Spring Boot 3.4.4
+  - Spring Boot 3.4.5
   - Spring Security
   - Spring Data JPA
   - MySQL 9
@@ -152,7 +152,15 @@ src/
 │           ├── compras/          # Purchase-related Templates
 │           ├── productos/        # Product-related Templates
 │           └── usuarios/         # User-related Templates
-├── test/                          # Test Classes
+├── test/
+│   ├── java/
+│   │   └── com/gplanet/commerce/
+│   │       ├── controllers/       # Controllers Tests
+│   │       ├── integration/       # Integration Tests
+│   │       ├── repositories/      # Spring Data Repositories Tests
+│   │       ├── security/          # Security Configuration Tests
+│   │       ├── services/          # JUnit services tests
+│   └── resources/
 └── docker-compose.db.yml          # Docker Compose for Database
 ```
 
@@ -196,7 +204,7 @@ HTMX is used to provide a modern, dynamic user experience without the complexity
 
 - Bootstrap 5 for responsive layouts
 - Custom CSS for theme customization
-- Client-side JavaScript for enhanced interactions
+- Client-side JavaScript cart logic
 - Theme switching between light and dark modes
 
 ## 🧪 Testing
@@ -216,7 +224,7 @@ mvn verify
 
 ## 🛡️ Security
 
-- Basic authentication with Spring Security
+- Form-based authentication with Spring Security
 - Role-based access control (ADMIN, USER)
 - CSRF protection for form submissions
 - Input validation

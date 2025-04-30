@@ -1,13 +1,15 @@
 <!-- Used for error responses from controllers -->
-<div th:fragment="empty"></div>
+<div th:fragment="empty">
 
-<!-- Toast trigger script -->
-<script th:inline="javascript">
-    (function() {
-        const toastMessage = /*[[${toastMessage}]]*/ null;
-        const toastType = /*[[${toastType}]]*/ null;
-        if (toastMessage && toastType) {
-            setTimeout(() => UiUtils.showToast(toastMessage, toastType), 50);
-        }
-    })();
-</script>
+    <!-- Toast trigger script -->
+    <script th:inline="javascript">
+        (function() {
+            const toastMessage = /*[[${toastMessage}]]*/ null;
+            const toastType = /*[[${toastType}]]*/ null;
+            if (toastMessage && toastType) {
+                setTimeout(() => UiUtils.showToast(toastMessage, toastType), 50);
+            }
+        })();
+    </script>
+    
+</div>
