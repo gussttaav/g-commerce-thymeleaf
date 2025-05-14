@@ -31,39 +31,40 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "compras")
 public class Compra {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    
-    /**
-     * The user who made the purchase
-     */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "usuario_id")
-    private Usuario usuario;
-    
-    /**
-     * Timestamp when the purchase was made
-     */
-    private LocalDateTime fecha;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+  
+  /**
+   * The user who made the purchase.
+   */
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "usuario_id")
+  private Usuario usuario;
+  
+  /**
+   * Timestamp when the purchase was made.
+   */
+  private LocalDateTime fecha;
 
-    /**
-     * Total amount of the purchase
-     */
-    private BigDecimal total;
-    
-    /**
-     * List of products included in this purchase
-     */
-    @OneToMany(mappedBy = "compra", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CompraProducto> productos = new ArrayList<>();
+  /**
+   * Total amount of the purchase.
+   */
+  private BigDecimal total;
+  
+  /**
+   * List of products included in this purchase.
+   */
+  @OneToMany(mappedBy = "compra", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<CompraProducto> productos = new ArrayList<>();
 
-    /**
-     * Adds a product to the purchase and maintains the bidirectional relationship
-     * @param compraProducto The product entry to add to the purchase
-     */
-    public void addCompraProducto(CompraProducto compraProducto) {
-        productos.add(compraProducto);
-        compraProducto.setCompra(this);
-    }
+  /**
+   * Adds a product to the purchase and maintains the bidirectional relationship.
+   * 
+   * @param compraProducto The product entry to add to the purchase
+   */
+  public void addCompraProducto(CompraProducto compraProducto) {
+    productos.add(compraProducto);
+    compraProducto.setCompra(this);
+  }
 }

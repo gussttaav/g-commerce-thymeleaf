@@ -11,12 +11,12 @@ package com.gplanet.commerce.exceptions;
  * @version 1.0
  */
 public class ResourceNotFoundException extends RuntimeException {
-    /**
-     * Creates a new resource not found exception.
-     * 
-     * @param message The detailed message explaining which resource was not found
-     */
-    public ResourceNotFoundException(String message) {
-        super(message);
-    }
+  /**
+   * Creates a new resource not found exception.
+   * 
+   * @param message The detailed message explaining which resource was not found
+   */
+  public ResourceNotFoundException(String message) {
+    super(message);
+  }
 }

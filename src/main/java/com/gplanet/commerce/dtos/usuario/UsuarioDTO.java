@@ -14,22 +14,22 @@ import lombok.Data;
  */
 @Data
 public class UsuarioDTO {
-    /** 
-     * The full name of the user. 
-     */
-    @NotBlank(message = "El nombre es obligatorio")
-    private String nombre;
-    
-    /** 
-     * The email address for the user account, used as username. 
-     */
-    @Email(message = "El email debe ser válido")
-    @NotBlank(message = "El email es obligatorio")
-    private String email;
-    
-    /** 
-     * The password for the user account. 
-     */
-    @NotBlank(message = "La contraseña es obligatoria")
-    private String password; 
+  /** 
+   * The full name of the user. 
+   */
+  @NotBlank(message = "El nombre es obligatorio")
+  private String nombre;
+  
+  /** 
+   * The email address for the user account, used as username. 
+   */
+  @Email(message = "El email debe ser válido")
+  @NotBlank(message = "El email es obligatorio")
+  private String email;
+  
+  /** 
+   * The password for the user account. 
+   */
+  @NotBlank(message = "La contraseña es obligatoria")
+  private String password; 
 }

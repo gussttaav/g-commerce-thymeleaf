@@ -1,38 +1,38 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" 
-    th:replace="~{layout :: layout('Login', ~{::section})}">
+  th:replace="~{layout :: layout('Login', ~{::section})}">
 <body>
-    <section>
-        <div class="row justify-content-center" id="loginForm">
-            <div class="col-12 col-sm-8 col-md-6 col-lg-4">
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="text-center">Login</h3>
-                    </div>
-                    <div class="card-body">
-                        <form th:action="@{/usuarios/login}" method="post">
-                            <div class="mb-3">
-                                <label for="email" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="email" name="username" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="password" class="form-label">Password</label>
-                                <input type="password" class="form-control" id="password" name="password" required>
-                            </div>
-                            <div class="d-grid gap-2">
-                                <button type="submit" class="btn btn-primary">Login</button>
-                                <a th:href="@{/usuarios/registro}" class="btn btn-link">
-                                    Don't have an account? Register here
-                                </a>                                
-                            </div>
-                        </form>
-                        <div class="alert alert-danger" th:if="${loginError}" th:text="${loginError}" role="alert">
-                            Login failed. Please check your email and password.
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+  <section>
+      <div class="row justify-content-center" id="loginForm">
+          <div class="col-12 col-sm-8 col-md-6 col-lg-4">
+              <div class="card">
+                  <div class="card-header">
+                      <h3 class="text-center">Login</h3>
+                  </div>
+                  <div class="card-body">
+                      <form th:action="@{/usuarios/login}" method="post">
+                          <div class="mb-3">
+                              <label for="email" class="form-label">Email</label>
+                              <input type="email" class="form-control" id="email" name="username" required>
+                          </div>
+                          <div class="mb-3">
+                              <label for="password" class="form-label">Password</label>
+                              <input type="password" class="form-control" id="password" name="password" required>
+                          </div>
+                          <div class="d-grid gap-2">
+                              <button type="submit" class="btn btn-primary">Login</button>
+                              <a th:href="@{/usuarios/registro}" class="btn btn-link">
+                                  Don't have an account? Register here
+                              </a>                                
+                          </div>
+                      </form>
+                      <div class="alert alert-danger" th:if="${loginError}" th:text="${loginError}" role="alert">
+                          Login failed. Please check your email and password.
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </section>
 </body>
 </html>

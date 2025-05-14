@@ -47,114 +47,114 @@ import com.gplanet.commerce.services.UsuarioService;
 @ActiveProfiles("test")
 public class SecurityIntegrationTest {
 
-    @Autowired
-    private WebApplicationContext context;
+  @Autowired
+  private WebApplicationContext context;
 
-    private MockMvc mockMvc;
+  private MockMvc mockMvc;
 
-    @MockitoBean
-    private UsuarioRepository usuarioRepository;
+  @MockitoBean
+  private UsuarioRepository usuarioRepository;
 
-    @MockitoBean
-    private UsuarioService usuarioService;
-    
-    @MockitoBean
-    private UsuarioDetallesService usuarioDetallesService;
+  @MockitoBean
+  private UsuarioService usuarioService;
 
-    @BeforeEach
-    public void setup() {
-        mockMvc = MockMvcBuilders
-                .webAppContextSetup(context)
-                .apply(springSecurity())
-                .build();
-        
-        // Set up a test user
-        Usuario testUser = new Usuario();
-        testUser.setEmail("user@example.com");
-        testUser.setPassword("$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG"); // "password" encoded
-        testUser.setNombre("Test User");
-        testUser.setRol(Usuario.Role.USER);
-        
-        // Set up an admin user
-        Usuario adminUser = new Usuario();
-        adminUser.setEmail("admin@example.com");
-        adminUser.setPassword("$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG"); // "password" encoded
-        adminUser.setNombre("Admin User");
-        adminUser.setRol(Usuario.Role.ADMIN);
-        
-        when(usuarioRepository.findByEmail("user@example.com")).thenReturn(Optional.of(testUser));
-        when(usuarioRepository.findByEmail("admin@example.com")).thenReturn(Optional.of(adminUser));
+  @MockitoBean
+  private UsuarioDetallesService usuarioDetallesService;
 
-        when(usuarioService.buscarPorEmail(anyString())).thenReturn(testUser);
-        
-        // Mock UserDetailsService to return proper UserDetails objects
-        Collection<GrantedAuthority> userAuthorities = new ArrayList<>();
-        userAuthorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-        UsuarioDetalles userDetails = new UsuarioDetalles(testUser, userAuthorities);
-        
-        Collection<GrantedAuthority> adminAuthorities = new ArrayList<>();
-        adminAuthorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
-        UsuarioDetalles adminDetails = new UsuarioDetalles(adminUser, adminAuthorities);
-        
-        when(usuarioDetallesService.loadUserByUsername("user@example.com")).thenReturn(userDetails);
-        when(usuarioDetallesService.loadUserByUsername("admin@example.com")).thenReturn(adminDetails);
-    }
+  @BeforeEach
+  public void setup() {
+    mockMvc = MockMvcBuilders
+        .webAppContextSetup(context)
+        .apply(springSecurity())
+        .build();
 
-    @Test
-    @WithAnonymousUser
-    public void accessUnsecuredEndpoint_Success() throws Exception {
-        mockMvc.perform(get("/"))
-                .andExpect(status().isOk());
-    }
+    // Set up a test user
+    Usuario testUser = new Usuario();
+    testUser.setEmail("user@example.com");
+    testUser.setPassword("$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG"); // "password" encoded
+    testUser.setNombre("Test User");
+    testUser.setRol(Usuario.Role.USER);
 
-    @Test
-    @WithAnonymousUser
-    public void accessSecuredEndpoint_RedirectsToLogin() throws Exception {
-        mockMvc.perform(get("/usuarios/perfil"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("**/usuarios/login"));
-    }
+    // Set up an admin user
+    Usuario adminUser = new Usuario();
+    adminUser.setEmail("admin@example.com");
+    adminUser.setPassword("$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG"); // "password" encoded
+    adminUser.setNombre("Admin User");
+    adminUser.setRol(Usuario.Role.ADMIN);
 
-    @Test
-    public void accessUserEndpoint_AsUser_Success() throws Exception {
-        UserDetails userDetails = usuarioDetallesService.loadUserByUsername("user@example.com");
-        mockMvc.perform(get("/usuarios/perfil").with(user(userDetails)))
-                .andExpect(status().isOk());
-    }
+    when(usuarioRepository.findByEmail("user@example.com")).thenReturn(Optional.of(testUser));
+    when(usuarioRepository.findByEmail("admin@example.com")).thenReturn(Optional.of(adminUser));
 
-    @Test
-    @WithMockUser(roles = "USER")
-    public void accessAdminEndpoint_AsUser_Forbidden() throws Exception {
-        mockMvc.perform(get("/usuarios/admin/listar"))
-                .andExpect(status().isForbidden());
-    }
+    when(usuarioService.buscarPorEmail(anyString())).thenReturn(testUser);
 
-    @Test
-    public void accessAdminEndpoint_AsAdmin_Success() throws Exception {
-        // Mock usuario service for admin controller
-        List<UsuarioResponseDTO> usuariosList = new ArrayList<>();
-        Page<UsuarioResponseDTO> usuariosPage = new PageImpl<>(usuariosList);
-        when(usuarioService.listarUsuarios(anyInt(), anyInt(), anyString(), anyString()))
-            .thenReturn(usuariosPage);
-            
-        UserDetails userDetails = usuarioDetallesService.loadUserByUsername("admin@example.com");
-        mockMvc.perform(get("/usuarios/admin/listar").with(user(userDetails)))
-                .andExpect(status().isOk());
-    }
+    // Mock UserDetailsService to return proper UserDetails objects
+    Collection<GrantedAuthority> userAuthorities = new ArrayList<>();
+    userAuthorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+    UsuarioDetalles userDetails = new UsuarioDetalles(testUser, userAuthorities);
 
-    @Test
-    public void loginWithValidCredentials_Success() throws Exception {
-        mockMvc.perform(formLogin("/usuarios/login")
-                .user("user@example.com")
-                .password("password"))
-                .andExpect(authenticated());
-    }
+    Collection<GrantedAuthority> adminAuthorities = new ArrayList<>();
+    adminAuthorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+    UsuarioDetalles adminDetails = new UsuarioDetalles(adminUser, adminAuthorities);
 
-    @Test
-    public void loginWithInvalidCredentials_Fails() throws Exception {
-        mockMvc.perform(formLogin("/usuarios/login")
-                .user("user@example.com")
-                .password("wrongpassword"))
-                .andExpect(unauthenticated());
-    }
+    when(usuarioDetallesService.loadUserByUsername("user@example.com")).thenReturn(userDetails);
+    when(usuarioDetallesService.loadUserByUsername("admin@example.com")).thenReturn(adminDetails);
+  }
+
+  @Test
+  @WithAnonymousUser
+  public void accessUnsecuredEndpoint_Success() throws Exception {
+    mockMvc.perform(get("/"))
+        .andExpect(status().isOk());
+  }
+
+  @Test
+  @WithAnonymousUser
+  public void accessSecuredEndpoint_RedirectsToLogin() throws Exception {
+    mockMvc.perform(get("/usuarios/perfil"))
+        .andExpect(status().is3xxRedirection())
+        .andExpect(redirectedUrlPattern("**/usuarios/login"));
+  }
+
+  @Test
+  public void accessUserEndpoint_AsUser_Success() throws Exception {
+    UserDetails userDetails = usuarioDetallesService.loadUserByUsername("user@example.com");
+    mockMvc.perform(get("/usuarios/perfil").with(user(userDetails)))
+        .andExpect(status().isOk());
+  }
+
+  @Test
+  @WithMockUser(roles = "USER")
+  public void accessAdminEndpoint_AsUser_Forbidden() throws Exception {
+    mockMvc.perform(get("/usuarios/admin/listar"))
+        .andExpect(status().isForbidden());
+  }
+
+  @Test
+  public void accessAdminEndpoint_AsAdmin_Success() throws Exception {
+    // Mock usuario service for admin controller
+    List<UsuarioResponseDTO> usuariosList = new ArrayList<>();
+    Page<UsuarioResponseDTO> usuariosPage = new PageImpl<>(usuariosList);
+    when(usuarioService.listarUsuarios(anyInt(), anyInt(), anyString(), anyString()))
+        .thenReturn(usuariosPage);
+
+    UserDetails userDetails = usuarioDetallesService.loadUserByUsername("admin@example.com");
+    mockMvc.perform(get("/usuarios/admin/listar").with(user(userDetails)))
+        .andExpect(status().isOk());
+  }
+
+  @Test
+  public void loginWithValidCredentials_Success() throws Exception {
+    mockMvc.perform(formLogin("/usuarios/login")
+        .user("user@example.com")
+        .password("password"))
+        .andExpect(authenticated());
+  }
+
+  @Test
+  public void loginWithInvalidCredentials_Fails() throws Exception {
+    mockMvc.perform(formLogin("/usuarios/login")
+        .user("user@example.com")
+        .password("wrongpassword"))
+        .andExpect(unauthenticated());
+  }
 }

@@ -8,12 +8,12 @@ package com.gplanet.commerce.exceptions;
  * @version 1.0
  */
 public class PasswordMismatchException extends RuntimeException {
-    /**
-     * Creates a new password mismatch exception.
-     * 
-     * @param message The detailed message explaining the mismatch
-     */
-    public PasswordMismatchException(String message) {
-        super(message);
-    }
+  /**
+   * Creates a new password mismatch exception.
+   * 
+   * @param message The detailed message explaining the mismatch
+   */
+  public PasswordMismatchException(String message) {
+    super(message);
+  }
 }

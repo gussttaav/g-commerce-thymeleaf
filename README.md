@@ -44,6 +44,11 @@ This project is based on the original [G-commerce backend api](https://github.co
   - Input validation
   - User role enforcement
 
+- **Code Quality Tools**
+  - Checkstyle for enforcing coding standards
+  - PMD for static code analysis
+  - Automated checks during build process
+
 ## 🛠️ Technologies
 
 - **Backend**
@@ -67,6 +72,8 @@ This project is based on the original [G-commerce backend api](https://github.co
   - GitHub Actions for CI/CD
   - Lombok
   - JUnit 5 & Mockito
+  - Checkstyle 10.14.2
+  - PMD 7.1.0
 
 ## 📋 Prerequisites
 
@@ -222,6 +229,45 @@ mvn test -Dtest=UsuarioControllerTest
 mvn verify
 ```
 
+## 🔍 Code Quality
+
+The project enforces strict code quality standards using the following tools:
+
+### Checkstyle
+
+Checkstyle is configured to enforce consistent coding conventions and best practices:
+
+```bash
+# Run Checkstyle checks
+mvn checkstyle:check
+```
+
+Key Checkstyle rules include:
+- Line length limit (120 characters)
+- Import organization rules (no wildcard imports)
+- Naming conventions for all code elements
+- Code block organization (braces, whitespace)
+- Method size limits (50 lines max)
+- Parameter number limits (7 max)
+- Class design rules (final classes, utility class constructors)
+- Code complexity rules (cyclomatic complexity)
+
+### PMD
+
+PMD performs static code analysis to detect potential bugs and code smells:
+
+```bash
+# Run PMD checks
+mvn pmd:check
+```
+
+PMD is configured to focus on:
+- Best practices for Java development
+- Error-prone patterns
+- Code duplication detection
+
+Both Checkstyle and PMD are integrated into the Maven build lifecycle and will cause the build to fail if any violations are detected. This ensures consistent code quality throughout the project.
+
 ## 🛡️ Security
 
 - Form-based authentication with Spring Security
@@ -229,6 +275,17 @@ mvn verify
 - CSRF protection for form submissions
 - Input validation
 - Secure password storage with BCrypt
+
+
+## 🌐 Live Demo
+
+A live demo of this application is available at:
+
+👉 [G-Commerce Thymeleaf Demo on Render](https://g-commerce-thymeleaf-latest.onrender.com/)
+
+**⚠️ Note:**  
+This demo is hosted on a **free Render.com plan**, which means the server spins down after periods of inactivity. The first request after a while might take **up to a minute or more** to load as the server starts up again. Be patient — it’s worth the wait!
+
 
 ## 📄 License
 

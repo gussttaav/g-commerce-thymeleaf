@@ -26,31 +26,31 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "compra_productos")
 public class CompraProducto {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    
-    /**
-     * The purchase this entry belongs to
-     */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "compra_id")
-    private Compra compra;
-    
-    /**
-     * The product included in the purchase
-     */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "producto_id")
-    private Producto producto;
-    
-    /**
-     * Quantity of the product purchased
-     */
-    private Integer cantidad;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+  
+  /**
+   * The purchase this entry belongs to.
+   */
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "compra_id")
+  private Compra compra;
+  
+  /**
+   * The product included in the purchase.
+   */
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "producto_id")
+  private Producto producto;
+  
+  /**
+   * Quantity of the product purchased.
+   */
+  private Integer cantidad;
 
-    /**
-     * Subtotal for this product entry (price * quantity)
-     */
-    private BigDecimal subtotal;
+  /**
+   * Subtotal for this product entry (price * quantity).
+   */
+  private BigDecimal subtotal;
 }

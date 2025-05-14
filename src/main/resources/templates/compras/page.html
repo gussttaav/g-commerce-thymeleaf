@@ -1,40 +1,40 @@
 <div th:fragment="compras-page">
-    <div class="table-responsive">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Products</th>
-                    <th>Total</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="compra : ${compras}">
-                    <td th:text="${#temporals.format(compra.fecha, 'dd/MM/yyyy HH:mm')}"></td>
-                    <td>
-                        <ul class="list-unstyled">
-                            <li th:each="producto : ${compra.productos}">
-                                <span th:text="${producto.productoNombre}"></span> x 
-                                <span th:text="${producto.cantidad}"></span> - 
-                                $<span th:text="${producto.subtotal}"></span>
-                            </li>
-                        </ul>
-                    </td>
-                    <td>$<span th:text="${compra.total}"></span></td>
-                </tr>
-                <tr th:if="${#lists.isEmpty(compras)}">
-                    <td colspan="3" class="text-center">You haven't made any purchases yet.</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+  <div class="table-responsive">
+      <table class="table">
+          <thead>
+              <tr>
+                  <th>Date</th>
+                  <th>Products</th>
+                  <th>Total</th>
+              </tr>
+          </thead>
+          <tbody>
+              <tr th:each="compra : ${compras}">
+                  <td th:text="${#temporals.format(compra.fecha, 'dd/MM/yyyy HH:mm')}"></td>
+                  <td>
+                      <ul class="list-unstyled">
+                          <li th:each="producto : ${compra.productos}">
+                              <span th:text="${producto.productoNombre}"></span> x 
+                              <span th:text="${producto.cantidad}"></span> - 
+                              $<span th:text="${producto.subtotal}"></span>
+                          </li>
+                      </ul>
+                  </td>
+                  <td>$<span th:text="${compra.total}"></span></td>
+              </tr>
+              <tr th:if="${#lists.isEmpty(compras)}">
+                  <td colspan="3" class="text-center">You haven't made any purchases yet.</td>
+              </tr>
+          </tbody>
+      </table>
+  </div>
 
-    <!-- Pagination Controls -->
-    <div th:replace="~{pagination :: paginationControls(
-            ${pagination}, 
-            '/compras/filtrar', 
-            '#purchaseFilterForm', 
-            '#purchasesTableContainer',
-            'purchases')}">
-    </div>
+  <!-- Pagination Controls -->
+  <div th:replace="~{pagination :: paginationControls(
+          ${pagination}, 
+          '/compras/filtrar', 
+          '#purchaseFilterForm', 
+          '#purchasesTableContainer',
+          'purchases')}">
+  </div>
 </div>

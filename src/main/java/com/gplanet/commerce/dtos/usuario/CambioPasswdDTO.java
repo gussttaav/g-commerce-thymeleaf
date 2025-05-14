@@ -13,21 +13,21 @@ import lombok.Data;
  */
 @Data
 public class CambioPasswdDTO {
-    /** 
-     * The user's current password for verification. 
-     */
-    @NotBlank(message = "La contraseña actual es obligatoria")
-    private String currentPassword;
-    
-    /** 
-     * The new password to be set for the user account. 
-     */
-    @NotBlank(message = "La nueva contraseña es obligatoria")
-    private String newPassword;
-    
-    /** 
-     * Confirmation of the new password to prevent typing errors. 
-     */
-    @NotBlank(message = "La confirmación de contraseña es obligatoria")
-    private String confirmPassword;
+  /** 
+   * The user's current password for verification. 
+   */
+  @NotBlank(message = "La contraseña actual es obligatoria")
+  private String currentPassword;
+  
+  /** 
+   * The new password to be set for the user account. 
+   */
+  @NotBlank(message = "La nueva contraseña es obligatoria")
+  private String newPassword;
+  
+  /** 
+   * Confirmation of the new password to prevent typing errors. 
+   */
+  @NotBlank(message = "La confirmación de contraseña es obligatoria")
+  private String confirmPassword;
 }

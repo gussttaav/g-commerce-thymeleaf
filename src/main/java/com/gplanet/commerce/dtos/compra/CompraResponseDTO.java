@@ -20,9 +20,9 @@ import java.util.List;
  * @param productos       The list of products included in this purchase.
  */
 public record CompraResponseDTO(
-    Long id,
-    String usuarioNombre,
-    LocalDateTime fecha,
-    BigDecimal total,
-    List<CompraProductoResponseDTO> productos
+  Long id,
+  String usuarioNombre,
+  LocalDateTime fecha,
+  BigDecimal total,
+  List<CompraProductoResponseDTO> productos
 ) {}

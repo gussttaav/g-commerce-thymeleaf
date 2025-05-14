@@ -24,73 +24,73 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final UsuarioDetallesService customUserDetailsService;
+  private final UsuarioDetallesService customUserDetailsService;
 
-    /**
-     * Configures the security filter chain with specific security rules and permissions.
-     *
-     * @param http the HttpSecurity to configure
-     * @return the configured SecurityFilterChain
-     * @throws Exception if there's an error during configuration
-     */
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-            .authorizeHttpRequests(authz -> authz
-                .requestMatchers("/css/**", "/js/**", "/img/**").permitAll()
-                .requestMatchers("/", "/usuarios/registro", "/usuarios/login", 
-                                "/usuarios/authenticated", "/productos/filtrar").permitAll()
-                .requestMatchers("/usuarios/admin/**").hasRole("ADMIN")
-                .requestMatchers("/usuarios/perfil", "/usuarios/password").authenticated()
-                .requestMatchers("/productos/**").hasRole("ADMIN")
-                .requestMatchers("/compras/nueva").hasRole("USER")
-                .requestMatchers("/compras/**").authenticated()
-                .anyRequest().authenticated()
-            )
-            .formLogin(form -> form
-                .loginPage("/usuarios/login")
-                .defaultSuccessUrl("/")
-                .failureUrl("/usuarios/login?error")
-                .permitAll()
-            )
-            .logout(logout -> logout
-                .logoutSuccessUrl("/")
-                .permitAll()
-            )
-            .exceptionHandling(ex -> ex
-                .accessDeniedPage("/usuarios/login")
-            );
-        
-        return http.build();
-    }
+  /**
+   * Configures the security filter chain with specific security rules and permissions.
+   *
+   * @param http the HttpSecurity to configure
+   * @return the configured SecurityFilterChain
+   * @throws Exception if there's an error during configuration
+   */
+  @Bean
+  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    http
+        .authorizeHttpRequests(authz -> authz
+            .requestMatchers("/css/**", "/js/**", "/img/**").permitAll()
+            .requestMatchers("/", "/usuarios/registro", "/usuarios/login", 
+                            "/usuarios/authenticated", "/productos/filtrar").permitAll()
+            .requestMatchers("/usuarios/admin/**").hasRole("ADMIN")
+            .requestMatchers("/usuarios/perfil", "/usuarios/password").authenticated()
+            .requestMatchers("/productos/**").hasRole("ADMIN")
+            .requestMatchers("/compras/nueva").hasRole("USER")
+            .requestMatchers("/compras/**").authenticated()
+            .anyRequest().authenticated()
+        )
+        .formLogin(form -> form
+            .loginPage("/usuarios/login")
+            .defaultSuccessUrl("/")
+            .failureUrl("/usuarios/login?error")
+            .permitAll()
+        )
+        .logout(logout -> logout
+            .logoutSuccessUrl("/")
+            .permitAll()
+        )
+        .exceptionHandling(ex -> ex
+            .accessDeniedPage("/usuarios/login")
+        );
+    
+    return http.build();
+  }
 
-    /**
-     * Creates a password encoder bean for secure password hashing.
-     *
-     * @return BCryptPasswordEncoder instance
-     */
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+  /**
+   * Creates a password encoder bean for secure password hashing.
+   *
+   * @return BCryptPasswordEncoder instance
+   */
+  @Bean
+  public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+  }
 
-    /**
-     * Configures the authentication manager with custom user details service and password encoder.
-     *
-     * @param http the HttpSecurity to configure
-     * @param passwordEncoder the password encoder to use
-     * @return configured AuthenticationManager
-     * @throws Exception if there's an error during configuration
-     */
-    @Bean
-    AuthenticationManager authManager(HttpSecurity http, PasswordEncoder passwordEncoder) throws Exception {
-        AuthenticationManagerBuilder authenticationManagerBuilder = 
-                http.getSharedObject(AuthenticationManagerBuilder.class);
+  /**
+   * Configures the authentication manager with custom user details service and password encoder.
+   *
+   * @param http the HttpSecurity to configure
+   * @param passwordEncoder the password encoder to use
+   * @return configured AuthenticationManager
+   * @throws Exception if there's an error during configuration
+   */
+  @Bean
+  AuthenticationManager authManager(HttpSecurity http, PasswordEncoder passwordEncoder) throws Exception {
+    AuthenticationManagerBuilder authenticationManagerBuilder = 
+            http.getSharedObject(AuthenticationManagerBuilder.class);
 
-        authenticationManagerBuilder
-                .userDetailsService(customUserDetailsService)
-                .passwordEncoder(passwordEncoder);
-        
-        return authenticationManagerBuilder.build();
-    }
+    authenticationManagerBuilder
+            .userDetailsService(customUserDetailsService)
+            .passwordEncoder(passwordEncoder);
+    
+    return authenticationManagerBuilder.build();
+  }
 }

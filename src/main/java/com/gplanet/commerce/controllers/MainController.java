@@ -26,43 +26,43 @@ import com.gplanet.commerce.services.ProductoService;
 @RequiredArgsConstructor
 public class MainController {
 
-    private final ProductoService productoService;
-    
-    /**
-     * Handles requests to the home page, redirecting based on user role
-     * and loading initial product list.
-     * 
-     * @param authentication Current user's authentication
-     * @param model Spring MVC model
-     * @param compraExitosa Optional parameter indicating purchase success when redirected
-     * @return View name for home page or redirect URL
-     */
-    @GetMapping("/")
-    public String home(Authentication authentication, Model model,
-                       @RequestParam(required = false) Boolean compraExitosa) {
-        
-        // Check if user is authenticated
-        if (authentication != null && authentication.isAuthenticated()) {
-            if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
-                return "redirect:/productos/admin/listar";
-            }
-            else if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_USER"))) {
-                model.addAttribute("activePage", "productos");
-                if(compraExitosa != null){
-                    model.addAttribute("compraExitosa", compraExitosa);
-                }
-            }
-        }
+  private final ProductoService productoService;
 
-        // Initial product loading with default values
-        Page<ProductoResponseDTO> productosPage = productoService.listarProductos(
-            ProductStatus.ACTIVE, "", 0, 10, "nombre", "ASC");
-        
-        PaginatedResponse<ProductoResponseDTO> paginatedResponse = PaginatedResponse.fromPage(productosPage);
-        
-        model.addAttribute("productos", productosPage.getContent());
-        model.addAttribute("pagination", paginatedResponse);
-        
-        return "index";
+  /**
+   * Handles requests to the home page, redirecting based on user role
+   * and loading initial product list.
+   * 
+   * @param authentication Current user's authentication
+   * @param model          Spring MVC model
+   * @param compraExitosa  Optional parameter indicating purchase success when
+   *                       redirected
+   * @return View name for home page or redirect URL
+   */
+  @GetMapping("/")
+  public String home(Authentication authentication, Model model,
+      @RequestParam(required = false) Boolean compraExitosa) {
+
+    // Check if user is authenticated
+    if (authentication != null && authentication.isAuthenticated()) {
+      if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
+        return "redirect:/productos/admin/listar";
+      } else if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_USER"))) {
+        model.addAttribute("activePage", "productos");
+        if (compraExitosa != null) {
+          model.addAttribute("compraExitosa", compraExitosa);
+        }
+      }
     }
+
+    // Initial product loading with default values
+    Page<ProductoResponseDTO> productosPage = productoService.listarProductos(
+        ProductStatus.ACTIVE, "", 0, 10, "nombre", "ASC");
+
+    PaginatedResponse<ProductoResponseDTO> paginatedResponse = PaginatedResponse.fromPage(productosPage);
+
+    model.addAttribute("productos", productosPage.getContent());
+    model.addAttribute("pagination", paginatedResponse);
+
+    return "index";
+  }
 }

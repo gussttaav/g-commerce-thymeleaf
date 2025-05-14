@@ -1,54 +1,54 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" 
-    th:replace="~{layout :: layout('Inicio', ~{::section})}">
+  th:replace="~{layout :: layout('Inicio', ~{::section})}">
 <body>
-    <section>
-        <form id="productFilterForm" class="card mb-4" 
-              hx-get="/productos/filtrar" 
-              hx-target="#productGridContainer" 
-              hx-trigger="submit, change from:select, keyup from:input[name='search'] delay:500"
-              sec:authorize="!isAuthenticated() or hasRole('USER')">
-            <div class="card-body">
-                <div class="row align-items-center g-2">
-                    <div class="col-md-3">
-                        <select class="form-select" id="pageSize" name="size" hx-trigger="change">
-                            <option value="10" selected>10 per page</option>
-                            <option value="20">20 per page</option>
-                            <option value="50">50 per page</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <select class="form-select" id="sortField" name="sort" hx-trigger="change">
-                            <option value="nombre" selected>Name</option>
-                            <option value="precio">Price</option>
-                            <option value="fechaCreacion">Creation Date</option>
-                        </select>
-                    </div>
-                    <div class="col-md-2">
-                        <select class="form-select" id="sortDirection" name="direction" hx-trigger="change">
-                            <option value="ASC" selected>Ascending</option>
-                            <option value="DESC">Descending</option>
-                        </select>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="input-group">
-                            <input type="search" class="form-control" id="search" name="search"
-                                   placeholder="Find products..." aria-label="Find products">
-                            <button class="btn btn-outline-secondary" type="submit">
-                                <i class="bi bi-search"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </form>
+  <section>
+      <form id="productFilterForm" class="card mb-4" 
+            hx-get="/productos/filtrar" 
+            hx-target="#productGridContainer" 
+            hx-trigger="submit, change from:select, keyup from:input[name='search'] delay:500"
+            sec:authorize="!isAuthenticated() or hasRole('USER')">
+          <div class="card-body">
+              <div class="row align-items-center g-2">
+                  <div class="col-md-3">
+                      <select class="form-select" id="pageSize" name="size" hx-trigger="change">
+                          <option value="10" selected>10 per page</option>
+                          <option value="20">20 per page</option>
+                          <option value="50">50 per page</option>
+                      </select>
+                  </div>
+                  <div class="col-md-3">
+                      <select class="form-select" id="sortField" name="sort" hx-trigger="change">
+                          <option value="nombre" selected>Name</option>
+                          <option value="precio">Price</option>
+                          <option value="fechaCreacion">Creation Date</option>
+                      </select>
+                  </div>
+                  <div class="col-md-2">
+                      <select class="form-select" id="sortDirection" name="direction" hx-trigger="change">
+                          <option value="ASC" selected>Ascending</option>
+                          <option value="DESC">Descending</option>
+                      </select>
+                  </div>
+                  <div class="col-md-4">
+                      <div class="input-group">
+                          <input type="search" class="form-control" id="search" name="search"
+                                 placeholder="Find products..." aria-label="Find products">
+                          <button class="btn btn-outline-secondary" type="submit">
+                              <i class="bi bi-search"></i>
+                          </button>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </form>
 
-        <!-- Product Grid Container -->
-        <div id="productGridContainer" sec:authorize="!isAuthenticated() or hasRole('USER')">
-            <!-- Include the product grid fragment -->
-            <div th:replace="~{productos/user-grid :: user-grid}"></div>
-        </div>
+      <!-- Product Grid Container -->
+      <div id="productGridContainer" sec:authorize="!isAuthenticated() or hasRole('USER')">
+          <!-- Include the product grid fragment -->
+          <div th:replace="~{productos/user-grid :: user-grid}"></div>
+      </div>
 
-    </section>
+  </section>
 </body>
 </html>

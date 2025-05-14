@@ -12,10 +12,10 @@ import jakarta.validation.constraints.NotBlank;
  * @param nuevoEmail The new email address for the user account.
  */
 public record ActualizacionUsuarioDTO(
-    @NotBlank(message = "El nombre es obligatorio")
-    String nombre,
+  @NotBlank(message = "El nombre es obligatorio")
+  String nombre,
 
-    @Email(message = "El email debe ser válido")
-    @NotBlank(message = "El email es obligatorio")
-    String nuevoEmail
+  @Email(message = "El email debe ser válido")
+  @NotBlank(message = "El email es obligatorio")
+  String nuevoEmail
 ) {}

@@ -1,87 +1,87 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" 
-    th:replace="~{layout :: layout('Products', ~{::section})}">
+  th:replace="~{layout :: layout('Products', ~{::section})}">
 <body>
-    <section>
-        <div class="container mt-4" th:if="${not #lists.isEmpty(productos)}">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2>Manage Products</h2>
-                <button class="btn btn-primary"
-                        th:attr="hx-get=@{/productos/admin/crear}"
-                        hx-target="#modalContainer"
-                        hx-trigger="click"
-                        hx-swap="innerHTML">
-                    <i class="bi bi-plus-circle"></i> Add Product
-                </button>
-            </div>
+  <section>
+      <div class="container mt-4" th:if="${not #lists.isEmpty(productos)}">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+              <h2>Manage Products</h2>
+              <button class="btn btn-primary"
+                      th:attr="hx-get=@{/productos/admin/crear}"
+                      hx-target="#modalContainer"
+                      hx-trigger="click"
+                      hx-swap="innerHTML">
+                  <i class="bi bi-plus-circle"></i> Add Product
+              </button>
+          </div>
 
-            <form id="productsAdminFilterForm" class="card mb-4"
-                  hx-get="/productos/admin/filtrar" 
-                  hx-target="#adminProductsTableContainer" 
-                  hx-trigger="submit, change from:select, keyup from:input[name='search'] delay:500"
-                  sec:authorize="isAuthenticated() and hasRole('ADMIN')">
+          <form id="productsAdminFilterForm" class="card mb-4"
+                hx-get="/productos/admin/filtrar" 
+                hx-target="#adminProductsTableContainer" 
+                hx-trigger="submit, change from:select, keyup from:input[name='search'] delay:500"
+                sec:authorize="isAuthenticated() and hasRole('ADMIN')">
 
-                <div class="card-body">
-                    <div class="row align-items-center g-2">
-                        <div class="col-md-2">
-                            <select class="form-select" id="pageSize" name="size" hx-trigger="change">
-                                <option value="10" selected>10 per page</option>
-                                <option value="20">20 per page</option>
-                                <option value="50">50 per page</option>
-                            </select>
-                        </div>
-                        <div class="col-md-2">
-                            <select class="form-select" id="sortField" name="sort" hx-trigger="change">
-                                <option value="nombre" selected>Name</option>
-                                <option value="precio">Price</option>
-                            </select>
-                        </div>
-                        <div class="col-md-2">
-                            <select class="form-select" id="sortDirection" name="direction" hx-trigger="change">
-                                <option value="ASC" selected>Ascending</option>
-                                <option value="DESC">Descending</option>
-                            </select>
-                        </div>
-                        <div class="col-md-2">
-                            <select class="form-select" id="statusFilter" name="status" hx-trigger="change">
-                                <option value="ALL" selected>All Products</option>
-                                <option value="ACTIVE">Active Only</option>
-                                <option value="INACTIVE">Inactive Only</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="input-group">
-                                <input type="search" class="form-control" id="searchAdmin" name="search"
-                                       placeholder="Find products..."
-                                       aria-label="Find products">
-                                <button class="btn btn-outline-secondary" type="submit">
-                                    <i class="bi bi-search"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </form>
+              <div class="card-body">
+                  <div class="row align-items-center g-2">
+                      <div class="col-md-2">
+                          <select class="form-select" id="pageSize" name="size" hx-trigger="change">
+                              <option value="10" selected>10 per page</option>
+                              <option value="20">20 per page</option>
+                              <option value="50">50 per page</option>
+                          </select>
+                      </div>
+                      <div class="col-md-2">
+                          <select class="form-select" id="sortField" name="sort" hx-trigger="change">
+                              <option value="nombre" selected>Name</option>
+                              <option value="precio">Price</option>
+                          </select>
+                      </div>
+                      <div class="col-md-2">
+                          <select class="form-select" id="sortDirection" name="direction" hx-trigger="change">
+                              <option value="ASC" selected>Ascending</option>
+                              <option value="DESC">Descending</option>
+                          </select>
+                      </div>
+                      <div class="col-md-2">
+                          <select class="form-select" id="statusFilter" name="status" hx-trigger="change">
+                              <option value="ALL" selected>All Products</option>
+                              <option value="ACTIVE">Active Only</option>
+                              <option value="INACTIVE">Inactive Only</option>
+                          </select>
+                      </div>
+                      <div class="col-md-4">
+                          <div class="input-group">
+                              <input type="search" class="form-control" id="searchAdmin" name="search"
+                                     placeholder="Find products..."
+                                     aria-label="Find products">
+                              <button class="btn btn-outline-secondary" type="submit">
+                                  <i class="bi bi-search"></i>
+                              </button>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </form>
 
-            <!-- Admin Products Table Container -->
-            <div id="adminProductsTableContainer" sec:authorize="isAuthenticated() and hasRole('ADMIN')">
-                <!-- Include the products page fragment -->
-                <div th:replace="~{productos/lista-admin-page :: producto-page}"></div>
-            </div>
-        </div>
-        
-        <div class="alert alert-info" th:if="${#lists.isEmpty(productos)}">
-            No products found.
-        </div>
+          <!-- Admin Products Table Container -->
+          <div id="adminProductsTableContainer" sec:authorize="isAuthenticated() and hasRole('ADMIN')">
+              <!-- Include the products page fragment -->
+              <div th:replace="~{productos/lista-admin-page :: producto-page}"></div>
+          </div>
+      </div>
+      
+      <div class="alert alert-info" th:if="${#lists.isEmpty(productos)}">
+          No products found.
+      </div>
 
-        <div id="modalContainer"></div>
+      <div id="modalContainer"></div>
 
-        <!-- Initialize modal functionality -->
-        <script>
-            UiUtils.setupModalListeners({
-                'productModal': 'modalContainer'
-            });
-        </script>
-    </section>
+      <!-- Initialize modal functionality -->
+      <script>
+          UiUtils.setupModalListeners({
+              'productModal': 'modalContainer'
+          });
+      </script>
+  </section>
 </body>
 </html>

@@ -24,22 +24,22 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public class UsuarioDetallesService implements UserDetailsService {
 
-    private final UsuarioRepository usuarioRepository;
+  private final UsuarioRepository usuarioRepository;
 
-    /**
-     * Loads user details by email for Spring Security authentication.
-     * 
-     * @param email The email of the user to load
-     * @return UsuarioDetalles object containing user's security information
-     * @throws UsernameNotFoundException if user is not found
-     */
-    @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Usuario usuario = usuarioRepository.findByEmail(email)
-            .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
+  /**
+   * Loads user details by email for Spring Security authentication.
+   * 
+   * @param email The email of the user to load
+   * @return UsuarioDetalles object containing user's security information
+   * @throws UsernameNotFoundException if user is not found
+   */
+  @Override
+  public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    Usuario usuario = usuarioRepository.findByEmail(email)
+        .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
 
-        return new UsuarioDetalles(usuario,
-            Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + usuario.getRol()))
-        );
-    }
+    return new UsuarioDetalles(usuario,
+        Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + usuario.getRol()))
+    );
+  }
 }

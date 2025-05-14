@@ -14,9 +14,9 @@ import jakarta.validation.constraints.Positive;
  * @param cantidad    The quantity of the product to purchase. Must be a positive number.
  */
 public record CompraProductoDTO(
-    @Positive(message = "El ID del producto debe ser válido")
-    Long productoId,
+  @Positive(message = "El ID del producto debe ser válido")
+  Long productoId,
 
-    @Positive(message = "La cantidad debe ser mayor a 0")
-    Integer cantidad
+  @Positive(message = "La cantidad debe ser mayor a 0")
+  Integer cantidad
 ) {}

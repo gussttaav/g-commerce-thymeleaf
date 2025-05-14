@@ -17,8 +17,8 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class UsuarioAdminDTO extends UsuarioDTO {
 
-    /**
-     * The role assigned to the user in the system. Defaults to USER role.
-     */
-    private Usuario.Role rol = Usuario.Role.USER;
+  /**
+   * The role assigned to the user in the system. Defaults to USER role.
+   */
+  private Usuario.Role rol = Usuario.Role.USER;
 }

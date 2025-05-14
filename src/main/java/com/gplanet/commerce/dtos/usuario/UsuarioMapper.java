@@ -14,11 +14,11 @@ import com.gplanet.commerce.entities.Usuario;
  */
 @Mapper(componentModel = "spring")
 public interface UsuarioMapper {
-    /**
-     * Converts a Usuario entity to a UsuarioResponseDTO.
-     *
-     * @param usuario the Usuario entity to convert
-     * @return the corresponding UsuarioResponseDTO
-     */
-    UsuarioResponseDTO toUsuarioResponseDTO(Usuario usuario);
+  /**
+   * Converts a Usuario entity to a UsuarioResponseDTO.
+   *
+   * @param usuario the Usuario entity to convert
+   * @return the corresponding UsuarioResponseDTO
+   */
+  UsuarioResponseDTO toUsuarioResponseDTO(Usuario usuario);
 }

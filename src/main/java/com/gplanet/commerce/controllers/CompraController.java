@@ -4,6 +4,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -18,6 +19,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.gplanet.commerce.dtos.compra.CompraDTO;
 import com.gplanet.commerce.dtos.compra.CompraResponseDTO;
 import com.gplanet.commerce.dtos.pagination.PaginatedResponse;
+import com.gplanet.commerce.exceptions.ResourceNotFoundException;
 import com.gplanet.commerce.services.CompraService;
 import com.gplanet.commerce.utilities.ToastUtil;
 
@@ -36,92 +38,94 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CompraController {
 
-    private final CompraService compraService;
+  private final CompraService compraService;
 
-    /**
-     * Processes a new purchase request from a user.
-     * 
-     * @param compraDTO Purchase data transfer object containing purchase details
-     * @param bindingResult Validation results for the purchase data
-     * @param authentication Current user's authentication
-     * @param redirectAttributes Redirect attributes for toast messages
-     * @return Redirect URL with purchase status
-     */
-    @PostMapping("/nueva")
-    public String processPurchase(
-            @Valid @ModelAttribute CompraDTO compraDTO,
-            BindingResult bindingResult,
-            Authentication authentication,
-            RedirectAttributes redirectAttributes) {
+  /**
+   * Processes a new purchase request from a user.
+   * 
+   * @param compraDTO Purchase data transfer object containing purchase details
+   * @param bindingResult Validation results for the purchase data
+   * @param authentication Current user's authentication
+   * @param redirectAttributes Redirect attributes for toast messages
+   * @return Redirect URL with purchase status
+   */
+  @PostMapping("/nueva")
+  public String processPurchase(
+          @Valid @ModelAttribute CompraDTO compraDTO,
+          BindingResult bindingResult,
+          Authentication authentication,
+          RedirectAttributes redirectAttributes) {
 
-        // Check for validation errors
-        if (bindingResult.hasErrors()) {
-            // Collect error messages
-            String errors = bindingResult.getFieldErrors().stream()
-                    .map(FieldError::getDefaultMessage)
-                    .collect(Collectors.joining("\n"));
+      // Check for validation errors
+      if (bindingResult.hasErrors()) {
+        // Collect error messages
+        String errors = bindingResult.getFieldErrors().stream()
+                .map(FieldError::getDefaultMessage)
+                .collect(Collectors.joining("\n"));
 
-            ToastUtil.errorRedirect(redirectAttributes, errors);
-            return "redirect:/?compraExitosa=false";
-        }
+        ToastUtil.errorRedirect(redirectAttributes, errors);
+        return "redirect:/?compraExitosa=false";
+      }
 
-        try {
-            compraService.realizarCompra(authentication.getName(), compraDTO);
-            ToastUtil.successRedirect(redirectAttributes, "Purchase completed successfully");
+      try {
+        compraService.realizarCompra(authentication.getName(), compraDTO);
+        ToastUtil.successRedirect(redirectAttributes, "Purchase completed successfully");
+        return "redirect:/?compraExitosa=true";
+      } catch (UsernameNotFoundException e) {
+        ToastUtil.errorRedirect(redirectAttributes, "Purchase failed: User not found");
+        return "redirect:/?compraExitosa=false";
+      } catch(ResourceNotFoundException e){
+        ToastUtil.errorRedirect(redirectAttributes, "Purchase failed: Product not found");
+        return "redirect:/?compraExitosa=false";
+      }
+  }
 
-            return "redirect:/?compraExitosa=true";
-        } catch (Exception e) {
-            ToastUtil.errorRedirect(redirectAttributes, "Purchase failed: " + e.getMessage());
-            return "redirect:/?compraExitosa=false";
-        }
-    }
+  /**
+   * Lists all purchases for the current user with pagination.
+   * 
+   * @param authentication Current user's authentication
+   * @param model Spring MVC model
+   * @return View name for purchase list
+   */
+  @GetMapping("/listar")
+  public String listarCompras(Authentication authentication, Model model) {
+    Page<CompraResponseDTO> comprasPage = compraService.listarCompras(
+        authentication.getName(), 0, 10, "fecha", "DESC");
+    PaginatedResponse<CompraResponseDTO> paginatedResponse = PaginatedResponse.fromPage(comprasPage);
 
-    /**
-     * Lists all purchases for the current user with pagination.
-     * 
-     * @param authentication Current user's authentication
-     * @param model Spring MVC model
-     * @return View name for purchase list
-     */
-    @GetMapping("/listar")
-    public String listarCompras(Authentication authentication, Model model) {
-        Page<CompraResponseDTO> comprasPage = compraService.listarCompras(
-            authentication.getName(), 0, 10, "fecha", "DESC");
-        PaginatedResponse<CompraResponseDTO> paginatedResponse = PaginatedResponse.fromPage(comprasPage);
+    model.addAttribute("activePage", "compras");
+    model.addAttribute("compras", comprasPage.getContent());
+    model.addAttribute("pagination", paginatedResponse);
+    return "compras/lista";
+  }
 
-        model.addAttribute("activePage", "compras");
-        model.addAttribute("compras", comprasPage.getContent());
-        model.addAttribute("pagination", paginatedResponse);
-        return "compras/lista";
-    }
+  /**
+   * Filters and paginates purchase list based on provided parameters.
+   * 
+   * @param authentication Current user's authentication
+   * @param page Page number (zero-based)
+   * @param size Items per page
+   * @param sort Sort field
+   * @param direction Sort direction
+   * @param model Spring MVC model
+   * @return Fragment name containing filtered results
+   */
+  @GetMapping("/filtrar")
+  public String filterProducts(
+          Authentication authentication,
+          @RequestParam(defaultValue = "0") int page,
+          @RequestParam(defaultValue = "10") int size,
+          @RequestParam(defaultValue = "fecha") String sort,
+          @RequestParam(defaultValue = "DESC") String direction,
+          Model model) {
+      
+    Page<CompraResponseDTO> comprasPage = compraService.listarCompras(
+        authentication.getName(), page, size, sort, direction);
+    PaginatedResponse<CompraResponseDTO> paginatedResponse = PaginatedResponse.fromPage(comprasPage);
 
-    /**
-     * Filters and paginates purchase list based on provided parameters.
-     * 
-     * @param authentication Current user's authentication
-     * @param page Page number (zero-based)
-     * @param size Items per page
-     * @param sort Sort field
-     * @param direction Sort direction
-     * @param model Spring MVC model
-     * @return Fragment name containing filtered results
-     */
-    @GetMapping("/filtrar")
-    public String filterProducts(
-            Authentication authentication,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "fecha") String sort,
-            @RequestParam(defaultValue = "DESC") String direction,
-            Model model) {
-        
-        Page<CompraResponseDTO> comprasPage = compraService.listarCompras(
-            authentication.getName(), page, size, sort, direction);
-        PaginatedResponse<CompraResponseDTO> paginatedResponse = PaginatedResponse.fromPage(comprasPage);
-
-        model.addAttribute("compras", comprasPage.getContent());
-        model.addAttribute("pagination", paginatedResponse);
-        
-        return "compras/page :: compras-page";
-    }
+    model.addAttribute("compras", comprasPage.getContent());
+    model.addAttribute("pagination", paginatedResponse);
+    
+    return "compras/page :: compras-page";
+  }
 }

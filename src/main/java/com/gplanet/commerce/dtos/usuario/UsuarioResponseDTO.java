@@ -17,9 +17,9 @@ import com.gplanet.commerce.entities.Usuario;
  * @param fechaCreacion The date and time when the user account was created.
  */
 public record UsuarioResponseDTO(
-    Long id,
-    String nombre,
-    String email,
-    Usuario.Role rol,
-    LocalDateTime fechaCreacion
+  Long id,
+  String nombre,
+  String email,
+  Usuario.Role rol,
+  LocalDateTime fechaCreacion
 ) {}

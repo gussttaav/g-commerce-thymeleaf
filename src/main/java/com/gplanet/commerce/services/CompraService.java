@@ -42,101 +42,101 @@ import java.time.LocalDateTime;
 @Service
 @RequiredArgsConstructor
 public class CompraService {
-    private final CompraMapper compraMapper;
-    private final CompraRepository compraRepository;
-    private final ProductoRepository productoRepository;
-    private final UsuarioRepository usuarioRepository;
+  private final CompraMapper compraMapper;
+  private final CompraRepository compraRepository;
+  private final ProductoRepository productoRepository;
+  private final UsuarioRepository usuarioRepository;
 
-    /**
-     * Lists purchases based on user role with pagination support.
-     * Admins see all purchases, regular users see only their own purchases.
-     * 
-     * @param email Email of the requesting user
-     * @param page The page number (zero-based)
-     * @param size The page size
-     * @param sort The field to sort by
-     * @param direction The sort direction (ASC or DESC)
-     * @return Page of CompraResponseDTO containing paginated purchase information
-     * @throws UsernameNotFoundException if user is not found
-     */
-    @Transactional(readOnly = true)
-    public Page<CompraResponseDTO> listarCompras(String email, int page, int size, String sort, String direction) {
-        log.debug("Listing purchases for user: {} with pagination - page: {}, size: {}, sort: {}, direction: {}", 
-                email, page, size, sort, direction);
-        
-        Usuario usuario = usuarioRepository.findByEmail(email)
-            .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
-            
-        // Create Pageable object with sort direction
-        Sort.Direction sortDirection = Sort.Direction.fromString(direction);
-        Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, sort));
-        
-        // Get paginated result based on user role
-        Page<Compra> comprasPage;
-        if (usuario.getRol() == Usuario.Role.ADMIN) {
-            comprasPage = compraRepository.findAll(pageable);
-        } else {
-            comprasPage = compraRepository.findByUsuario(usuario, pageable);
-        }
-        
-        // Map to DTOs
-        Page<CompraResponseDTO> result = comprasPage.map(compraMapper::toCompraResponseDTO);
-        
-        log.debug("Found {} purchases on page {} of {}", 
-                result.getNumberOfElements(), 
-                result.getNumber() + 1,  // +1 for human-readable page number
-                result.getTotalPages());
-                
-        return result;
+  /**
+   * Lists purchases based on user role with pagination support.
+   * Admins see all purchases, regular users see only their own purchases.
+   * 
+   * @param email     Email of the requesting user
+   * @param page      The page number (zero-based)
+   * @param size      The page size
+   * @param sort      The field to sort by
+   * @param direction The sort direction (ASC or DESC)
+   * @return Page of CompraResponseDTO containing paginated purchase information
+   * @throws UsernameNotFoundException if user is not found
+   */
+  @Transactional(readOnly = true)
+  public Page<CompraResponseDTO> listarCompras(String email, int page, int size, String sort, String direction) {
+    log.debug("Listing purchases for user: {} with pagination - page: {}, size: {}, sort: {}, direction: {}",
+        email, page, size, sort, direction);
+
+    Usuario usuario = usuarioRepository.findByEmail(email)
+        .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
+
+    // Create Pageable object with sort direction
+    Sort.Direction sortDirection = Sort.Direction.fromString(direction);
+    Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, sort));
+
+    // Get paginated result based on user role
+    Page<Compra> comprasPage;
+    if (usuario.getRol() == Usuario.Role.ADMIN) {
+      comprasPage = compraRepository.findAll(pageable);
+    } else {
+      comprasPage = compraRepository.findByUsuario(usuario, pageable);
     }
 
-    /**
-     * Processes a new purchase for a user, calculating totals and
-     * creating all necessary purchase records.
-     * 
-     * @param email Email of the user making the purchase
-     * @param compraDTO Data transfer object containing purchase information
-     * @return CompraResponseDTO containing the created purchase information
-     * @throws UsernameNotFoundException if user is not found
-     * @throws ResourceNotFoundException if any product in the purchase is not found
-     */
-    @Transactional
-    public void realizarCompra(String email, CompraDTO compraDTO) {
-        log.info("Starting new purchase for user: {}", email);
+    // Map to DTOs
+    Page<CompraResponseDTO> result = comprasPage.map(compraMapper::toCompraResponseDTO);
 
-        // Find user by email
-        Usuario usuario = usuarioRepository.findByEmail(email)
-            .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
+    log.debug("Found {} purchases on page {} of {}",
+        result.getNumberOfElements(),
+        result.getNumber() + 1, // +1 for human-readable page number
+        result.getTotalPages());
 
-        // Initialize Compra entity
-        Compra compra = new Compra();
-        compra.setUsuario(usuario);
-        compra.setFecha(LocalDateTime.now());
-        compra.setTotal(BigDecimal.ZERO);
+    return result;
+  }
 
-        BigDecimal total = BigDecimal.ZERO;
+  /**
+   * Processes a new purchase for a user, calculating totals and
+   * creating all necessary purchase records.
+   * 
+   * @param email     Email of the user making the purchase
+   * @param compraDTO Data transfer object containing purchase information
+   * @return CompraResponseDTO containing the created purchase information
+   * @throws UsernameNotFoundException if user is not found
+   * @throws ResourceNotFoundException if any product in the purchase is not found
+   */
+  @Transactional
+  public void realizarCompra(String email, CompraDTO compraDTO) {
+    log.info("Starting new purchase for user: {}", email);
 
-        // Process each product in the purchase
-        for (CompraProductoDTO item : compraDTO.productos()) {
-            Producto producto = productoRepository.findById(item.productoId())
-                .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado"));
+    // Find user by email
+    Usuario usuario = usuarioRepository.findByEmail(email)
+        .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
 
-            CompraProducto compraProducto = new CompraProducto();
-            compraProducto.setProducto(producto);
-            compraProducto.setCantidad(item.cantidad());
+    // Initialize Compra entity
+    Compra compra = new Compra();
+    compra.setUsuario(usuario);
+    compra.setFecha(LocalDateTime.now());
+    compra.setTotal(BigDecimal.ZERO);
 
-            BigDecimal subtotal = producto.getPrecio()
-                .multiply(BigDecimal.valueOf(item.cantidad()));
+    BigDecimal total = BigDecimal.ZERO;
 
-            compraProducto.setSubtotal(subtotal);
-            compra.addCompraProducto(compraProducto);
+    // Process each product in the purchase
+    for (CompraProductoDTO item : compraDTO.productos()) {
+      Producto producto = productoRepository.findById(item.productoId())
+          .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado"));
 
-            total = total.add(subtotal);
-        }
+      CompraProducto compraProducto = new CompraProducto();
+      compraProducto.setProducto(producto);
+      compraProducto.setCantidad(item.cantidad());
 
-        compra.setTotal(total);
-        Compra savedCompra = compraRepository.save(compra);
+      BigDecimal subtotal = producto.getPrecio()
+          .multiply(BigDecimal.valueOf(item.cantidad()));
 
-        log.info("Purchase completed - ID: {}, Total: {}", savedCompra.getId(), savedCompra.getTotal());
+      compraProducto.setSubtotal(subtotal);
+      compra.addCompraProducto(compraProducto);
+
+      total = total.add(subtotal);
     }
+
+    compra.setTotal(total);
+    Compra savedCompra = compraRepository.save(compra);
+
+    log.info("Purchase completed - ID: {}, Total: {}", savedCompra.getId(), savedCompra.getTotal());
+  }
 }

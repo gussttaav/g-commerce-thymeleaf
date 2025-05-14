@@ -1,202 +1,202 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" th:fragment="layout(title, content)">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="_csrf" th:content="${_csrf.token}"/>
-    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
-    <title th:text="${title} + ' - G-commerce'">G-commerce</title>
-    <script th:src="@{/js/ui.utils.js}"></script>
-    <script th:src="@{/js/initial-theme.js}"></script>
-    <script src="https://unpkg.com/htmx.org@1.9.6"></script>
-    <link rel="icon" type="image/svg+xml" th:href="@{/img/logo.svg}">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-    <link rel="stylesheet" th:href="@{/css/styles.css}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="_csrf" th:content="${_csrf.token}"/>
+  <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+  <title th:text="${title} + ' - G-commerce'">G-commerce</title>
+  <script th:src="@{/js/ui.utils.js}"></script>
+  <script th:src="@{/js/initial-theme.js}"></script>
+  <script src="https://unpkg.com/htmx.org@1.9.6"></script>
+  <link rel="icon" type="image/svg+xml" th:href="@{/img/logo.svg}">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body th:attr="data-toast-type=${toastType} ?: _, data-toast-message=${toastMessage} ?: _">
 
-    <div class="toast-container position-fixed bottom-0 end-0 p-3"></div>
+  <div class="toast-container position-fixed bottom-0 end-0 p-3"></div>
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand d-flex align-items-center" th:href="@{/}">
-                <img th:src="@{/img/logo.svg}" alt="Logo" width="25" height="25" class="me-1">
-                G-commerce
-            </a>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container-fluid">
+          <a class="navbar-brand d-flex align-items-center" th:href="@{/}">
+              <img th:src="@{/img/logo.svg}" alt="Logo" width="25" height="25" class="me-1">
+              G-commerce
+          </a>
 
-            <div class="d-flex align-items-center order-lg-last">
-                <a href="#" class="text-light text-decoration-none position-relative me-2" 
-                            id="cartButton" sec:authorize="!isAuthenticated() or hasRole('USER')">
-                    <i class="bi bi-cart3 fs-4"></i>
-                    <span class="position-absolute top-1 start-100 translate-middle badge rounded-pill bg-danger" id="cartCount"
-                          th:attr="data-cart-empty=${compraExitosa != null ? compraExitosa : false}">
-                        0
-                    </span>
-                </a>
-                <button class="btn" id="themeToggle">
-                    <i class="bi bi-moon-fill"></i>
-                </button>
-                
-                <!-- Show Login Button if user is NOT authenticated -->
-                <a th:href="@{/usuarios/login}" class="btn" sec:authorize="!isAuthenticated()">
-                    <i class="bi bi-person-circle fs-4 text-light"></i>
-                </a>
+          <div class="d-flex align-items-center order-lg-last">
+              <a href="#" class="text-light text-decoration-none position-relative me-2" 
+                          id="cartButton" sec:authorize="!isAuthenticated() or hasRole('USER')">
+                  <i class="bi bi-cart3 fs-4"></i>
+                  <span class="position-absolute top-1 start-100 translate-middle badge rounded-pill bg-danger" id="cartCount"
+                        th:attr="data-cart-empty=${compraExitosa != null ? compraExitosa : false}">
+                      0
+                  </span>
+              </a>
+              <button class="btn" id="themeToggle">
+                  <i class="bi bi-moon-fill"></i>
+              </button>
+              
+              <!-- Show Login Button if user is NOT authenticated -->
+              <a th:href="@{/usuarios/login}" class="btn" sec:authorize="!isAuthenticated()">
+                  <i class="bi bi-person-circle fs-4 text-light"></i>
+              </a>
 
-                <!-- Show Dropdown if user IS authenticated -->
-                <div class="dropdown" sec:authorize="isAuthenticated()">
-                    <button class="btn" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="bi bi-person-circle fs-4 text-light"></i>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li>
-                            <h6 class="dropdown-header" th:text="${#authentication.principal.nombre}"></h6>
-                        </li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li>
-                            <a class="dropdown-item" th:href="@{/usuarios/perfil}">
-                                <i class="bi bi-person me-2"></i>My Profile
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" th:href="@{/usuarios/password}">
-                                <i class="bi bi-key me-2"></i>Change Password
-                            </a>
-                        </li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li>
-                            <form th:action="@{/logout}" method="post">
-                                <button type="submit" class="dropdown-item text-danger">
-                                    <i class="bi bi-box-arrow-right me-2"></i>Logout
-                                </button>
-                            </form>
-                        </li>
-                    </ul>
-                </div>
-            </div>
+              <!-- Show Dropdown if user IS authenticated -->
+              <div class="dropdown" sec:authorize="isAuthenticated()">
+                  <button class="btn" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                      <i class="bi bi-person-circle fs-4 text-light"></i>
+                  </button>
+                  <ul class="dropdown-menu dropdown-menu-end">
+                      <li>
+                          <h6 class="dropdown-header" th:text="${#authentication.principal.nombre}"></h6>
+                      </li>
+                      <li><hr class="dropdown-divider"></li>
+                      <li>
+                          <a class="dropdown-item" th:href="@{/usuarios/perfil}">
+                              <i class="bi bi-person me-2"></i>My Profile
+                          </a>
+                      </li>
+                      <li>
+                          <a class="dropdown-item" th:href="@{/usuarios/password}">
+                              <i class="bi bi-key me-2"></i>Change Password
+                          </a>
+                      </li>
+                      <li><hr class="dropdown-divider"></li>
+                      <li>
+                          <form th:action="@{/logout}" method="post">
+                              <button type="submit" class="dropdown-item text-danger">
+                                  <i class="bi bi-box-arrow-right me-2"></i>Logout
+                              </button>
+                          </form>
+                      </li>
+                  </ul>
+              </div>
+          </div>
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+              <span class="navbar-toggler-icon"></span>
+          </button>
 
-            <!-- Navigation Links (Visible only if authenticated) -->
-            <div class="collapse navbar-collapse" id="navbarNav" sec:authorize="isAuthenticated()">
-                <ul class="navbar-nav me-auto">
+          <!-- Navigation Links (Visible only if authenticated) -->
+          <div class="collapse navbar-collapse" id="navbarNav" sec:authorize="isAuthenticated()">
+              <ul class="navbar-nav me-auto">
 
-                    <!-- Links visible only to users with the ROLE_USER -->
-                    <li class="nav-item" sec:authorize="hasRole('USER')">
-                        <a class="nav-link" th:href="@{/}" 
-                           th:classappend="${activePage == 'productos'} ? 'active'">Products</a>
-                    </li>
-                    <li class="nav-item" sec:authorize="hasRole('USER')">
-                        <a class="nav-link" th:href="@{/compras/listar}"
-                           th:classappend="${activePage == 'compras'} ? 'active'">My Purchases</a>
-                    </li>
+                  <!-- Links visible only to users with the ROLE_USER -->
+                  <li class="nav-item" sec:authorize="hasRole('USER')">
+                      <a class="nav-link" th:href="@{/}" 
+                         th:classappend="${activePage == 'productos'} ? 'active'">Products</a>
+                  </li>
+                  <li class="nav-item" sec:authorize="hasRole('USER')">
+                      <a class="nav-link" th:href="@{/compras/listar}"
+                         th:classappend="${activePage == 'compras'} ? 'active'">My Purchases</a>
+                  </li>
 
-                    <!-- Links visible only to users with the ROLE_ADMIN -->
-                    <li class="nav-item" sec:authorize="hasRole('ADMIN')">
-                        <a class="nav-link" th:href="@{/}"
-                           th:classappend="${activePage == 'adminProductos'} ? 'active'">Manage Products</a>
-                    </li>
-                    <li class="nav-item" sec:authorize="hasRole('ADMIN')">
-                        <a class="nav-link" th:href="@{/usuarios/admin/listar}"
-                           th:classappend="${activePage == 'adminUsuarios'} ? 'active'">Manage Users</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+                  <!-- Links visible only to users with the ROLE_ADMIN -->
+                  <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                      <a class="nav-link" th:href="@{/}"
+                         th:classappend="${activePage == 'adminProductos'} ? 'active'">Manage Products</a>
+                  </li>
+                  <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                      <a class="nav-link" th:href="@{/usuarios/admin/listar}"
+                         th:classappend="${activePage == 'adminUsuarios'} ? 'active'">Manage Users</a>
+                  </li>
+              </ul>
+          </div>
+      </div>
+  </nav>
 
-    <main class="container my-4">
-        <div th:replace="${content}">
-            <!-- Contenido específico de cada página -->
-        </div>
-    </main>
+  <main class="container my-4">
+      <div th:replace="${content}">
+          <!-- Contenido específico de cada página -->
+      </div>
+  </main>
 
-    <!-- Cart Modal -->
-    <div class="modal fade" id="cartModal" tabindex="-1"
-            sec:authorize="!isAuthenticated() or hasRole('USER')">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Shopping Cart</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="table-responsive">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Product</th>
-                                    <th>Price</th>
-                                    <th>Quantity</th>
-                                    <th>Subtotal</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="cartItems"></tbody>
-                        </table>
-                    </div>
-                    <div class="text-end mt-3">
-                        <h5>Total: $<span id="cartTotal">0</span></h5>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Continue Shopping</button>
-                    <button type="button" class="btn btn-primary" id="proceedToCheckoutBtn">Proceed to Checkout</button>
-                </div>
-            </div>
-        </div>
-    </div>
+  <!-- Cart Modal -->
+  <div class="modal fade" id="cartModal" tabindex="-1"
+          sec:authorize="!isAuthenticated() or hasRole('USER')">
+      <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h5 class="modal-title">Shopping Cart</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+              <div class="modal-body">
+                  <div class="table-responsive">
+                      <table class="table">
+                          <thead>
+                              <tr>
+                                  <th>Product</th>
+                                  <th>Price</th>
+                                  <th>Quantity</th>
+                                  <th>Subtotal</th>
+                                  <th>Actions</th>
+                              </tr>
+                          </thead>
+                          <tbody id="cartItems"></tbody>
+                      </table>
+                  </div>
+                  <div class="text-end mt-3">
+                      <h5>Total: $<span id="cartTotal">0</span></h5>
+                  </div>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Continue Shopping</button>
+                  <button type="button" class="btn btn-primary" id="proceedToCheckoutBtn">Proceed to Checkout</button>
+              </div>
+          </div>
+      </div>
+  </div>
 
-    <!-- Checkout Modal -->
-    <div class="modal fade" id="checkoutModal" tabindex="-1"
-            sec:authorize="isAuthenticated() and hasRole('USER')">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Confirm Purchase</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div id="purchaseDetails"></div>
-                    <h5 class="mt-3">Total: $<span id="purchaseTotal">0</span></h5>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="confirmPurchaseBtn">Confirm Purchase</button>
-                </div>
-            </div>
-        </div>
-    </div>
+  <!-- Checkout Modal -->
+  <div class="modal fade" id="checkoutModal" tabindex="-1"
+          sec:authorize="isAuthenticated() and hasRole('USER')">
+      <div class="modal-dialog">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h5 class="modal-title">Confirm Purchase</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+              <div class="modal-body">
+                  <div id="purchaseDetails"></div>
+                  <h5 class="mt-3">Total: $<span id="purchaseTotal">0</span></h5>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                  <button type="button" class="btn btn-primary" id="confirmPurchaseBtn">Confirm Purchase</button>
+              </div>
+          </div>
+      </div>
+  </div>
 
-    <footer class="bg-dark text-light text-center py-3">
-        <div class="container">
-            <p class="mb-1">© 2025 G-commerce. All rights reserved.</p>
-            <p class="mb-1"><small>This application is for educational purposes only. The developer assumes no responsibility for any misuse or inaccuracies.</small></p>
-            
-            <div class="d-flex justify-content-center">
-                <a href="https://github.com/gussttaav" class="text-white me-3" target="_blank">
-                    <i class="bi bi-github"></i> GitHub
-                </a>
-                <a href="mailto:lastgtorres@gmail.com" class="text-white me-3">
-                    <i class="bi bi-envelope-fill"></i> Contact
-                </a>
-            </div>
-        </div>
-    </footer>
+  <footer class="bg-dark text-light text-center py-3">
+      <div class="container">
+          <p class="mb-1">© 2025 G-commerce. All rights reserved.</p>
+          <p class="mb-1"><small>This application is for educational purposes only. The developer assumes no responsibility for any misuse or inaccuracies.</small></p>
+          
+          <div class="d-flex justify-content-center">
+              <a href="https://github.com/gussttaav" class="text-white me-3" target="_blank">
+                  <i class="bi bi-github"></i> GitHub
+              </a>
+              <a href="mailto:lastgtorres@gmail.com" class="text-white me-3">
+                  <i class="bi bi-envelope-fill"></i> Contact
+              </a>
+          </div>
+      </div>
+  </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script th:src="@{/js/theme.utils.js}"></script>
-    <script th:src="@{/js/cart.js}" sec:authorize="!isAuthenticated() or hasRole('USER')"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script th:src="@{/js/theme.utils.js}"></script>
+  <script th:src="@{/js/cart.js}" sec:authorize="!isAuthenticated() or hasRole('USER')"></script>
 
-    <script>
-        // Automatically include CSRF token in all HTMX requests
-        document.addEventListener('htmx:configRequest', (event) => {
-            const csrfToken = document.querySelector('meta[name="_csrf"]').content;
-            const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
-            event.detail.headers[csrfHeader] = csrfToken;
-        });
-    </script>
+  <script>
+      // Automatically include CSRF token in all HTMX requests
+      document.addEventListener('htmx:configRequest', (event) => {
+          const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+          const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+          event.detail.headers[csrfHeader] = csrfToken;
+      });
+  </script>
 </body>
 </html>

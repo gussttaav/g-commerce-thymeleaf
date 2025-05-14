@@ -59,384 +59,382 @@ import com.gplanet.commerce.services.UsuarioService;
 @ActiveProfiles("test")
 class UsuarioControllerTest {
 
-    private MockMvc mockMvc;
+  private MockMvc mockMvc;
 
-    @Autowired
-    private WebApplicationContext context;
+  @Autowired
+  private WebApplicationContext context;
 
-    @MockitoBean
-    private UsuarioService usuarioService;
+  @MockitoBean
+  private UsuarioService usuarioService;
 
-    @MockitoBean
-    private UsuarioDetallesService usuarioDetallesService;
+  @MockitoBean
+  private UsuarioDetallesService usuarioDetallesService;
 
-    private UsuarioDTO usuarioDTO;
-    private CambioPasswdDTO cambioPasswdDTO;
-    private UsuarioResponseDTO usuarioResponseDTO;
-    private UsuarioAdminDTO usuarioAdminDTO;
+  private UsuarioDTO usuarioDTO;
+  private CambioPasswdDTO cambioPasswdDTO;
+  private UsuarioResponseDTO usuarioResponseDTO;
+  private UsuarioAdminDTO usuarioAdminDTO;
 
-    private Usuario testUser;
-    private UsuarioDetalles userDetails;
-    private Usuario adminUser;
-    private UsuarioDetalles adminDetails;
+  private Usuario testUser;
+  private UsuarioDetalles userDetails;
+  private Usuario adminUser;
+  private UsuarioDetalles adminDetails;
 
-    @BeforeEach
-    void setUp() {
+  @BeforeEach
+  void setUp() {
 
-        mockMvc = MockMvcBuilders
-                .webAppContextSetup(context)
-                .apply(springSecurity())
-                .build();
+    mockMvc = MockMvcBuilders
+        .webAppContextSetup(context)
+        .apply(springSecurity())
+        .build();
 
-         // Set up a test user
-        testUser = new Usuario();
-        testUser.setEmail("test@example.com");
-        testUser.setPassword("$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG"); // "password" encoded
-        testUser.setNombre("Test User");
-        testUser.setRol(Usuario.Role.USER);
-        userDetails = new UsuarioDetalles(testUser, List.of(new SimpleGrantedAuthority("ROLE_USER")));
-        when(usuarioDetallesService.loadUserByUsername("test@example.com")).thenReturn(userDetails);
+    // Set up a test user
+    testUser = new Usuario();
+    testUser.setEmail("test@example.com");
+    testUser.setPassword("$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG"); // "password" encoded
+    testUser.setNombre("Test User");
+    testUser.setRol(Usuario.Role.USER);
+    userDetails = new UsuarioDetalles(testUser, List.of(new SimpleGrantedAuthority("ROLE_USER")));
+    when(usuarioDetallesService.loadUserByUsername("test@example.com")).thenReturn(userDetails);
 
-        // Set up an admin user
-        adminUser = new Usuario();
-        adminUser.setEmail("admin@example.com");
-        adminUser.setPassword("$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG"); // "password" encoded
-        adminUser.setNombre("Admin User");
-        adminUser.setRol(Usuario.Role.ADMIN);
-        adminDetails = new UsuarioDetalles(adminUser, List.of(new SimpleGrantedAuthority("ROLE_ADMIN")));
-        when(usuarioDetallesService.loadUserByUsername("admin@example.com")).thenReturn(adminDetails);
+    // Set up an admin user
+    adminUser = new Usuario();
+    adminUser.setEmail("admin@example.com");
+    adminUser.setPassword("$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG"); // "password" encoded
+    adminUser.setNombre("Admin User");
+    adminUser.setRol(Usuario.Role.ADMIN);
+    adminDetails = new UsuarioDetalles(adminUser, List.of(new SimpleGrantedAuthority("ROLE_ADMIN")));
+    when(usuarioDetallesService.loadUserByUsername("admin@example.com")).thenReturn(adminDetails);
 
-        usuarioDTO = new UsuarioDTO();
-        usuarioDTO.setNombre("Test User");
-        usuarioDTO.setEmail("test@example.com");
-        usuarioDTO.setPassword("password");
+    usuarioDTO = new UsuarioDTO();
+    usuarioDTO.setNombre("Test User");
+    usuarioDTO.setEmail("test@example.com");
+    usuarioDTO.setPassword("password");
 
-        cambioPasswdDTO = new CambioPasswdDTO();
-        cambioPasswdDTO.setCurrentPassword("oldPassword");
-        cambioPasswdDTO.setNewPassword("newPassword");
-        cambioPasswdDTO.setConfirmPassword("newPassword");
+    cambioPasswdDTO = new CambioPasswdDTO();
+    cambioPasswdDTO.setCurrentPassword("oldPassword");
+    cambioPasswdDTO.setNewPassword("newPassword");
+    cambioPasswdDTO.setConfirmPassword("newPassword");
 
-        usuarioResponseDTO = new UsuarioResponseDTO(
-            1L, "Admin User", "admin@example.com", Usuario.Role.ADMIN, LocalDateTime.now());
+    usuarioResponseDTO = new UsuarioResponseDTO(
+        1L, "Admin User", "admin@example.com", Usuario.Role.ADMIN, LocalDateTime.now());
 
-        usuarioAdminDTO = new UsuarioAdminDTO();
-        usuarioAdminDTO.setNombre("New Admin");
-        usuarioAdminDTO.setEmail("newadmin@example.com");
-        usuarioAdminDTO.setPassword("adminPassword");
-        usuarioAdminDTO.setRol(Usuario.Role.ADMIN);
-    }
+    usuarioAdminDTO = new UsuarioAdminDTO();
+    usuarioAdminDTO.setNombre("New Admin");
+    usuarioAdminDTO.setEmail("newadmin@example.com");
+    usuarioAdminDTO.setPassword("adminPassword");
+    usuarioAdminDTO.setRol(Usuario.Role.ADMIN);
+  }
 
-    @Test
-    void mostrarFormularioLogin_ShouldReturnLoginView() throws Exception {
-        mockMvc.perform(get("/usuarios/login"))
-               .andExpect(status().isOk())
-               .andExpect(view().name("usuarios/login"));
-    }
+  @Test
+  void mostrarFormularioLogin_ShouldReturnLoginView() throws Exception {
+    mockMvc.perform(get("/usuarios/login"))
+        .andExpect(status().isOk())
+        .andExpect(view().name("usuarios/login"));
+  }
 
-    @Test
-    void mostrarFormularioLogin_WithErrorParam_ShouldAddErrorToModel() throws Exception {
-        mockMvc.perform(get("/usuarios/login").param("error", "true"))
-               .andExpect(status().isOk())
-               .andExpect(model().attributeExists("loginError"));
-    }
+  @Test
+  void mostrarFormularioLogin_WithErrorParam_ShouldAddErrorToModel() throws Exception {
+    mockMvc.perform(get("/usuarios/login").param("error", "true"))
+        .andExpect(status().isOk())
+        .andExpect(model().attributeExists("loginError"));
+  }
 
-    @Test
-    void mostrarFormularioLogin_WithRegistroExitosoParam_ShouldAddSuccessToModel() throws Exception {
-        mockMvc.perform(get("/usuarios/login").param("registroExitoso", "true"))
-               .andExpect(status().isOk())
-               .andExpect(model().attributeExists("registroExitoso"));
-    }
+  @Test
+  void mostrarFormularioLogin_WithRegistroExitosoParam_ShouldAddSuccessToModel() throws Exception {
+    mockMvc.perform(get("/usuarios/login").param("registroExitoso", "true"))
+        .andExpect(status().isOk())
+        .andExpect(model().attributeExists("registroExitoso"));
+  }
 
-    @Test
-    void mostrarFormularioRegistro_ShouldReturnRegistroViewWithUsuarioDTO() throws Exception {
-        mockMvc.perform(get("/usuarios/registro"))
-               .andExpect(status().isOk())
-               .andExpect(view().name("usuarios/registro"))
-               .andExpect(model().attributeExists("usuario"));
-    }
+  @Test
+  void mostrarFormularioRegistro_ShouldReturnRegistroViewWithUsuarioDTO() throws Exception {
+    mockMvc.perform(get("/usuarios/registro"))
+        .andExpect(status().isOk())
+        .andExpect(view().name("usuarios/registro"))
+        .andExpect(model().attributeExists("usuario"));
+  }
 
-    @Test
-    void registrarUsuario_WithValidData_ShouldRedirectToLogin() throws Exception {
-        mockMvc.perform(post("/usuarios/registro")
-               .with(csrf())
-               .flashAttr("usuario", usuarioDTO))
-               .andExpect(status().is3xxRedirection())
-               .andExpect(redirectedUrl("/usuarios/login?registroExitoso"));
-    }
+  @Test
+  void registrarUsuario_WithValidData_ShouldRedirectToLogin() throws Exception {
+    mockMvc.perform(post("/usuarios/registro")
+        .with(csrf())
+        .flashAttr("usuario", usuarioDTO))
+        .andExpect(status().is3xxRedirection())
+        .andExpect(redirectedUrl("/usuarios/login?registroExitoso"));
+  }
 
-    @Test
-    void registrarUsuario_WithInvalidData_ShouldReturnRegistroView() throws Exception {
-        mockMvc.perform(post("/usuarios/registro")
-               .with(csrf())
-               .param("nombre", "") // Invalid empty name
-               .param("email", "invalid-email") // Invalid email
-               .param("password", "short")) // Invalid password
-               .andExpect(status().isOk())
-               .andExpect(view().name("usuarios/registro"));
-    }
+  @Test
+  void registrarUsuario_WithInvalidData_ShouldReturnRegistroView() throws Exception {
+    mockMvc.perform(post("/usuarios/registro")
+        .with(csrf())
+        .param("nombre", "") // Invalid empty name
+        .param("email", "invalid-email") // Invalid email
+        .param("password", "short")) // Invalid password
+        .andExpect(status().isOk())
+        .andExpect(view().name("usuarios/registro"));
+  }
 
-    @Test
-    void registrarUsuario_WithExistingEmail_ShouldReturnRegistroViewWithError() throws Exception {
-        when(usuarioService.registrarUsuario(any(UsuarioDTO.class)))
-            .thenThrow(new EmailAlreadyExistsException("Email already exists"));
+  @Test
+  void registrarUsuario_WithExistingEmail_ShouldReturnRegistroViewWithError() throws Exception {
+    when(usuarioService.registrarUsuario(any(UsuarioDTO.class)))
+        .thenThrow(new EmailAlreadyExistsException("Email already exists"));
 
-        mockMvc.perform(post("/usuarios/registro")
-               .with(csrf())
-               .flashAttr("usuario", usuarioDTO))
-               .andExpect(status().isOk())
-               .andExpect(view().name("usuarios/registro"))
-               .andExpect(model().attributeExists("registroError"));
-    }
+    mockMvc.perform(post("/usuarios/registro")
+        .with(csrf())
+        .flashAttr("usuario", usuarioDTO))
+        .andExpect(status().isOk())
+        .andExpect(view().name("usuarios/registro"))
+        .andExpect(model().attributeExists("registroError"));
+  }
 
-    @Test
-    void mostrarPerfil_ShouldReturnPerfilViewWithUserData() throws Exception {
+  @Test
+  void mostrarPerfil_ShouldReturnPerfilViewWithUserData() throws Exception {
 
-        when(usuarioService.buscarPorEmail(anyString())).thenReturn(testUser);
+    when(usuarioService.buscarPorEmail(anyString())).thenReturn(testUser);
 
-        mockMvc.perform(get("/usuarios/perfil").with(user(userDetails)))
-               .andExpect(status().isOk())
-               .andExpect(view().name("usuarios/perfil"))
-               .andExpect(model().attributeExists("usuario"));
-    }
+    mockMvc.perform(get("/usuarios/perfil").with(user(userDetails)))
+        .andExpect(status().isOk())
+        .andExpect(view().name("usuarios/perfil"))
+        .andExpect(model().attributeExists("usuario"));
+  }
 
-    @Test
-    void actualizarPerfil_WithValidData_ShouldUpdateProfile() throws Exception {
+  @Test
+  void actualizarPerfil_WithValidData_ShouldUpdateProfile() throws Exception {
 
-        mockMvc.perform(post("/usuarios/perfil")
-               .with(user(userDetails))
-               .with(csrf())
-               .flashAttr("usuario", 
-                    new ActualizacionUsuarioDTO("Updated User", "updated@example.com")
-                ))
-               .andExpect(status().isOk())
-               .andExpect(view().name("usuarios/perfil"))
-               .andExpect(model().attribute("toastType", "success"))
-               .andExpect(model().attributeExists("toastMessage"));
+    mockMvc.perform(post("/usuarios/perfil")
+        .with(user(userDetails))
+        .with(csrf())
+        .flashAttr("usuario",
+            new ActualizacionUsuarioDTO("Updated User", "updated@example.com")))
+        .andExpect(status().isOk())
+        .andExpect(view().name("usuarios/perfil"))
+        .andExpect(model().attribute("toastType", "success"))
+        .andExpect(model().attributeExists("toastMessage"));
 
-        verify(usuarioService).actualizarPerfil(anyString(), any(ActualizacionUsuarioDTO.class));
-    }
+    verify(usuarioService).actualizarPerfil(anyString(), any(ActualizacionUsuarioDTO.class));
+  }
 
-    @Test
-    void actualizarPerfil_WithInvalidData_ShouldReturnPerfilView() throws Exception {
-        mockMvc.perform(post("/usuarios/perfil")
-               .with(user(userDetails))
-               .with(csrf())
-               .param("nombre", "") // Invalid empty name
-               .param("nuevoEmail", "invalid-email")) // Invalid email
-               .andExpect(status().isOk())
-               .andExpect(view().name("usuarios/perfil"));
-    }
+  @Test
+  void actualizarPerfil_WithInvalidData_ShouldReturnPerfilView() throws Exception {
+    mockMvc.perform(post("/usuarios/perfil")
+        .with(user(userDetails))
+        .with(csrf())
+        .param("nombre", "") // Invalid empty name
+        .param("nuevoEmail", "invalid-email")) // Invalid email
+        .andExpect(status().isOk())
+        .andExpect(view().name("usuarios/perfil"));
+  }
 
-    @Test
-    void actualizarPerfil_WithExistingEmail_ShouldShowError() throws Exception {
-        doThrow(new EmailAlreadyExistsException("Email already exists"))
-            .when(usuarioService).actualizarPerfil(anyString(), any(ActualizacionUsuarioDTO.class));
+  @Test
+  void actualizarPerfil_WithExistingEmail_ShouldShowError() throws Exception {
+    doThrow(new EmailAlreadyExistsException("Email already exists"))
+        .when(usuarioService).actualizarPerfil(anyString(), any(ActualizacionUsuarioDTO.class));
 
-        mockMvc.perform(post("/usuarios/perfil")
-               .with(user(userDetails))
-               .with(csrf())
-               .flashAttr("usuario",
-                    new ActualizacionUsuarioDTO("Updated User", "updated@example.com")
-                ))
-               .andExpect(status().isOk())
-               .andExpect(view().name("usuarios/perfil"))
-               .andExpect(model().attribute("toastType", "danger"))
-               .andExpect(model().attributeExists("toastMessage"));
-    }
+    mockMvc.perform(post("/usuarios/perfil")
+        .with(user(userDetails))
+        .with(csrf())
+        .flashAttr("usuario",
+            new ActualizacionUsuarioDTO("Updated User", "updated@example.com")))
+        .andExpect(status().isOk())
+        .andExpect(view().name("usuarios/perfil"))
+        .andExpect(model().attribute("toastType", "danger"))
+        .andExpect(model().attributeExists("toastMessage"));
+  }
 
-    @Test
-    void mostrarFormularioCambioPassword_ShouldReturnPasswordView() throws Exception {
-        mockMvc.perform(get("/usuarios/password").with(user(userDetails)))
-               .andExpect(status().isOk())
-               .andExpect(view().name("usuarios/password"))
-               .andExpect(model().attributeExists("cambioPasswd"));
-    }
+  @Test
+  void mostrarFormularioCambioPassword_ShouldReturnPasswordView() throws Exception {
+    mockMvc.perform(get("/usuarios/password").with(user(userDetails)))
+        .andExpect(status().isOk())
+        .andExpect(view().name("usuarios/password"))
+        .andExpect(model().attributeExists("cambioPasswd"));
+  }
 
-    @Test
-    void cambiarContraseña_WithValidData_ShouldUpdatePassword() throws Exception {
-        mockMvc.perform(post("/usuarios/password")
-               .with(user(userDetails))
-               .with(csrf())
-               .flashAttr("cambioPasswd", cambioPasswdDTO))
-               .andExpect(status().isOk())
-               .andExpect(view().name("usuarios/password"))
-               .andExpect(model().attribute("toastType", "success"))
-               .andExpect(model().attributeExists("toastMessage"));
+  @Test
+  void cambiarContraseña_WithValidData_ShouldUpdatePassword() throws Exception {
+    mockMvc.perform(post("/usuarios/password")
+        .with(user(userDetails))
+        .with(csrf())
+        .flashAttr("cambioPasswd", cambioPasswdDTO))
+        .andExpect(status().isOk())
+        .andExpect(view().name("usuarios/password"))
+        .andExpect(model().attribute("toastType", "success"))
+        .andExpect(model().attributeExists("toastMessage"));
 
-        verify(usuarioService).cambiarContraseña(anyString(), any(CambioPasswdDTO.class));
-    }
+    verify(usuarioService).changePassword(anyString(), any(CambioPasswdDTO.class));
+  }
 
-    @Test
-    void cambiarContraseña_WithInvalidData_ShouldReturnPasswordView() throws Exception {
-        mockMvc.perform(post("/usuarios/password")
-               .with(user(userDetails))
-               .with(csrf())
-               .param("currentPassword", "") // Invalid empty password
-               .param("newPassword", "short") // Invalid password
-               .param("confirmPassword", "mismatch")) // Mismatch password
-               .andExpect(status().isOk())
-               .andExpect(view().name("usuarios/password"));
-    }
+  @Test
+  void cambiarContraseña_WithInvalidData_ShouldReturnPasswordView() throws Exception {
+    mockMvc.perform(post("/usuarios/password")
+        .with(user(userDetails))
+        .with(csrf())
+        .param("currentPassword", "") // Invalid empty password
+        .param("newPassword", "short") // Invalid password
+        .param("confirmPassword", "mismatch")) // Mismatch password
+        .andExpect(status().isOk())
+        .andExpect(view().name("usuarios/password"));
+  }
 
-    @Test
-    void cambiarContraseña_WithInvalidCurrentPassword_ShouldShowError() throws Exception {
-        doThrow(new InvalidPasswordException("Invalid current password"))
-            .when(usuarioService).cambiarContraseña(anyString(), any(CambioPasswdDTO.class));
+  @Test
+  void cambiarContraseña_WithInvalidCurrentPassword_ShouldShowError() throws Exception {
+    doThrow(new InvalidPasswordException("Invalid current password"))
+        .when(usuarioService).changePassword(anyString(), any(CambioPasswdDTO.class));
 
-        mockMvc.perform(post("/usuarios/password")
-               .with(user(userDetails))
-               .with(csrf())
-               .flashAttr("cambioPasswd", cambioPasswdDTO))
-               .andExpect(status().isOk())
-               .andExpect(view().name("usuarios/password"))
-               .andExpect(model().attribute("toastType", "danger"))
-               .andExpect(model().attributeExists("toastMessage"));
-    }
+    mockMvc.perform(post("/usuarios/password")
+        .with(user(userDetails))
+        .with(csrf())
+        .flashAttr("cambioPasswd", cambioPasswdDTO))
+        .andExpect(status().isOk())
+        .andExpect(view().name("usuarios/password"))
+        .andExpect(model().attribute("toastType", "danger"))
+        .andExpect(model().attributeExists("toastMessage"));
+  }
 
-    @Test
-    void cambiarContraseña_WithPasswordMismatch_ShouldShowError() throws Exception {
-        doThrow(new PasswordMismatchException("Passwords don't match"))
-            .when(usuarioService).cambiarContraseña(anyString(), any(CambioPasswdDTO.class));
+  @Test
+  void changePassword_WithPasswordMismatch_ShouldShowError() throws Exception {
+    doThrow(new PasswordMismatchException("Passwords don't match"))
+        .when(usuarioService).changePassword(anyString(), any(CambioPasswdDTO.class));
 
-        mockMvc.perform(post("/usuarios/password")
-               .with(user(userDetails))
-               .with(csrf())
-               .flashAttr("cambioPasswd", cambioPasswdDTO))
-               .andExpect(status().isOk())
-               .andExpect(view().name("usuarios/password"))
-               .andExpect(model().attribute("toastType", "danger"))
-               .andExpect(model().attributeExists("toastMessage"));
-    }
+    mockMvc.perform(post("/usuarios/password")
+        .with(user(userDetails))
+        .with(csrf())
+        .flashAttr("cambioPasswd", cambioPasswdDTO))
+        .andExpect(status().isOk())
+        .andExpect(view().name("usuarios/password"))
+        .andExpect(model().attribute("toastType", "danger"))
+        .andExpect(model().attributeExists("toastMessage"));
+  }
 
-    @Test
-    @WithMockUser
-    void checkAuthentication_WhenAuthenticated_ShouldReturnTrue() throws Exception {
-        mockMvc.perform(get("/usuarios/authenticated"))
-               .andExpect(status().isOk());
-    }
+  @Test
+  @WithMockUser
+  void checkAuthentication_WhenAuthenticated_ShouldReturnTrue() throws Exception {
+    mockMvc.perform(get("/usuarios/authenticated"))
+        .andExpect(status().isOk());
+  }
 
-    @Test
-    void listarUsuarios_ShouldReturnUserListView() throws Exception {
-        List<UsuarioResponseDTO> usuarios = new ArrayList<>();
-        usuarios.add(usuarioResponseDTO);
-        
-        Page<UsuarioResponseDTO> page = new PageImpl<>(usuarios);
-        when(usuarioService.listarUsuarios(anyInt(), anyInt(), anyString(), anyString()))
-            .thenReturn(page);
+  @Test
+  void listarUsuarios_ShouldReturnUserListView() throws Exception {
+    List<UsuarioResponseDTO> usuarios = new ArrayList<>();
+    usuarios.add(usuarioResponseDTO);
 
-        mockMvc.perform(get("/usuarios/admin/listar").with(user(adminDetails)))
-               .andExpect(status().isOk())
-               .andExpect(view().name("usuarios/lista"))
-               .andExpect(model().attributeExists("usuarios"))
-               .andExpect(model().attributeExists("pagination"));
-    }
+    Page<UsuarioResponseDTO> page = new PageImpl<>(usuarios);
+    when(usuarioService.listarUsuarios(anyInt(), anyInt(), anyString(), anyString()))
+        .thenReturn(page);
 
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    void filtrarUsuarios_ShouldReturnUserPageFragment() throws Exception {
-        List<UsuarioResponseDTO> usuarios = new ArrayList<>();
-        usuarios.add(usuarioResponseDTO);
-        
-        Page<UsuarioResponseDTO> page = new PageImpl<>(usuarios);
-        when(usuarioService.listarUsuarios(anyInt(), anyInt(), anyString(), anyString()))
-            .thenReturn(page);
+    mockMvc.perform(get("/usuarios/admin/listar").with(user(adminDetails)))
+        .andExpect(status().isOk())
+        .andExpect(view().name("usuarios/lista"))
+        .andExpect(model().attributeExists("usuarios"))
+        .andExpect(model().attributeExists("pagination"));
+  }
 
-        mockMvc.perform(get("/usuarios/admin/filtrar")
-               .param("page", "0")
-               .param("size", "10")
-               .param("sort", "nombre")
-               .param("direction", "ASC"))
-               .andExpect(status().isOk())
-               .andExpect(view().name("usuarios/lista-usuario-page :: usuario-page"))
-               .andExpect(model().attributeExists("usuarios"))
-               .andExpect(model().attributeExists("pagination"));
-    }
+  @Test
+  @WithMockUser(roles = "ADMIN")
+  void filtrarUsuarios_ShouldReturnUserPageFragment() throws Exception {
+    List<UsuarioResponseDTO> usuarios = new ArrayList<>();
+    usuarios.add(usuarioResponseDTO);
 
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    void cambiarRol_WithValidId_ShouldReturnUpdatedUserRow() throws Exception {
-        when(usuarioService.cambiarRol(any(Long.class))).thenReturn(usuarioResponseDTO);
+    Page<UsuarioResponseDTO> page = new PageImpl<>(usuarios);
+    when(usuarioService.listarUsuarios(anyInt(), anyInt(), anyString(), anyString()))
+        .thenReturn(page);
 
-        mockMvc.perform(post("/usuarios/admin/change-role/1")
-               .with(csrf()))
-               .andExpect(status().isOk())
-               .andExpect(view().name("usuarios/lista-usuario-row :: usuario-row"))
-               .andExpect(model().attributeExists("usuario"))
-               .andExpect(model().attribute("toastType", "success"))
-               .andExpect(model().attributeExists("toastMessage"));
-    }
+    mockMvc.perform(get("/usuarios/admin/filtrar")
+        .param("page", "0")
+        .param("size", "10")
+        .param("sort", "nombre")
+        .param("direction", "ASC"))
+        .andExpect(status().isOk())
+        .andExpect(view().name("usuarios/lista-usuario-page :: usuario-page"))
+        .andExpect(model().attributeExists("usuarios"))
+        .andExpect(model().attributeExists("pagination"));
+  }
 
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    void cambiarRol_WithInvalidId_ShouldReturnError() throws Exception {
-        when(usuarioService.cambiarRol(any(Long.class)))
-            .thenThrow(new ResourceNotFoundException("User not found"));
+  @Test
+  @WithMockUser(roles = "ADMIN")
+  void cambiarRol_WithValidId_ShouldReturnUpdatedUserRow() throws Exception {
+    when(usuarioService.cambiarRol(any(Long.class))).thenReturn(usuarioResponseDTO);
 
-        mockMvc.perform(post("/usuarios/admin/change-role/999")
-               .with(csrf()))
-               .andExpect(status().isOk())
-               .andExpect(view().name("empty :: empty"))
-               .andExpect(model().attribute("toastType", "danger"))
-               .andExpect(model().attributeExists("toastMessage"));
-    }
+    mockMvc.perform(post("/usuarios/admin/change-role/1")
+        .with(csrf()))
+        .andExpect(status().isOk())
+        .andExpect(view().name("usuarios/lista-usuario-row :: usuario-row"))
+        .andExpect(model().attributeExists("usuario"))
+        .andExpect(model().attribute("toastType", "success"))
+        .andExpect(model().attributeExists("toastMessage"));
+  }
 
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    void showAddUserModal_ShouldReturnUserModalFragment() throws Exception {
-        mockMvc.perform(get("/usuarios/admin/registrar"))
-               .andExpect(status().isOk())
-               .andExpect(view().name("usuarios/nuevo-modal :: userModal"));
-    }
+  @Test
+  @WithMockUser(roles = "ADMIN")
+  void cambiarRol_WithInvalidId_ShouldReturnError() throws Exception {
+    when(usuarioService.cambiarRol(any(Long.class)))
+        .thenThrow(new ResourceNotFoundException("User not found"));
 
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    void createUser_WithValidData_ShouldReturnNewUserRow() throws Exception {
-        when(usuarioService.registrarUsuario(any(UsuarioAdminDTO.class))).thenReturn(usuarioResponseDTO);
+    mockMvc.perform(post("/usuarios/admin/change-role/999")
+        .with(csrf()))
+        .andExpect(status().isOk())
+        .andExpect(view().name("empty :: empty"))
+        .andExpect(model().attribute("toastType", "danger"))
+        .andExpect(model().attributeExists("toastMessage"));
+  }
 
-        mockMvc.perform(post("/usuarios/admin/registrar")
-               .with(csrf())
-               .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-               .param("nombre", usuarioAdminDTO.getNombre())
-               .param("email", usuarioAdminDTO.getEmail())
-               .param("password", usuarioAdminDTO.getPassword())
-               .param("rol", usuarioAdminDTO.getRol().toString()))
-               .andExpect(status().isOk())
-               .andExpect(view().name("usuarios/lista-usuario-row :: usuario-row"))
-               .andExpect(model().attributeExists("usuario"))
-               .andExpect(model().attribute("toastType", "success"))
-               .andExpect(model().attributeExists("toastMessage"));
-    }
+  @Test
+  @WithMockUser(roles = "ADMIN")
+  void showAddUserModal_ShouldReturnUserModalFragment() throws Exception {
+    mockMvc.perform(get("/usuarios/admin/registrar"))
+        .andExpect(status().isOk())
+        .andExpect(view().name("usuarios/nuevo-modal :: userModal"));
+  }
 
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    void createUser_WithInvalidData_ShouldReturnError() throws Exception {
-        when(usuarioService.registrarUsuario(any(UsuarioAdminDTO.class)))
-            .thenThrow(new RuntimeException("Error creating user"));
+  @Test
+  @WithMockUser(roles = "ADMIN")
+  void createUser_WithValidData_ShouldReturnNewUserRow() throws Exception {
+    when(usuarioService.registrarUsuario(any(UsuarioAdminDTO.class))).thenReturn(usuarioResponseDTO);
 
-        mockMvc.perform(post("/usuarios/admin/registrar")
-               .with(csrf())
-               .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-               .param("nombre", "") // Invalid empty name
-               .param("email", "invalid-email") // Invalid email
-               .param("password", "short") // Invalid password
-               .param("rol", "INVALID")) // Invalid role
-               .andExpect(status().isOk())
-               .andExpect(view().name("empty :: empty"))
-               .andExpect(model().attribute("toastType", "danger"))
-               .andExpect(model().attributeExists("toastMessage"));
-    }
+    mockMvc.perform(post("/usuarios/admin/registrar")
+        .with(csrf())
+        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+        .param("nombre", usuarioAdminDTO.getNombre())
+        .param("email", usuarioAdminDTO.getEmail())
+        .param("password", usuarioAdminDTO.getPassword())
+        .param("rol", usuarioAdminDTO.getRol().toString()))
+        .andExpect(status().isOk())
+        .andExpect(view().name("usuarios/lista-usuario-row :: usuario-row"))
+        .andExpect(model().attributeExists("usuario"))
+        .andExpect(model().attribute("toastType", "success"))
+        .andExpect(model().attributeExists("toastMessage"));
+  }
 
-    @Test
-    void listarUsuarios_WithoutAdminRole_ShouldBeForbidden() throws Exception {
-        mockMvc.perform(get("/usuarios/admin/listar"))
-               .andExpect(status().is3xxRedirection())
-               .andExpect(redirectedUrlPattern("**/usuarios/login"));
-    }
+  @Test
+  @WithMockUser(roles = "ADMIN")
+  void createUser_WithInvalidData_ShouldReturnError() throws Exception {
+    when(usuarioService.registrarUsuario(any(UsuarioAdminDTO.class)))
+        .thenThrow(new RuntimeException("Error creating user"));
 
-    @Test
-    @WithMockUser
-    void listarUsuarios_WithUserRole_ShouldBeForbidden() throws Exception {
-        mockMvc.perform(get("/usuarios/admin/listar"))
-               .andExpect(status().isForbidden());
-    }
+    mockMvc.perform(post("/usuarios/admin/registrar")
+        .with(csrf())
+        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+        .param("nombre", "") // Invalid empty name
+        .param("email", "invalid-email") // Invalid email
+        .param("password", "short") // Invalid password
+        .param("rol", "INVALID")) // Invalid role
+        .andExpect(status().isOk())
+        .andExpect(view().name("empty :: empty"))
+        .andExpect(model().attribute("toastType", "danger"))
+        .andExpect(model().attributeExists("toastMessage"));
+  }
+
+  @Test
+  void listarUsuarios_WithoutAdminRole_ShouldBeForbidden() throws Exception {
+    mockMvc.perform(get("/usuarios/admin/listar"))
+        .andExpect(status().is3xxRedirection())
+        .andExpect(redirectedUrlPattern("**/usuarios/login"));
+  }
+
+  @Test
+  @WithMockUser
+  void listarUsuarios_WithUserRole_ShouldBeForbidden() throws Exception {
+    mockMvc.perform(get("/usuarios/admin/listar"))
+        .andExpect(status().isForbidden());
+  }
 }

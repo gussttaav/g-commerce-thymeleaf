@@ -16,7 +16,7 @@ import java.util.List;
  *                   Must contain at least one product.
  */
 public record CompraDTO(
-    @NotEmpty(message = "Debe incluir al menos un producto")
-    @Valid
-    List<CompraProductoDTO> productos
+  @NotEmpty(message = "Debe incluir al menos un producto")
+  @Valid
+  List<CompraProductoDTO> productos
 ) {}

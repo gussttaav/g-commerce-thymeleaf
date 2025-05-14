@@ -53,285 +53,285 @@ import com.gplanet.commerce.services.ProductoService;
 @ActiveProfiles("test")
 class ProductoControllerTest {
 
-    private MockMvc mockMvc;
+  private MockMvc mockMvc;
 
-    @Autowired
-    private WebApplicationContext context;
+  @Autowired
+  private WebApplicationContext context;
 
-    @MockitoBean
-    private ProductoService productoService;
+  @MockitoBean
+  private ProductoService productoService;
 
-    @MockitoBean
-    private UsuarioDetallesService usuarioDetallesService;
+  @MockitoBean
+  private UsuarioDetallesService usuarioDetallesService;
 
-    private ProductoDTO productoDTO;
-    private ProductoResponseDTO productoResponseDTO;
-    private Usuario adminUser;
-    private UsuarioDetalles adminDetails;
+  private ProductoDTO productoDTO;
+  private ProductoResponseDTO productoResponseDTO;
+  private Usuario adminUser;
+  private UsuarioDetalles adminDetails;
 
-    @BeforeEach
-    void setUp() {
-        mockMvc = MockMvcBuilders
-                .webAppContextSetup(context)
-                .apply(springSecurity())
-                .build();
+  @BeforeEach
+  void setUp() {
+    mockMvc = MockMvcBuilders
+        .webAppContextSetup(context)
+        .apply(springSecurity())
+        .build();
 
-        // Set up an admin user
-        adminUser = new Usuario();
-        adminUser.setEmail("admin@example.com");
-        adminUser.setPassword("$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG"); // "password" encoded
-        adminUser.setNombre("Admin User");
-        adminUser.setRol(Usuario.Role.ADMIN);
-        adminDetails = new UsuarioDetalles(adminUser, List.of(new SimpleGrantedAuthority("ROLE_ADMIN")));
-        when(usuarioDetallesService.loadUserByUsername("admin@example.com")).thenReturn(adminDetails);
+    // Set up an admin user
+    adminUser = new Usuario();
+    adminUser.setEmail("admin@example.com");
+    adminUser.setPassword("$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG"); // "password" encoded
+    adminUser.setNombre("Admin User");
+    adminUser.setRol(Usuario.Role.ADMIN);
+    adminDetails = new UsuarioDetalles(adminUser, List.of(new SimpleGrantedAuthority("ROLE_ADMIN")));
+    when(usuarioDetallesService.loadUserByUsername("admin@example.com")).thenReturn(adminDetails);
 
-        productoDTO = new ProductoDTO(
-            "Test Product",
-            "Test Description",
-            BigDecimal.valueOf(19.99),
-            true
-        );
+    productoDTO = new ProductoDTO(
+        "Test Product",
+        "Test Description",
+        BigDecimal.valueOf(19.99),
+        true);
 
-        productoResponseDTO = new ProductoResponseDTO(
-            1L,
-            "Test Product",
-            "Test Description",
-            BigDecimal.valueOf(19.99),
-            LocalDateTime.now(),
-            true
-        );
-    }
+    productoResponseDTO = new ProductoResponseDTO(
+        1L,
+        "Test Product",
+        "Test Description",
+        BigDecimal.valueOf(19.99),
+        LocalDateTime.now(),
+        true);
+  }
 
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    void listarProductos_ShouldReturnProductListView() throws Exception {
-        List<ProductoResponseDTO> productos = new ArrayList<>();
-        productos.add(productoResponseDTO);
-        
-        Page<ProductoResponseDTO> page = new PageImpl<>(productos);
-        when(productoService.listarProductos(any(ProductStatus.class), anyString(), anyInt(), anyInt(), anyString(), anyString()))
-            .thenReturn(page);
+  @Test
+  @WithMockUser(roles = "ADMIN")
+  void listarProductos_ShouldReturnProductListView() throws Exception {
+    List<ProductoResponseDTO> productos = new ArrayList<>();
+    productos.add(productoResponseDTO);
 
-        mockMvc.perform(get("/productos/admin/listar").with(user(adminDetails)))
-               .andExpect(status().isOk())
-               .andExpect(view().name("productos/lista-admin"))
-               .andExpect(model().attributeExists("productos"))
-               .andExpect(model().attributeExists("pagination"))
-               .andExpect(model().attribute("activePage", "adminProductos"));
-    }
+    Page<ProductoResponseDTO> page = new PageImpl<>(productos);
+    when(productoService.listarProductos(any(ProductStatus.class), anyString(), anyInt(), anyInt(), anyString(),
+        anyString()))
+        .thenReturn(page);
 
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    void toggleStatus_WithValidId_ShouldReturnUpdatedProductRow() throws Exception {
-        when(productoService.toggleProductStatus(anyLong())).thenReturn(productoResponseDTO);
+    mockMvc.perform(get("/productos/admin/listar").with(user(adminDetails)))
+        .andExpect(status().isOk())
+        .andExpect(view().name("productos/lista-admin"))
+        .andExpect(model().attributeExists("productos"))
+        .andExpect(model().attributeExists("pagination"))
+        .andExpect(model().attribute("activePage", "adminProductos"));
+  }
 
-        mockMvc.perform(post("/productos/admin/toggle-status/1")
-               .with(csrf()))
-               .andExpect(status().isOk())
-               .andExpect(view().name("productos/lista-admin-row :: producto-row"))
-               .andExpect(model().attributeExists("producto"))
-               .andExpect(model().attribute("toastType", "success"))
-               .andExpect(model().attributeExists("toastMessage"));
-    }
+  @Test
+  @WithMockUser(roles = "ADMIN")
+  void toggleStatus_WithValidId_ShouldReturnUpdatedProductRow() throws Exception {
+    when(productoService.toggleProductStatus(anyLong())).thenReturn(productoResponseDTO);
 
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    void toggleStatus_WithInvalidId_ShouldReturnError() throws Exception {
-        when(productoService.toggleProductStatus(anyLong()))
-            .thenThrow(new ResourceNotFoundException("Product not found"));
+    mockMvc.perform(post("/productos/admin/toggle-status/1")
+        .with(csrf()))
+        .andExpect(status().isOk())
+        .andExpect(view().name("productos/lista-admin-row :: producto-row"))
+        .andExpect(model().attributeExists("producto"))
+        .andExpect(model().attribute("toastType", "success"))
+        .andExpect(model().attributeExists("toastMessage"));
+  }
 
-        mockMvc.perform(post("/productos/admin/toggle-status/999")
-               .with(csrf()))
-               .andExpect(status().isOk())
-               .andExpect(view().name("empty :: empty"))
-               .andExpect(model().attribute("toastType", "danger"))
-               .andExpect(model().attributeExists("toastMessage"));
-    }
+  @Test
+  @WithMockUser(roles = "ADMIN")
+  void toggleStatus_WithInvalidId_ShouldReturnError() throws Exception {
+    when(productoService.toggleProductStatus(anyLong()))
+        .thenThrow(new ResourceNotFoundException("Product not found"));
 
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    void getProductById_WithValidId_ShouldReturnProductModal() throws Exception {
-        when(productoService.findById(anyLong())).thenReturn(productoResponseDTO);
+    mockMvc.perform(post("/productos/admin/toggle-status/999")
+        .with(csrf()))
+        .andExpect(status().isOk())
+        .andExpect(view().name("empty :: empty"))
+        .andExpect(model().attribute("toastType", "danger"))
+        .andExpect(model().attributeExists("toastMessage"));
+  }
 
-        mockMvc.perform(get("/productos/1"))
-               .andExpect(status().isOk())
-               .andExpect(view().name("productos/producto-modal :: producto-modal"))
-               .andExpect(model().attributeExists("producto"));
-    }
+  @Test
+  @WithMockUser(roles = "ADMIN")
+  void getProductById_WithValidId_ShouldReturnProductModal() throws Exception {
+    when(productoService.findById(anyLong())).thenReturn(productoResponseDTO);
 
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    void getProductById_WithInvalidId_ShouldReturnError() throws Exception {
-        when(productoService.findById(anyLong()))
-            .thenThrow(new ResourceNotFoundException("Product not found"));
+    mockMvc.perform(get("/productos/1"))
+        .andExpect(status().isOk())
+        .andExpect(view().name("productos/producto-modal :: producto-modal"))
+        .andExpect(model().attributeExists("producto"));
+  }
 
-        mockMvc.perform(get("/productos/999"))
-               .andExpect(status().isOk())
-               .andExpect(view().name("empty :: empty"))
-               .andExpect(model().attribute("toastType", "danger"))
-               .andExpect(model().attributeExists("toastMessage"));
-    }
+  @Test
+  @WithMockUser(roles = "ADMIN")
+  void getProductById_WithInvalidId_ShouldReturnError() throws Exception {
+    when(productoService.findById(anyLong()))
+        .thenThrow(new ResourceNotFoundException("Product not found"));
 
-    @Test
-    void filterProducts_ShouldReturnUserGridFragment() throws Exception {
-        List<ProductoResponseDTO> productos = new ArrayList<>();
-        productos.add(productoResponseDTO);
-        
-        Page<ProductoResponseDTO> page = new PageImpl<>(productos);
-        when(productoService.listarProductos(any(ProductStatus.class), anyString(), anyInt(), anyInt(), anyString(), anyString()))
-            .thenReturn(page);
+    mockMvc.perform(get("/productos/999"))
+        .andExpect(status().isOk())
+        .andExpect(view().name("empty :: empty"))
+        .andExpect(model().attribute("toastType", "danger"))
+        .andExpect(model().attributeExists("toastMessage"));
+  }
 
-        mockMvc.perform(get("/productos/filtrar")
-               .param("page", "0")
-               .param("size", "10")
-               .param("search", "")
-               .param("sort", "nombre")
-               .param("direction", "ASC"))
-               .andExpect(status().isOk())
-               .andExpect(view().name("productos/user-grid :: user-grid"))
-               .andExpect(model().attributeExists("productos"))
-               .andExpect(model().attributeExists("pagination"));
-    }
+  @Test
+  void filterProducts_ShouldReturnUserGridFragment() throws Exception {
+    List<ProductoResponseDTO> productos = new ArrayList<>();
+    productos.add(productoResponseDTO);
 
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    void filterAdminProducts_ShouldReturnProductPageFragment() throws Exception {
-        List<ProductoResponseDTO> productos = new ArrayList<>();
-        productos.add(productoResponseDTO);
-        
-        Page<ProductoResponseDTO> page = new PageImpl<>(productos);
-        when(productoService.listarProductos(any(ProductStatus.class), anyString(), anyInt(), anyInt(), anyString(), anyString()))
-            .thenReturn(page);
+    Page<ProductoResponseDTO> page = new PageImpl<>(productos);
+    when(productoService.listarProductos(any(ProductStatus.class), anyString(), anyInt(), anyInt(), anyString(),
+        anyString()))
+        .thenReturn(page);
 
-        mockMvc.perform(get("/productos/admin/filtrar")
-               .param("status", "ALL")
-               .param("page", "0")
-               .param("size", "10")
-               .param("search", "")
-               .param("sort", "nombre")
-               .param("direction", "ASC"))
-               .andExpect(status().isOk())
-               .andExpect(view().name("productos/lista-admin-page :: producto-page"))
-               .andExpect(model().attributeExists("productos"))
-               .andExpect(model().attributeExists("pagination"));
-    }
+    mockMvc.perform(get("/productos/filtrar")
+        .param("page", "0")
+        .param("size", "10")
+        .param("search", "")
+        .param("sort", "nombre")
+        .param("direction", "ASC"))
+        .andExpect(status().isOk())
+        .andExpect(view().name("productos/user-grid :: user-grid"))
+        .andExpect(model().attributeExists("productos"))
+        .andExpect(model().attributeExists("pagination"));
+  }
 
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    void showAddProductModal_ShouldReturnProductModalFragment() throws Exception {
-        mockMvc.perform(get("/productos/admin/crear"))
-               .andExpect(status().isOk())
-               .andExpect(view().name("productos/producto-modal :: producto-modal"));
-    }
+  @Test
+  @WithMockUser(roles = "ADMIN")
+  void filterAdminProducts_ShouldReturnProductPageFragment() throws Exception {
+    List<ProductoResponseDTO> productos = new ArrayList<>();
+    productos.add(productoResponseDTO);
 
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    void crearProducto_WithValidData_ShouldReturnNewProductRow() throws Exception {
-        when(productoService.crearProducto(any(ProductoDTO.class))).thenReturn(productoResponseDTO);
+    Page<ProductoResponseDTO> page = new PageImpl<>(productos);
+    when(productoService.listarProductos(any(ProductStatus.class), anyString(), anyInt(), anyInt(), anyString(),
+        anyString()))
+        .thenReturn(page);
 
-        mockMvc.perform(post("/productos/admin/crear")
-               .with(csrf())
-               .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-               .param("nombre", productoDTO.nombre())
-               .param("descripcion", productoDTO.descripcion())
-               .param("precio", "19.99")
-               .param("activo", "true"))
-               .andExpect(status().isOk())
-               .andExpect(view().name("productos/lista-admin-row :: producto-row"))
-               .andExpect(model().attributeExists("producto"))
-               .andExpect(model().attribute("toastType", "success"))
-               .andExpect(model().attributeExists("toastMessage"));
-    }
+    mockMvc.perform(get("/productos/admin/filtrar")
+        .param("status", "ALL")
+        .param("page", "0")
+        .param("size", "10")
+        .param("search", "")
+        .param("sort", "nombre")
+        .param("direction", "ASC"))
+        .andExpect(status().isOk())
+        .andExpect(view().name("productos/lista-admin-page :: producto-page"))
+        .andExpect(model().attributeExists("productos"))
+        .andExpect(model().attributeExists("pagination"));
+  }
 
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    void crearProducto_WithValidationErrors_ShouldReturnBadRequest() throws Exception {
-        mockMvc.perform(post("/productos/admin/crear")
-            .with(csrf())
-            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-            .param("nombre", "") // Invalid empty name
-            .param("descripcion", "Test")
-            .param("precio", "0") // Invalid price
-            .param("activo", "true"))
-            .andExpect(status().isBadRequest());
-    }
+  @Test
+  @WithMockUser(roles = "ADMIN")
+  void showAddProductModal_ShouldReturnProductModalFragment() throws Exception {
+    mockMvc.perform(get("/productos/admin/crear"))
+        .andExpect(status().isOk())
+        .andExpect(view().name("productos/producto-modal :: producto-modal"));
+  }
 
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    void crearProducto_WithInvalidData_ShouldReturnError() throws Exception {
-        // Create invalid data that will pass validation but fail in service
-        ProductoDTO invalidProduct = new ProductoDTO(
-            "Valid Name",  // This will pass @NotBlank validation
-            "Test Description",
-            BigDecimal.valueOf(19.99),
-            true
-        );
+  @Test
+  @WithMockUser(roles = "ADMIN")
+  void crearProducto_WithValidData_ShouldReturnNewProductRow() throws Exception {
+    when(productoService.crearProducto(any(ProductoDTO.class))).thenReturn(productoResponseDTO);
 
-        when(productoService.crearProducto(any(ProductoDTO.class)))
-            .thenThrow(new RuntimeException("Error creating product"));
+    mockMvc.perform(post("/productos/admin/crear")
+        .with(csrf())
+        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+        .param("nombre", productoDTO.nombre())
+        .param("descripcion", productoDTO.descripcion())
+        .param("precio", "19.99")
+        .param("activo", "true"))
+        .andExpect(status().isOk())
+        .andExpect(view().name("productos/lista-admin-row :: producto-row"))
+        .andExpect(model().attributeExists("producto"))
+        .andExpect(model().attribute("toastType", "success"))
+        .andExpect(model().attributeExists("toastMessage"));
+  }
 
-        mockMvc.perform(post("/productos/admin/crear")
-            .with(csrf())
-            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-            .param("nombre", invalidProduct.nombre())
-            .param("descripcion", invalidProduct.descripcion())
-            .param("precio", invalidProduct.precio().toString())
-            .param("activo", String.valueOf(invalidProduct.activo())))
-            .andExpect(status().isOk())
-            .andExpect(view().name("empty :: empty"))
-            .andExpect(model().attribute("toastType", "danger"))
-            .andExpect(model().attributeExists("toastMessage"));
-    }
+  @Test
+  @WithMockUser(roles = "ADMIN")
+  void crearProducto_WithValidationErrors_ShouldReturnBadRequest() throws Exception {
+    mockMvc.perform(post("/productos/admin/crear")
+        .with(csrf())
+        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+        .param("nombre", "") // Invalid empty name
+        .param("descripcion", "Test")
+        .param("precio", "0") // Invalid price
+        .param("activo", "true"))
+        .andExpect(status().isBadRequest());
+  }
 
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    void actualizarProducto_WithValidData_ShouldReturnUpdatedProductRow() throws Exception {
-        when(productoService.actualizarProducto(anyLong(), any(ProductoDTO.class))).thenReturn(productoResponseDTO);
+  @Test
+  @WithMockUser(roles = "ADMIN")
+  void crearProducto_WithInvalidData_ShouldReturnError() throws Exception {
+    // Create invalid data that will pass validation but fail in service
+    ProductoDTO invalidProduct = new ProductoDTO(
+        "Valid Name", // This will pass @NotBlank validation
+        "Test Description",
+        BigDecimal.valueOf(19.99),
+        true);
 
-        mockMvc.perform(post("/productos/admin/actualizar/1")
-               .with(csrf())
-               .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-               .param("nombre", productoDTO.nombre())
-               .param("descripcion", productoDTO.descripcion())
-               .param("precio", "19.99")
-               .param("activo", "true"))
-               .andExpect(status().isOk())
-               .andExpect(view().name("productos/lista-admin-row :: producto-row"))
-               .andExpect(model().attributeExists("producto"))
-               .andExpect(model().attribute("toastType", "success"))
-               .andExpect(model().attributeExists("toastMessage"));
-    }
+    when(productoService.crearProducto(any(ProductoDTO.class)))
+        .thenThrow(new RuntimeException("Error creating product"));
 
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    void actualizarProducto_WithInvalidId_ShouldReturnError() throws Exception {
-        when(productoService.actualizarProducto(anyLong(), any(ProductoDTO.class)))
-            .thenThrow(new ResourceNotFoundException("Product not found"));
+    mockMvc.perform(post("/productos/admin/crear")
+        .with(csrf())
+        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+        .param("nombre", invalidProduct.nombre())
+        .param("descripcion", invalidProduct.descripcion())
+        .param("precio", invalidProduct.precio().toString())
+        .param("activo", String.valueOf(invalidProduct.activo())))
+        .andExpect(status().isOk())
+        .andExpect(view().name("empty :: empty"))
+        .andExpect(model().attribute("toastType", "danger"))
+        .andExpect(model().attributeExists("toastMessage"));
+  }
 
-        mockMvc.perform(post("/productos/admin/actualizar/999")
-               .with(csrf())
-               .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-               .param("nombre", productoDTO.nombre())
-               .param("descripcion", productoDTO.descripcion())
-               .param("precio", "19.99")
-               .param("activo", "true"))
-               .andExpect(status().isOk())
-               .andExpect(view().name("empty :: empty"))
-               .andExpect(model().attribute("toastType", "danger"))
-               .andExpect(model().attributeExists("toastMessage"));
-    }
+  @Test
+  @WithMockUser(roles = "ADMIN")
+  void actualizarProducto_WithValidData_ShouldReturnUpdatedProductRow() throws Exception {
+    when(productoService.actualizarProducto(anyLong(), any(ProductoDTO.class))).thenReturn(productoResponseDTO);
 
-    @Test
-    void listarProductos_WithoutAdminRole_ShouldBeForbidden() throws Exception {
-        mockMvc.perform(get("/productos/admin/listar"))
-               .andExpect(status().is3xxRedirection())
-               .andExpect(redirectedUrlPattern("**/usuarios/login"));
-    }
+    mockMvc.perform(post("/productos/admin/actualizar/1")
+        .with(csrf())
+        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+        .param("nombre", productoDTO.nombre())
+        .param("descripcion", productoDTO.descripcion())
+        .param("precio", "19.99")
+        .param("activo", "true"))
+        .andExpect(status().isOk())
+        .andExpect(view().name("productos/lista-admin-row :: producto-row"))
+        .andExpect(model().attributeExists("producto"))
+        .andExpect(model().attribute("toastType", "success"))
+        .andExpect(model().attributeExists("toastMessage"));
+  }
 
-    @Test
-    @WithMockUser
-    void listarProductos_WithUserRole_ShouldBeForbidden() throws Exception {
-        mockMvc.perform(get("/productos/admin/listar"))
-               .andExpect(status().isForbidden());
-    }
+  @Test
+  @WithMockUser(roles = "ADMIN")
+  void actualizarProducto_WithInvalidId_ShouldReturnError() throws Exception {
+    when(productoService.actualizarProducto(anyLong(), any(ProductoDTO.class)))
+        .thenThrow(new ResourceNotFoundException("Product not found"));
+
+    mockMvc.perform(post("/productos/admin/actualizar/999")
+        .with(csrf())
+        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+        .param("nombre", productoDTO.nombre())
+        .param("descripcion", productoDTO.descripcion())
+        .param("precio", "19.99")
+        .param("activo", "true"))
+        .andExpect(status().isOk())
+        .andExpect(view().name("empty :: empty"))
+        .andExpect(model().attribute("toastType", "danger"))
+        .andExpect(model().attributeExists("toastMessage"));
+  }
+
+  @Test
+  void listarProductos_WithoutAdminRole_ShouldBeForbidden() throws Exception {
+    mockMvc.perform(get("/productos/admin/listar"))
+        .andExpect(status().is3xxRedirection())
+        .andExpect(redirectedUrlPattern("**/usuarios/login"));
+  }
+
+  @Test
+  @WithMockUser
+  void listarProductos_WithUserRole_ShouldBeForbidden() throws Exception {
+    mockMvc.perform(get("/productos/admin/listar"))
+        .andExpect(status().isForbidden());
+  }
 }

@@ -17,9 +17,9 @@ import java.math.BigDecimal;
  * @param subtotal        The subtotal for this product (unit price * quantity).
  */
 public record CompraProductoResponseDTO(
-    Long id,
-    String productoNombre,
-    BigDecimal precioUnitario,
-    Integer cantidad,
-    BigDecimal subtotal
+  Long id,
+  String productoNombre,
+  BigDecimal precioUnitario,
+  Integer cantidad,
+  BigDecimal subtotal
 ) {}

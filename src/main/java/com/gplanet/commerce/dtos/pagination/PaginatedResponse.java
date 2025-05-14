@@ -20,28 +20,28 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PaginatedResponse<T> {
-    private List<T> content;
-    private int pageNumber;
-    private int pageSize;
-    private long totalElements;
-    private int totalPages;
-    private boolean isLastPage;
+  private List<T> content;
+  private int pageNumber;
+  private int pageSize;
+  private long totalElements;
+  private int totalPages;
+  private boolean isLastPage;
 
-    /**
-     * Creates a PaginatedResponse from a Spring Page object.
-     *
-     * @param <T> The type of content being paginated
-     * @param page The Spring Page object to convert
-     * @return A new PaginatedResponse containing the page information
-     */
-    public static <T> PaginatedResponse<T> fromPage(Page<T> page) {
-        return new PaginatedResponse<>(
-            page.getContent(),
-            page.getNumber(),
-            page.getSize(),
-            page.getTotalElements(),
-            page.getTotalPages(),
-            page.isLast()
-        );
-    }
+  /**
+   * Creates a PaginatedResponse from a Spring Page object.
+   *
+   * @param <T> The type of content being paginated
+   * @param page The Spring Page object to convert
+   * @return A new PaginatedResponse containing the page information
+   */
+  public static <T> PaginatedResponse<T> fromPage(Page<T> page) {
+      return new PaginatedResponse<>(
+          page.getContent(),
+          page.getNumber(),
+          page.getSize(),
+          page.getTotalElements(),
+          page.getTotalPages(),
+          page.isLast()
+      );
+  }
 }

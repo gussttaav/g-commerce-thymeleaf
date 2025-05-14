@@ -18,20 +18,20 @@ import java.math.BigDecimal;
  * @version 1.0
  */
 public record ProductoDTO(
-    @NotBlank(message = "The name is mandatory")
-    String nombre,
+  @NotBlank(message = "The name is mandatory")
+  String nombre,
 
-    String descripcion,
+  String descripcion,
 
-    @Positive(message = "The price must be greater than 0")
-    BigDecimal precio,
+  @Positive(message = "The price must be greater than 0")
+  BigDecimal precio,
 
-    boolean activo
+  boolean activo
 ) {
-    /**
-     * Constructs a ProductoDTO with the 'activo' field defaulting to true if not provided.
-     */
-    public ProductoDTO(String nombre, String descripcion, BigDecimal precio) {
-        this(nombre, descripcion, precio, true);
-    }
+  /**
+   * Constructs a ProductoDTO with the 'activo' field defaulting to true if not provided.
+   */
+  public ProductoDTO(String nombre, String descripcion, BigDecimal precio) {
+      this(nombre, descripcion, precio, true);
+  }
 }

@@ -1,70 +1,70 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" 
-    th:replace="~{layout :: layout('Users', ~{::section})}">
+  th:replace="~{layout :: layout('Users', ~{::section})}">
 <body>
-    <section>
-        <div class="container mt-4">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2>Manage Users</h2>
-                <button class="btn btn-primary"
-                        th:attr="hx-get=@{/usuarios/admin/registrar}"
-                        hx-target="#modalContainer"
-                        hx-trigger="click"
-                        hx-swap="innerHTML">
+  <section>
+      <div class="container mt-4">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+              <h2>Manage Users</h2>
+              <button class="btn btn-primary"
+                      th:attr="hx-get=@{/usuarios/admin/registrar}"
+                      hx-target="#modalContainer"
+                      hx-trigger="click"
+                      hx-swap="innerHTML">
 
-                    <i class="bi bi-plus-circle"></i> Add Admin User
-                </button>
-            </div>
+                  <i class="bi bi-plus-circle"></i> Add Admin User
+              </button>
+          </div>
 
-            <form id="usersFilterForm" class="card mb-4"
-                hx-get="/usuarios/admin/filtrar" 
-                hx-target="#usersTableContainer" 
-                hx-trigger="submit, change from:select"
-                sec:authorize="isAuthenticated() and hasRole('ADMIN')">
+          <form id="usersFilterForm" class="card mb-4"
+              hx-get="/usuarios/admin/filtrar" 
+              hx-target="#usersTableContainer" 
+              hx-trigger="submit, change from:select"
+              sec:authorize="isAuthenticated() and hasRole('ADMIN')">
 
-                <div class="card-body">
-                    <div class="row align-items-center g-2">
-                        <div class="col-md-3">
-                            <select class="form-select" id="userPageSize" name="size" hx-trigger="change">
-                                <option value="10" selected>10 per page</option>
-                                <option value="20">20 per page</option>
-                                <option value="50">50 per page</option>
-                            </select>
-                        </div>
-                        <div class="col-md-3">
-                            <select class="form-select" id="userSortField" name="sort" hx-trigger="change">
-                                <option value="email" selected>Email</option>
-                                <option value="nombre">Name</option>
-                                <option value="fechaCreacion">Creation Date</option>
-                            </select>
-                        </div>
-                        <div class="col-md-3">
-                            <select class="form-select" id="userSortDirection" name="direction" hx-trigger="change">
-                                <option value="ASC" selected>Ascending</option>
-                                <option value="DESC">Descending</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            </form>
+              <div class="card-body">
+                  <div class="row align-items-center g-2">
+                      <div class="col-md-3">
+                          <select class="form-select" id="userPageSize" name="size" hx-trigger="change">
+                              <option value="10" selected>10 per page</option>
+                              <option value="20">20 per page</option>
+                              <option value="50">50 per page</option>
+                          </select>
+                      </div>
+                      <div class="col-md-3">
+                          <select class="form-select" id="userSortField" name="sort" hx-trigger="change">
+                              <option value="email" selected>Email</option>
+                              <option value="nombre">Name</option>
+                              <option value="fechaCreacion">Creation Date</option>
+                          </select>
+                      </div>
+                      <div class="col-md-3">
+                          <select class="form-select" id="userSortDirection" name="direction" hx-trigger="change">
+                              <option value="ASC" selected>Ascending</option>
+                              <option value="DESC">Descending</option>
+                          </select>
+                      </div>
+                  </div>
+              </div>
+          </form>
 
-            <!-- Users Table Container -->
-            <div id="usersTableContainer" sec:authorize="isAuthenticated() and hasRole('ADMIN')">
-                <!-- Include the users page fragment -->
-                <div th:replace="~{usuarios/lista-usuario-page :: usuario-page}"></div>
-            </div>
+          <!-- Users Table Container -->
+          <div id="usersTableContainer" sec:authorize="isAuthenticated() and hasRole('ADMIN')">
+              <!-- Include the users page fragment -->
+              <div th:replace="~{usuarios/lista-usuario-page :: usuario-page}"></div>
+          </div>
 
-        </div>
+      </div>
 
-        <div id="modalContainer"></div>
+      <div id="modalContainer"></div>
 
-        <!-- Initialize modal functionality -->
-        <script>
-            UiUtils.setupModalListeners({
-                'userModal': 'modalContainer'
-            });
-        </script>
+      <!-- Initialize modal functionality -->
+      <script>
+          UiUtils.setupModalListeners({
+              'userModal': 'modalContainer'
+          });
+      </script>
 
-    </section>
+  </section>
 </body>
 </html>

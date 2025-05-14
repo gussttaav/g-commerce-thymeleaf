@@ -23,46 +23,46 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "usuario")
 public class Usuario {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+  
+  /**
+   * The user's full name.
+   */
+  private String nombre;
+  
+  /**
+   * The user's email address. Must be unique in the system.
+   */
+  @Column(unique = true)
+  private String email;
+  
+  /**
+   * The user's encrypted password.
+   */
+  private String password;
+  
+  /**
+   * The user's role in the system.
+   */
+  @Enumerated(EnumType.STRING)
+  private Role rol;
+  
+  /**
+   * Timestamp when the user account was created.
+   */
+  @Column(name = "fecha_creacion")
+  private LocalDateTime fechaCreacion;
+  
+  /**
+   * Enumeration of possible user roles in the system.
+   */
+  public enum Role {
+    /** Administrator role with full system access. */
+    ADMIN,
     
-    /**
-     * The user's full name
-     */
-    private String nombre;
-    
-    /**
-     * The user's email address. Must be unique in the system.
-     */
-    @Column(unique = true)
-    private String email;
-    
-    /**
-     * The user's encrypted password
-     */
-    private String password;
-    
-    /**
-     * The user's role in the system
-     */
-    @Enumerated(EnumType.STRING)
-    private Role rol;
-    
-    /**
-     * Timestamp when the user account was created
-     */
-    @Column(name = "fecha_creacion")
-    private LocalDateTime fechaCreacion;
-    
-    /**
-     * Enumeration of possible user roles in the system
-     */
-    public enum Role {
-        /** Administrator role with full system access */
-        ADMIN,
-        
-        /** Regular user role with limited access */
-        USER
-    }
+    /** Regular user role with limited access. */
+    USER
+  }
 }

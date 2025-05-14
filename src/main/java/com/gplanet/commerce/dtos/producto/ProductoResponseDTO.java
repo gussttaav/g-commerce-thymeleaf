@@ -18,10 +18,10 @@ import java.time.LocalDateTime;
  * @version 1.0
  */
 public record ProductoResponseDTO(
-    Long id,
-    String nombre,
-    String descripcion,
-    BigDecimal precio,
-    LocalDateTime fechaCreacion,
-    boolean activo
+  Long id,
+  String nombre,
+  String descripcion,
+  BigDecimal precio,
+  LocalDateTime fechaCreacion,
+  boolean activo
 ) {}
