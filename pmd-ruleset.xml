@@ -1,0 +1,90 @@
+<?xml version="1.0"?>
+<ruleset name="Spring Boot Optimized PMD Rules"
+         xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd">
+
+    <description>
+        Optimized PMD ruleset for Spring Boot that complements Checkstyle configuration.
+        Focuses on bug detection, security, and code quality metrics.
+    </description>
+
+    <!-- Best Practices - Focused on real issues -->
+    <rule ref="category/java/bestpractices.xml">
+        <!-- Exclude rules that conflict with Spring/Lombok -->
+        <exclude name="AccessorClassGeneration"/>
+        <exclude name="JUnit5TestShouldBePackagePrivate"/>
+        <exclude name="GuardLogStatement"/>
+        
+        <!-- Keep these important checks -->
+        <rule ref="category/java/bestpractices.xml/UnusedPrivateMethod"/>
+        <rule ref="category/java/bestpractices.xml/UnusedLocalVariable"/>
+        <rule ref="category/java/bestpractices.xml/UnusedFormalParameter"/>
+        <rule ref="category/java/bestpractices.xml/PreserveStackTrace"/>
+        <rule ref="category/java/bestpractices.xml/PositionLiteralsFirstInComparisons"/>
+    </rule>
+
+    <rule ref="category/java/bestpractices.xml/GuardLogStatement">
+      <properties>
+        <property name="logLevels" value="debug,trace"/>
+        <property name="guardsMethods" value="isDebugEnabled,isTraceEnabled"/>
+      </properties>
+    </rule>
+
+    <!-- Code Style - Minimal overlap with Checkstyle -->
+    <rule ref="category/java/codestyle.xml">
+        <!-- Exclude what Checkstyle already handles -->
+        <exclude name="UnnecessaryModifier"/>
+        <exclude name="UnnecessaryConstructor"/>
+        <exclude name="MethodNamingConventions"/>
+        <exclude name="ClassNamingConventions"/>
+        <exclude name="AtLeastOneConstructor"/>
+        
+        <!-- Keep these PMD-specific style checks -->
+        <rule ref="category/java/codestyle.xml/UnnecessaryImport"/>
+        <rule ref="category/java/codestyle.xml/UnnecessaryFullyQualifiedName"/>
+    </rule>
+
+    <!-- Design Rules - PMD's strongest area -->
+    <rule ref="category/java/design.xml">
+        <!-- Configure complexity metrics -->
+        <rule ref="category/java/design.xml/CyclomaticComplexity">
+            <properties>
+                <property name="classReportLevel" value="80"/>
+                <property name="methodReportLevel" value="10"/>
+            </properties>
+        </rule>
+        
+        <rule ref="category/java/design.xml/NcssCount">
+            <properties>
+                <property name="methodReportLevel" value="60"/>
+                <property name="classReportLevel" value="300"/>
+            </properties>
+        </rule>
+        
+        <!-- Valuable design rules -->
+        <rule ref="category/java/design.xml/CouplingBetweenObjects">
+            <properties>
+                <property name="threshold" value="10"/>
+            </properties>
+        </rule>
+    </rule>
+
+    <!-- Error Prone - Critical bug detection -->
+    <rule ref="category/java/errorprone.xml">
+        <!-- Exclude conflicts -->
+        <exclude name="MissingSerialVersionUID"/>
+        
+        <!-- Important error checks -->
+        <rule ref="category/java/errorprone.xml/CompareObjectsWithEquals"/>
+        <rule ref="category/java/errorprone.xml/ReturnEmptyArrayRatherThanNull"/>
+    </rule>
+
+    <!-- Security - PMD's most valuable contribution -->
+    <rule ref="category/java/security.xml">
+        <!-- Critical security checks -->
+        <rule ref="category/java/security.xml/SQLInjection"/>
+        <rule ref="category/java/security.xml/CommandInjection"/>
+        <rule ref="category/java/security.xml/InsecureCryptoUsage"/>
+    </rule>
+</ruleset>

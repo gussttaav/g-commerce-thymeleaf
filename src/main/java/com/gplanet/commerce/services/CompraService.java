@@ -61,8 +61,10 @@ public class CompraService {
    */
   @Transactional(readOnly = true)
   public Page<CompraResponseDTO> listarCompras(String email, int page, int size, String sort, String direction) {
-    log.debug("Listing purchases for user: {} with pagination - page: {}, size: {}, sort: {}, direction: {}",
+    if(log.isDebugEnabled()) {
+      log.debug("Listing purchases for user: {} with pagination - page: {}, size: {}, sort: {}, direction: {}",
         email, page, size, sort, direction);
+    }
 
     Usuario usuario = usuarioRepository.findByEmail(email)
         .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
@@ -82,10 +84,12 @@ public class CompraService {
     // Map to DTOs
     Page<CompraResponseDTO> result = comprasPage.map(compraMapper::toCompraResponseDTO);
 
-    log.debug("Found {} purchases on page {} of {}",
-        result.getNumberOfElements(),
-        result.getNumber() + 1, // +1 for human-readable page number
-        result.getTotalPages());
+    if(log.isDebugEnabled()) {
+      log.debug("Found {} purchases on page {} of {}",
+          result.getNumberOfElements(),
+          result.getNumber() + 1, // +1 for human-readable page number
+          result.getTotalPages());
+    }
 
     return result;
   }

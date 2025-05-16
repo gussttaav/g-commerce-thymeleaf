@@ -30,8 +30,8 @@
     <java.version>21</java.version>
     <checkstyle.version>10.14.2</checkstyle.version>
     <maven-checkstyle-plugin.version>3.3.1</maven-checkstyle-plugin.version>
-    <pmd.version>7.1.0</pmd.version>
-    <maven-pmd-plugin.version>3.21.2</maven-pmd-plugin.version>
+    <pmd.version>6.55.0</pmd.version>
+    <maven-pmd-plugin.version>3.21.0</maven-pmd-plugin.version>
   </properties>
   <dependencies>
     <dependency>
@@ -181,8 +181,7 @@
         </dependencies>
         <configuration>
           <rulesets>
-            <ruleset>/category/java/bestpractices.xml</ruleset>
-            <ruleset>/category/java/errorprone.xml</ruleset>
+            <ruleset>pmd-ruleset.xml</ruleset>
           </rulesets>
           <sourceEncoding>UTF-8</sourceEncoding>
           <minimumPriority>2</minimumPriority>

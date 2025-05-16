@@ -59,9 +59,12 @@ public class ProductoService {
       String sort,
       String direction) {
 
-    log.debug(
-        "Listing products with status: {}, search: '{}' and pagination - page: {}, size: {}, sort: {}, direction: {}",
-        status, searchText, page, size, sort, direction);
+    if(log.isDebugEnabled()) {
+      log.debug(
+          "Listing products with status: {}, search: '{}' " +
+          "and pagination - page: {}, size: {}, sort: {}, direction: {}",
+          status, searchText, page, size, sort, direction);
+    }
 
     Sort.Direction sortDirection = Sort.Direction.fromString(direction);
     Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, sort));

@@ -1,6 +1,7 @@
 package com.gplanet.commerce.controllers;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
@@ -24,6 +25,7 @@ import com.gplanet.commerce.services.ProductoService;
  */
 @Controller
 @RequiredArgsConstructor
+@Slf4j
 public class MainController {
 
   private final ProductoService productoService;
@@ -42,16 +44,30 @@ public class MainController {
   public String home(Authentication authentication, Model model,
       @RequestParam(required = false) Boolean compraExitosa) {
 
+    if (log.isDebugEnabled()) {
+      log.debug("Accessing home page - User authenticated: {}", 
+          authentication != null && authentication.isAuthenticated());
+    }
+
     // Check if user is authenticated
     if (authentication != null && authentication.isAuthenticated()) {
       if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
+        log.info("Admin user {} accessing home page, redirecting to admin products", authentication.getName());
         return "redirect:/productos/admin/listar";
       } else if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_USER"))) {
+        if (log.isDebugEnabled()) {
+          log.debug("Regular user {} accessing home page", authentication.getName());
+        }
         model.addAttribute("activePage", "productos");
         if (compraExitosa != null) {
+          log.info("Purchase status for user {}: {}", authentication.getName(), compraExitosa);
           model.addAttribute("compraExitosa", compraExitosa);
         }
       }
+    }
+
+    if (log.isDebugEnabled()) {
+      log.debug("Loading initial product list");
     }
 
     // Initial product loading with default values

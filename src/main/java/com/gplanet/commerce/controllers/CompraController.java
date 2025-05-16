@@ -25,6 +25,7 @@ import com.gplanet.commerce.utilities.ToastUtil;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Controller class that handles purchase-related operations.
@@ -36,6 +37,7 @@ import lombok.RequiredArgsConstructor;
 @Controller
 @RequestMapping("/compras")
 @RequiredArgsConstructor
+@Slf4j
 public class CompraController {
 
   private final CompraService compraService;
@@ -56,27 +58,33 @@ public class CompraController {
           Authentication authentication,
           RedirectAttributes redirectAttributes) {
 
-      // Check for validation errors
-      if (bindingResult.hasErrors()) {
-        // Collect error messages
-        String errors = bindingResult.getFieldErrors().stream()
-                .map(FieldError::getDefaultMessage)
-                .collect(Collectors.joining("\n"));
+      if (log.isDebugEnabled()) {
+          log.debug("Processing new purchase request for user: {}", authentication.getName());
+      }
 
-        ToastUtil.errorRedirect(redirectAttributes, errors);
-        return "redirect:/?compraExitosa=false";
+      if (bindingResult.hasErrors()) {
+          String errors = bindingResult.getFieldErrors().stream()
+                  .map(FieldError::getDefaultMessage)
+                  .collect(Collectors.joining("\n"));
+
+          log.warn("Purchase validation errors for user {}: {}", authentication.getName(), errors);
+          ToastUtil.errorRedirect(redirectAttributes, errors);
+          return "redirect:/?compraExitosa=false";
       }
 
       try {
-        compraService.realizarCompra(authentication.getName(), compraDTO);
-        ToastUtil.successRedirect(redirectAttributes, "Purchase completed successfully");
-        return "redirect:/?compraExitosa=true";
+          compraService.realizarCompra(authentication.getName(), compraDTO);
+          log.info("Purchase successfully completed for user: {}", authentication.getName());
+          ToastUtil.successRedirect(redirectAttributes, "Purchase completed successfully");
+          return "redirect:/?compraExitosa=true";
       } catch (UsernameNotFoundException e) {
-        ToastUtil.errorRedirect(redirectAttributes, "Purchase failed: User not found");
-        return "redirect:/?compraExitosa=false";
-      } catch(ResourceNotFoundException e){
-        ToastUtil.errorRedirect(redirectAttributes, "Purchase failed: Product not found");
-        return "redirect:/?compraExitosa=false";
+          log.error("Purchase failed - User not found: {}", authentication.getName(), e);
+          ToastUtil.errorRedirect(redirectAttributes, "Purchase failed: User not found");
+          return "redirect:/?compraExitosa=false";
+      } catch(ResourceNotFoundException e) {
+          log.error("Purchase failed - Product not found for user: {}", authentication.getName(), e);
+          ToastUtil.errorRedirect(redirectAttributes, "Purchase failed: Product not found");
+          return "redirect:/?compraExitosa=false";
       }
   }
 
@@ -89,6 +97,9 @@ public class CompraController {
    */
   @GetMapping("/listar")
   public String listarCompras(Authentication authentication, Model model) {
+    if (log.isDebugEnabled()) {
+        log.debug("Listing purchases for user: {}", authentication.getName());
+    }
     Page<CompraResponseDTO> comprasPage = compraService.listarCompras(
         authentication.getName(), 0, 10, "fecha", "DESC");
     PaginatedResponse<CompraResponseDTO> paginatedResponse = PaginatedResponse.fromPage(comprasPage);
@@ -118,6 +129,11 @@ public class CompraController {
           @RequestParam(defaultValue = "fecha") String sort,
           @RequestParam(defaultValue = "DESC") String direction,
           Model model) {
+      
+    if (log.isDebugEnabled()) {
+        log.debug("Filtering purchases for user: {} - page: {}, size: {}, sort: {} {}", 
+            authentication.getName(), page, size, sort, direction);
+    }
       
     Page<CompraResponseDTO> comprasPage = compraService.listarCompras(
         authentication.getName(), page, size, sort, direction);

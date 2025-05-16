@@ -60,12 +60,17 @@ public class UsuarioController {
   public String mostrarFormularioLogin(Model model,
       @RequestParam(required = false) String error,
       @RequestParam(required = false) String registroExitoso) {
-
+    if (log.isDebugEnabled()) {
+      log.debug("Accessing login form");
+    }
+    
     if (error != null) {
+      log.warn("Failed login attempt");
       String errorMessage = "Login failed. Please check your email and password.";
       model.addAttribute("loginError", errorMessage);
     }
     if (registroExitoso != null) {
+      log.info("User successfully registered, redirecting to login");
       model.addAttribute("registroExitoso", "Registration successful! Please login.");
     }
     return "usuarios/login";
@@ -79,6 +84,9 @@ public class UsuarioController {
    */
   @GetMapping("/registro")
   public String mostrarFormularioRegistro(Model model) {
+    if (log.isDebugEnabled()) {
+      log.debug("Accessing registration form");
+    }
     model.addAttribute("usuario", new UsuarioDTO());
     return "usuarios/registro";
   }
@@ -96,14 +104,21 @@ public class UsuarioController {
   public String registrarUsuario(@Valid @ModelAttribute("usuario") UsuarioDTO usuarioDTO,
       BindingResult result,
       Model model) {
+    if (log.isDebugEnabled()) {
+      log.debug("Attempting to register new user: {}", usuarioDTO.getEmail());
+    }
+    
     if (result.hasErrors()) {
+      log.warn("Registration validation errors: {}", result.getAllErrors());
       return "usuarios/registro";
     }
 
     try {
       usuarioService.registrarUsuario(usuarioDTO);
+      log.info("User successfully registered: {}", usuarioDTO.getEmail());
       return "redirect:/usuarios/login?registroExitoso";
     } catch (EmailAlreadyExistsException e) {
+      log.error("Error registering user - Email already exists: {}", usuarioDTO.getEmail(), e);
       model.addAttribute("registroError", e.getMessage());
       return "usuarios/registro";
     }
@@ -118,6 +133,9 @@ public class UsuarioController {
    */
   @GetMapping("/perfil")
   public String mostrarPerfil(Model model, Authentication authentication) {
+    if (log.isDebugEnabled()) {
+      log.debug("Accessing user profile: {}", authentication.getName());
+    }
     Usuario usuario = usuarioService.buscarPorEmail(authentication.getName());
     ActualizacionUsuarioDTO perfilDTO = new ActualizacionUsuarioDTO(
         usuario.getNombre(), usuario.getEmail());
@@ -141,14 +159,21 @@ public class UsuarioController {
       @Valid @ModelAttribute("usuario") ActualizacionUsuarioDTO perfilDTO,
       BindingResult result,
       Model model) {
+    if (log.isDebugEnabled()) {
+      log.debug("Attempting to update profile for user: {}", authentication.getName());
+    }
+    
     if (result.hasErrors()) {
+      log.warn("Profile update validation errors: {}", result.getAllErrors());
       return "usuarios/perfil";
     }
 
     try {
       usuarioService.actualizarPerfil(authentication.getName(), perfilDTO);
+      log.info("Profile successfully updated for user: {}", authentication.getName());
       ToastUtil.success(model, "Profile updated successfully");
     } catch (EmailAlreadyExistsException e) {
+      log.error("Error updating profile - Email already exists for user: {}", authentication.getName(), e);
       ToastUtil.error(model, e.getMessage());
     }
 
@@ -164,6 +189,9 @@ public class UsuarioController {
    */
   @GetMapping("/password")
   public String mostrarFormularioCambioPassword(Model model, Authentication authentication) {
+    if (log.isDebugEnabled()) {
+      log.debug("Accessing password change form for user: {}", authentication.getName());
+    }
     model.addAttribute("cambioPasswd", new CambioPasswdDTO());
     return "usuarios/password";
   }
@@ -183,14 +211,21 @@ public class UsuarioController {
       @Valid @ModelAttribute("cambioPasswd") CambioPasswdDTO passwordDTO,
       BindingResult result,
       Model model) {
+    if (log.isDebugEnabled()) {
+      log.debug("Attempting to change password for user: {}", authentication.getName());
+    }
+    
     if (result.hasErrors()) {
+      log.warn("Password change validation errors: {}", result.getAllErrors());
       return "usuarios/password";
     }
 
     try {
       usuarioService.changePassword(authentication.getName(), passwordDTO);
+      log.info("Password successfully changed for user: {}", authentication.getName());
       ToastUtil.success(model, "Password changed successfully");
     } catch (InvalidPasswordException | PasswordMismatchException e) {
+      log.error("Error changing password for user: {}", authentication.getName(), e);
       ToastUtil.error(model, e.getMessage());
     }
 
@@ -206,6 +241,9 @@ public class UsuarioController {
   @GetMapping("/authenticated")
   @ResponseBody
   public ResponseEntity<Boolean> checkAuthentication(Authentication authentication) {
+    if (log.isDebugEnabled()) {
+      log.debug("Checking user authentication");
+    }
     return ResponseEntity.ok(authentication != null && authentication.isAuthenticated());
   }
 
@@ -217,6 +255,9 @@ public class UsuarioController {
    */
   @GetMapping("/admin/listar")
   public String listarUsuarios(Model model) {
+    if (log.isDebugEnabled()) {
+      log.debug("Listing users (page 0)");
+    }
     Page<UsuarioResponseDTO> usuariosPage = usuarioService.listarUsuarios(0, 10, "nombre", "ASC");
     PaginatedResponse<UsuarioResponseDTO> paginatedResponse = PaginatedResponse.fromPage(usuariosPage);
 
@@ -243,6 +284,9 @@ public class UsuarioController {
       @RequestParam(defaultValue = "nombre") String sort,
       @RequestParam(defaultValue = "ASC") String direction,
       Model model) {
+    if (log.isDebugEnabled()) {
+      log.debug("Filtering users - page: {}, size: {}, sort: {} {}", page, size, sort, direction);
+    }
 
     Page<UsuarioResponseDTO> usuariosPage = usuarioService.listarUsuarios(
         page, size, sort, direction);
@@ -262,12 +306,17 @@ public class UsuarioController {
    */
   @PostMapping("/admin/change-role/{id}")
   public String cambiarRol(@PathVariable Long id, Model model) {
+    if (log.isDebugEnabled()) {
+      log.debug("Attempting to change role for user ID: {}", id);
+    }
     try {
       UsuarioResponseDTO updatedUser = usuarioService.cambiarRol(id);
+      log.info("Role successfully changed for user ID: {}", id);
       model.addAttribute("usuario", updatedUser);
       ToastUtil.success(model, "User role updated successfully");
       return "usuarios/lista-usuario-row :: usuario-row";
     } catch (ResourceNotFoundException e) {
+      log.error("Error changing role - User not found with ID: {}", id, e);
       ToastUtil.error(model, "User not found!");
       return "empty :: empty";
     }
@@ -281,6 +330,9 @@ public class UsuarioController {
    */
   @GetMapping("/admin/registrar")
   public String showAddUserModal(Model model) {
+    if (log.isDebugEnabled()) {
+      log.debug("Showing modal for new user registration");
+    }
     return "usuarios/nuevo-modal :: userModal";
   }
 
@@ -293,13 +345,18 @@ public class UsuarioController {
    */
   @PostMapping("/admin/registrar")
   public String createUser(@Valid @ModelAttribute UsuarioAdminDTO usuarioDTO, BindingResult result, Model model) {
+    if (log.isDebugEnabled()) {
+      log.debug("Attempting to create new user: {}", usuarioDTO.getEmail());
+    }
+    
     if (result.hasErrors()) {
-      log.error("Error creating user! {}", result.getAllErrors());
+      log.error("User creation validation errors: {}", result.getAllErrors());
       ToastUtil.error(model, "Error creating user!");
       return "empty :: empty";
     }
 
     UsuarioResponseDTO newUser = usuarioService.registrarUsuario(usuarioDTO);
+    log.info("User successfully created: {}", usuarioDTO.getEmail());
     model.addAttribute("usuario", newUser);
     ToastUtil.success(model, "User created successfully");
     return "usuarios/lista-usuario-row :: usuario-row";

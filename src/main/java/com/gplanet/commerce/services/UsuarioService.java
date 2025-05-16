@@ -170,8 +170,10 @@ public class UsuarioService {
   public Page<UsuarioResponseDTO> listarUsuarios(
       int page, int size, String sort, String direction) {
 
-    log.debug("Listing users with pagination - page: {}, size: {}, sort: {}, direction: {}",
-        page, size, sort, direction);
+    if(log.isDebugEnabled()) {
+      log.debug("Listing users with pagination - page: {}, size: {}, sort: {}, direction: {}",
+          page, size, sort, direction);
+    }
 
     // Create Pageable object with sort direction
     Sort.Direction sortDirection = Sort.Direction.fromString(direction);
@@ -183,10 +185,12 @@ public class UsuarioService {
     // Map to DTOs
     Page<UsuarioResponseDTO> result = usuariosPage.map(usuarioMapper::toUsuarioResponseDTO);
 
-    log.debug("Found {} users on page {} of {}",
-        result.getNumberOfElements(),
-        result.getNumber() + 1, // +1 for human-readable page number
-        result.getTotalPages());
+    if(log.isDebugEnabled()) {
+      log.debug("Found {} users on page {} of {}",
+          result.getNumberOfElements(),
+          result.getNumber() + 1, // +1 for human-readable page number
+          result.getTotalPages());
+    }
 
     return result;
   }

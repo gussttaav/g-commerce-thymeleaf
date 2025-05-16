@@ -19,6 +19,7 @@ import com.gplanet.commerce.utilities.ToastUtil;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Controller class that handles product-related operations.
@@ -30,6 +31,7 @@ import lombok.RequiredArgsConstructor;
 @Controller
 @RequestMapping("/productos")
 @RequiredArgsConstructor
+@Slf4j
 public class ProductoController {
 
   private final ProductoService productoService;
@@ -42,6 +44,9 @@ public class ProductoController {
    */
   @GetMapping("/admin/listar")
   public String listarProductos(Model model) {
+    if (log.isDebugEnabled()) {
+      log.debug("Listing all products (admin view)");
+    }
     Page<ProductoResponseDTO> productosPage = productoService.listarProductos(
         ProductStatus.ALL, "", 0, 10, "nombre", "ASC");
     PaginatedResponse<ProductoResponseDTO> paginatedResponse = PaginatedResponse.fromPage(productosPage);
@@ -62,12 +67,17 @@ public class ProductoController {
    */
   @PostMapping("/admin/toggle-status/{id}")
   public String toggleStatus(@PathVariable Long id, Model model) {
+    if (log.isDebugEnabled()) {
+      log.debug("Attempting to toggle status for product ID: {}", id);
+    }
     try {
       ProductoResponseDTO updatedProduct = productoService.toggleProductStatus(id);
+      log.info("Product status successfully toggled for ID: {}", id);
       model.addAttribute("producto", updatedProduct);
       ToastUtil.success(model, "Product status updated successfully.");
       return "productos/lista-admin-row :: producto-row";
     } catch (ResourceNotFoundException e) {
+      log.error("Error toggling product status - Product not found with ID: {}", id, e);
       ToastUtil.error(model, "Product not found.");
       return "empty :: empty";
     }
@@ -82,11 +92,15 @@ public class ProductoController {
    */
   @GetMapping("/{id}")
   public String getProductById(@PathVariable Long id, Model model) {
+    if (log.isDebugEnabled()) {
+      log.debug("Retrieving product details for ID: {}", id);
+    }
     try {
       ProductoResponseDTO producto = productoService.findById(id);
       model.addAttribute("producto", producto);
       return "productos/producto-modal :: producto-modal";
     } catch (ResourceNotFoundException e) {
+      log.error("Error retrieving product - Product not found with ID: {}", id, e);
       ToastUtil.error(model, "Product not found.");
       return "empty :: empty";
     }
@@ -111,8 +125,11 @@ public class ProductoController {
       @RequestParam(defaultValue = "nombre") String sort,
       @RequestParam(defaultValue = "ASC") String direction,
       Model model) {
+    if (log.isDebugEnabled()) {
+      log.debug("Filtering products - page: {}, size: {}, search: {}, sort: {} {}", 
+          page, size, search, sort, direction);
+    }
 
-    // Get filtered and paginated products
     Page<ProductoResponseDTO> productosPage = productoService.listarProductos(
         ProductStatus.ACTIVE, search, page, size, sort, direction);
 
@@ -145,8 +162,11 @@ public class ProductoController {
       @RequestParam(defaultValue = "nombre") String sort,
       @RequestParam(defaultValue = "ASC") String direction,
       Model model) {
+    if (log.isDebugEnabled()) {
+      log.debug("Filtering admin products - status: {}, page: {}, size: {}, search: {}, sort: {} {}", 
+          status, page, size, search, sort, direction);
+    }
 
-    // Get filtered and paginated products
     Page<ProductoResponseDTO> productosPage = productoService.listarProductos(
         status, search, page, size, sort, direction);
 
@@ -166,6 +186,9 @@ public class ProductoController {
    */
   @GetMapping("/admin/crear")
   public String showAddProductModal(Model model) {
+    if (log.isDebugEnabled()) {
+      log.debug("Showing modal for new product creation");
+    }
     return "productos/producto-modal :: producto-modal";
   }
 
@@ -179,7 +202,11 @@ public class ProductoController {
    */
   @PostMapping("/admin/crear")
   public String crearProducto(@Valid ProductoDTO productoDTO, Model model) {
+    if (log.isDebugEnabled()) {
+      log.debug("Attempting to create new product: {}", productoDTO.nombre());
+    }
     ProductoResponseDTO createdProduct = productoService.crearProducto(productoDTO);
+    log.info("Product successfully created: {}", productoDTO.nombre());
     model.addAttribute("producto", createdProduct);
     ToastUtil.success(model, "Product created successfully.");
     return "productos/lista-admin-row :: producto-row";
@@ -201,12 +228,17 @@ public class ProductoController {
       @PathVariable Long id,
       @Valid ProductoDTO productoDTO,
       Model model) {
+    if (log.isDebugEnabled()) {
+      log.debug("Attempting to update product ID: {} with name: {}", id, productoDTO.nombre());
+    }
     try {
       ProductoResponseDTO updatedProduct = productoService.actualizarProducto(id, productoDTO);
+      log.info("Product successfully updated - ID: {}, Name: {}", id, productoDTO.nombre());
       model.addAttribute("producto", updatedProduct);
       ToastUtil.success(model, "Product updated successfully.");
       return "productos/lista-admin-row :: producto-row";
     } catch (ResourceNotFoundException e) {
+      log.error("Error updating product - Product not found with ID: {}", id, e);
       ToastUtil.error(model, "Product not found.");
       return "empty :: empty";
     }
