@@ -5,7 +5,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.ArrayList;
@@ -136,15 +136,15 @@ public class SecurityConfigTest {
     // Test endpoints that require authentication
     mockMvc.perform(get("/usuarios/perfil"))
         .andExpect(status().is3xxRedirection())
-        .andExpect(redirectedUrl("**/usuarios/login"));
+        .andExpect(redirectedUrlPattern("**/usuarios/login"));
 
     mockMvc.perform(get("/usuarios/password"))
         .andExpect(status().is3xxRedirection())
-        .andExpect(redirectedUrl("**/usuarios/login"));
+        .andExpect(redirectedUrlPattern("**/usuarios/login"));
 
     mockMvc.perform(get("/compras/listar"))
         .andExpect(status().is3xxRedirection())
-        .andExpect(redirectedUrl("**/usuarios/login"));
+        .andExpect(redirectedUrlPattern("**/usuarios/login"));
   }
 
   @Test

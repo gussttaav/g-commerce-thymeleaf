@@ -13,6 +13,7 @@ import com.gplanet.commerce.dtos.pagination.PaginatedResponse;
 import com.gplanet.commerce.dtos.producto.ProductStatus;
 import com.gplanet.commerce.dtos.producto.ProductoDTO;
 import com.gplanet.commerce.dtos.producto.ProductoResponseDTO;
+import com.gplanet.commerce.exceptions.ProductCreationException;
 import com.gplanet.commerce.exceptions.ResourceNotFoundException;
 import com.gplanet.commerce.services.ProductoService;
 import com.gplanet.commerce.utilities.ToastUtil;
@@ -126,7 +127,7 @@ public class ProductoController {
       @RequestParam(defaultValue = "ASC") String direction,
       Model model) {
     if (log.isDebugEnabled()) {
-      log.debug("Filtering products - page: {}, size: {}, search: {}, sort: {} {}", 
+      log.debug("Filtering products - page: {}, size: {}, search: {}, sort: {} {}",
           page, size, search, sort, direction);
     }
 
@@ -163,7 +164,7 @@ public class ProductoController {
       @RequestParam(defaultValue = "ASC") String direction,
       Model model) {
     if (log.isDebugEnabled()) {
-      log.debug("Filtering admin products - status: {}, page: {}, size: {}, search: {}, sort: {} {}", 
+      log.debug("Filtering admin products - status: {}, page: {}, size: {}, search: {}, sort: {} {}",
           status, page, size, search, sort, direction);
     }
 
@@ -202,14 +203,20 @@ public class ProductoController {
    */
   @PostMapping("/admin/crear")
   public String crearProducto(@Valid ProductoDTO productoDTO, Model model) {
-    if (log.isDebugEnabled()) {
-      log.debug("Attempting to create new product: {}", productoDTO.nombre());
+    try {
+      if (log.isDebugEnabled()) {
+        log.debug("Attempting to create new product: {}", productoDTO.nombre());
+      }
+      ProductoResponseDTO createdProduct = productoService.crearProducto(productoDTO);
+      log.info("Product successfully created: {}", productoDTO.nombre());
+      model.addAttribute("producto", createdProduct);
+      ToastUtil.success(model, "Product created successfully.");
+      return "productos/lista-admin-row :: producto-row";
+    } catch (ProductCreationException e) {
+      log.error("Product creation failed", e);
+      ToastUtil.error(model, e.getMessage());
+      return "empty :: empty";
     }
-    ProductoResponseDTO createdProduct = productoService.crearProducto(productoDTO);
-    log.info("Product successfully created: {}", productoDTO.nombre());
-    model.addAttribute("producto", createdProduct);
-    ToastUtil.success(model, "Product created successfully.");
-    return "productos/lista-admin-row :: producto-row";
   }
 
   /**

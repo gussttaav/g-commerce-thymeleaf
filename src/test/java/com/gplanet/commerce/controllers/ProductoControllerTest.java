@@ -41,6 +41,7 @@ import com.gplanet.commerce.dtos.producto.ProductStatus;
 import com.gplanet.commerce.dtos.producto.ProductoDTO;
 import com.gplanet.commerce.dtos.producto.ProductoResponseDTO;
 import com.gplanet.commerce.entities.Usuario;
+import com.gplanet.commerce.exceptions.ProductCreationException;
 import com.gplanet.commerce.exceptions.ResourceNotFoundException;
 import com.gplanet.commerce.security.SecurityConfig;
 import com.gplanet.commerce.security.UsuarioDetalles;
@@ -268,7 +269,7 @@ class ProductoControllerTest {
         true);
 
     when(productoService.crearProducto(any(ProductoDTO.class)))
-        .thenThrow(new RuntimeException("Error creating product"));
+        .thenThrow(new ProductCreationException("Error creating product"));
 
     mockMvc.perform(post("/productos/admin/crear")
         .with(csrf())

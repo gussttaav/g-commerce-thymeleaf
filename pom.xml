@@ -5,26 +5,36 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.4.5</version>
+    <version>3.4.6</version>
     <relativePath/> <!-- lookup parent from repository -->
   </parent>
   <groupId>com.gplanet</groupId>
   <artifactId>commerce</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.0.1</version>
   <name>commerce</name>
-  <description>Demo project for Spring Boot</description>
-  <url/>
+  <description>A full-stack e-commerce web application built with Spring Boot, 
+  Thymeleaf, and HTMX. Features user management, product catalog, shopping cart, 
+  and purchase system with a responsive, server-rendered UI.</description>
+  <url>https://github.com/gussttaav/g-commerce-thymeleaf</url>
   <licenses>
-    <license/>
+    <license>
+      <name>MIT License</name>
+      <url>https://github.com/gussttaav/g-commerce-thymeleaf/blob/main/LICENSE</url>
+      <distribution>repo</distribution>
+    </license>
   </licenses>
   <developers>
-    <developer/>
-  </developers>
+		<developer>
+      <id>gussttaav</id>
+      <name>Gustavo Torres G.</name>
+      <email>gvs7aav0@gmail.com</email>
+    </developer>
+	</developers>
   <scm>
-    <connection/>
-    <developerConnection/>
-    <tag/>
-    <url/>
+    <connection>scm:git:https://github.com/gussttaav/g-commerce-thymeleaf.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com:gussttaav/g-commerce-thymeleaf.git</developerConnection>
+    <tag>HEAD</tag>
+    <url>https://github.com/gussttaav/g-commerce-thymeleaf</url>
   </scm>
   <properties>
     <java.version>21</java.version>
@@ -83,6 +93,12 @@
       <groupId>org.mapstruct</groupId>
       <artifactId>mapstruct</artifactId>
       <version>1.5.5.Final</version>
+    </dependency>
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok-mapstruct-binding</artifactId>
+      <version>0.2.0</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.h2database</groupId>
@@ -145,7 +161,7 @@
           </dependency>
         </dependencies>
         <configuration>
-          <configLocation>${project.basedir}/checkstyle-rules.xml</configLocation>
+          <configLocation>checkstyle-rules.xml</configLocation>
           <encoding>UTF-8</encoding>
           <consoleOutput>true</consoleOutput>
           <failsOnError>true</failsOnError>

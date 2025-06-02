@@ -3,6 +3,7 @@ package com.gplanet.commerce.services;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
@@ -16,6 +17,7 @@ import com.gplanet.commerce.dtos.producto.ProductoDTO;
 import com.gplanet.commerce.dtos.producto.ProductoMapper;
 import com.gplanet.commerce.dtos.producto.ProductoResponseDTO;
 import com.gplanet.commerce.entities.Producto;
+import com.gplanet.commerce.exceptions.ProductCreationException;
 import com.gplanet.commerce.exceptions.ResourceNotFoundException;
 import com.gplanet.commerce.repositories.ProductoRepository;
 
@@ -59,10 +61,10 @@ public class ProductoService {
       String sort,
       String direction) {
 
-    if(log.isDebugEnabled()) {
+    if (log.isDebugEnabled()) {
       log.debug(
           "Listing products with status: {}, search: '{}' " +
-          "and pagination - page: {}, size: {}, sort: {}, direction: {}",
+              "and pagination - page: {}, size: {}, sort: {}, direction: {}",
           status, searchText, page, size, sort, direction);
     }
 
@@ -126,17 +128,26 @@ public class ProductoService {
    * 
    * @param productoDTO Data transfer object containing product information
    * @return ProductoResponseDTO containing the created product information
+   * @throws ProductCreationException if the product cannot be created due
+   *                                  to a data access issue or other unexpected
+   *                                  error
    */
   @Transactional
-  public ProductoResponseDTO crearProducto(ProductoDTO productoDTO) {
-    log.info("Creating new product: {}", productoDTO.nombre());
-    Producto producto = productoMapper.toProducto(productoDTO);
-    producto.setActivo(true);
-    producto.setFechaCreacion(LocalDateTime.now());
+  public ProductoResponseDTO crearProducto(ProductoDTO productoDTO) throws ProductCreationException {
+    try {
+      log.info("Creating new product: {}", productoDTO.nombre());
+      Producto producto = productoMapper.toProducto(productoDTO);
+      producto.setActivo(true);
+      producto.setFechaCreacion(LocalDateTime.now());
 
-    Producto savedProducto = productoRepository.save(producto);
-    log.info("Product created with ID: {}", savedProducto.getId());
-    return productoMapper.toProductoResponseDTO(savedProducto);
+      Producto savedProducto = productoRepository.save(producto);
+      log.info("Product created with ID: {}", savedProducto.getId());
+      return productoMapper.toProductoResponseDTO(savedProducto);
+    } catch (DataAccessException e) {
+      throw new ProductCreationException("Failed to create product due to data access error");
+    } catch (Exception e) {
+      throw new ProductCreationException("Unexpected error creating product");
+    }
   }
 
   /**
