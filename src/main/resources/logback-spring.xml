@@ -8,17 +8,14 @@
     <property name="MAX_HISTORY" value="${LOG_MAX_HISTORY:-30}" />
     <property name="TOTAL_SIZE_CAP" value="${LOG_TOTAL_SIZE_CAP:-1GB}" />
     
-    <!-- Console appender with colored output for development -->
+    <!-- Define patterns -->
+    <property name="CONSOLE_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%-5level) [%blue(%thread)] %yellow(%-40.40logger{39}) : %msg%n" />
+    <property name="FILE_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %-40.40logger{39} : %msg%n" />
+    
+    <!-- Console appender -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <pattern>
-                <springProfile name="!prod">
-                    %d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%-5level) [%blue(%thread)] %yellow(%logger{36}) - %msg%n
-                </springProfile>
-                <springProfile name="prod">
-                    %d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{36} - %msg%n
-                </springProfile>
-            </pattern>
+        <encoder>
+            <pattern>${CONSOLE_PATTERN}</pattern>
         </encoder>
     </appender>
     
@@ -32,7 +29,7 @@
             <totalSizeCap>${TOTAL_SIZE_CAP}</totalSizeCap>
         </rollingPolicy>
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{36} - %msg%n</pattern>
+            <pattern>${FILE_PATTERN}</pattern>
         </encoder>
     </appender>
     
@@ -51,7 +48,7 @@
             <totalSizeCap>500MB</totalSizeCap>
         </rollingPolicy>
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{36} - %msg%n</pattern>
+            <pattern>${FILE_PATTERN}</pattern>
         </encoder>
     </appender>
     
@@ -65,7 +62,7 @@
             <totalSizeCap>500MB</totalSizeCap>
         </rollingPolicy>
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{36} - %msg%n</pattern>
+            <pattern>${FILE_PATTERN}</pattern>
         </encoder>
     </appender>
     
@@ -79,7 +76,7 @@
             <totalSizeCap>200MB</totalSizeCap>
         </rollingPolicy>
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{36} - %msg%n</pattern>
+            <pattern>${FILE_PATTERN}</pattern>
         </encoder>
     </appender>
     
@@ -99,6 +96,15 @@
         <includeCallerData>true</includeCallerData>
     </appender>
     
+    <!-- Profile-specific console appender for production (no colors) -->
+    <springProfile name="prod">
+        <appender name="PROD_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %-40.40logger{39} : %msg%n</pattern>
+            </encoder>
+        </appender>
+    </springProfile>
+    
     <!-- Logger configurations -->
     
     <!-- Application-specific loggers -->
@@ -106,18 +112,27 @@
         <appender-ref ref="CONSOLE" />
         <appender-ref ref="ASYNC_FILE" />
         <appender-ref ref="ASYNC_ERROR_FILE" />
+        <springProfile name="prod">
+            <appender-ref ref="PROD_CONSOLE" />
+        </springProfile>
     </logger>
     
     <!-- Security-related logging -->
     <logger name="org.springframework.security" level="INFO" additivity="false">
         <appender-ref ref="CONSOLE" />
         <appender-ref ref="SECURITY_FILE" />
+        <springProfile name="prod">
+            <appender-ref ref="PROD_CONSOLE" />
+        </springProfile>
     </logger>
     
     <!-- Database/JPA logging -->
     <logger name="org.hibernate.SQL" level="DEBUG" additivity="false">
         <springProfile name="dev,test">
             <appender-ref ref="CONSOLE" />
+        </springProfile>
+        <springProfile name="prod">
+            <appender-ref ref="PROD_CONSOLE" />
         </springProfile>
         <appender-ref ref="ASYNC_FILE" />
     </logger>
@@ -132,11 +147,17 @@
     <logger name="org.springframework.web" level="INFO" additivity="false">
         <appender-ref ref="CONSOLE" />
         <appender-ref ref="ASYNC_FILE" />
+        <springProfile name="prod">
+            <appender-ref ref="PROD_CONSOLE" />
+        </springProfile>
     </logger>
     
     <logger name="org.springframework.boot" level="INFO" additivity="false">
         <appender-ref ref="CONSOLE" />
         <appender-ref ref="ASYNC_FILE" />
+        <springProfile name="prod">
+            <appender-ref ref="PROD_CONSOLE" />
+        </springProfile>
     </logger>
     
     <!-- Performance monitoring -->
@@ -148,12 +169,18 @@
     <logger name="org.thymeleaf" level="WARN" additivity="false">
         <appender-ref ref="CONSOLE" />
         <appender-ref ref="ASYNC_FILE" />
+        <springProfile name="prod">
+            <appender-ref ref="PROD_CONSOLE" />
+        </springProfile>
     </logger>
     
     <!-- HTTP request logging for development -->
     <logger name="org.springframework.web.servlet.DispatcherServlet" level="DEBUG" additivity="false">
         <springProfile name="dev">
             <appender-ref ref="CONSOLE" />
+        </springProfile>
+        <springProfile name="prod">
+            <appender-ref ref="PROD_CONSOLE" />
         </springProfile>
         <appender-ref ref="ASYNC_FILE" />
     </logger>
@@ -165,7 +192,7 @@
     <logger name="org.apache.coyote" level="WARN" />
     <logger name="org.springframework.boot.autoconfigure" level="WARN" />
     
-    <!-- Profile-specific configurations -->
+    <!-- Profile-specific root configurations -->
     <springProfile name="dev">
         <root level="DEBUG">
             <appender-ref ref="CONSOLE" />
@@ -181,7 +208,7 @@
     
     <springProfile name="prod">
         <root level="INFO">
-            <appender-ref ref="CONSOLE" />
+            <appender-ref ref="PROD_CONSOLE" />
             <appender-ref ref="ASYNC_FILE" />
             <appender-ref ref="ASYNC_ERROR_FILE" />
         </root>
