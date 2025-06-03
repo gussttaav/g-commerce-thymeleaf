@@ -4,6 +4,8 @@ WORKDIR /workspace/app
 COPY mvnw .
 COPY .mvn .mvn
 COPY pom.xml .
+COPY checkstyle-rules.xml .
+COPY pmd-ruleset.xml .
 COPY src src
 
 # Fix executable permissions and line endings

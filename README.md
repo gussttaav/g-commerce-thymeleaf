@@ -44,6 +44,11 @@ This project is based on the original [G-commerce backend api](https://github.co
   - Input validation
   - User role enforcement
 
+- **Advanced Logging System**
+  - Comprehensive Logback configuration optimized for containers
+  - Multiple specialized log files (application, error, security, performance)
+  - Async logging for improved performance
+
 - **Code Quality Tools**
   - Checkstyle for enforcing coding standards
   - PMD for static code analysis
@@ -74,6 +79,7 @@ This project is based on the original [G-commerce backend api](https://github.co
   - JUnit 5 & Mockito
   - Checkstyle 10.14.2
   - PMD 7.1.0
+  - Logback for advanced logging
 
 ## 📋 Prerequisites
 
@@ -119,6 +125,35 @@ This project is based on the original [G-commerce backend api](https://github.co
    ```
 
 The application will be available at `http://localhost:8080`.
+
+## 📊 Logging Configuration
+
+The application includes a comprehensive logging system designed for production environments and containerized deployments.
+
+### Log Files Generated
+
+- **`g-commerce.log`** - Main application logs
+- **`g-commerce-error.log`** - Error-level logs only for quick troubleshooting
+- **`g-commerce-security.log`** - Security-related events and audit trail
+- **`g-commerce-performance.log`** - Performance monitoring logs
+
+### Logging Features
+
+- **Automatic Log Rotation**: Configure log rotation to archive old logs and prevent disk space issues
+- **Compression**: Old logs are automatically compressed to save disk space
+- **Profile-Specific Configuration**: Different log levels for development, testing, and production
+- **Async Logging**: Improved application performance through asynchronous log writing
+- **Colored Console Output**: Enhanced readability during development
+
+### Environment Variables for Logging
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `LOG_PATH` | Directory for log files | `logs` |
+| `LOG_ARCHIVE` | Directory for archived logs | `logs/archive` |
+| `LOG_MAX_FILE_SIZE` | Maximum size per log file | `100MB` |
+| `LOG_MAX_HISTORY` | Days to keep archived logs | `30` |
+| `LOG_TOTAL_SIZE_CAP` | Total size limit for all logs | `1GB` |
 
 ## 🐳 Docker Deployment
 
