@@ -1,5 +1,9 @@
 # G-Commerce Spring Boot with Thymeleaf
 
+[![Build Status](https://img.shields.io/github/actions/workflow/status/gussttaav/g-commerce-thymeleaf/docker-build.yml?branch=main)](https://github.com/gussttaav/g-commerce-thymeleaf/actions)
+[![Docker Image](https://img.shields.io/docker/pulls/gussttaav/g-commerce-thymeleaf)](https://hub.docker.com/r/gussttaav/g-commerce-thymeleaf)
+[![Live Demo](https://img.shields.io/badge/demo-online-brightgreen)](https://g-commerce-thymeleaf-latest.onrender.com/)
+
 A full-stack e-commerce web application built with **Spring Boot**, **Thymeleaf**, and **HTMX**. This project combines backend services and frontend presentation in a single monolithic application, providing a seamless user experience without the need for a separate frontend application.
 
 This project is based on the original [G-commerce backend api](https://github.com/gussttaav/g-commerce-springboot-api) and [G-commerce frontend](https://github.com/gussttaav/g-commerce-front-web-no-framework) projects, combining them into a unified application.
