@@ -33,3 +33,6 @@ build/
 .vscode/
 .env
 logs/
+
+### Claude Code ###
+CLAUDE.md
