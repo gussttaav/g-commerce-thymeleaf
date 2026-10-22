@@ -299,3 +299,8 @@ main {
         min-width: 100px;
     }
 }
+
+/* Admin products table: hide the empty-state row once a product row exists */
+tbody:has(tr[data-product-id]) .no-products-row {
+    display: none;
+}

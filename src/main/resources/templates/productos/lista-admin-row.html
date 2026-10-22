@@ -1,7 +1,7 @@
 <tr th:fragment="producto-row(producto)" th:data-product-id="${producto.id}">
   <td th:text="${producto.nombre}">Product Name</td>
   <td th:text="${producto.descripcion ?: 'No description'}">Product Description</td>
-  <td th:text="'$' + ${#numbers.formatDecimal(producto.precio, 1, 2)}">$0.00</td>
+  <td th:text="'$' + ${#numbers.formatDecimal(producto.precio, 1, 'COMMA', 2, 'POINT')}">$0.00</td>
   <td>
       <div class="form-check form-switch">
           <input type="checkbox" class="form-check-input" 

@@ -1,6 +1,6 @@
 <!-- fragments/pagination.html -->
 <div th:fragment="paginationControls(pagination, hxGet, hxInclude, hxTarget, itemName)">
-  <div class="d-flex justify-content-between align-items-center mt-4" th:if="${pagination != null}">
+  <div class="d-flex justify-content-between align-items-center mt-4" th:if="${pagination != null and pagination.totalElements > 0}">
       <div class="pagination-info">
           <span th:text="${pagination.pageSize * pagination.pageNumber + 1} + '-' + 
                           ${pagination.pageSize * (pagination.pageNumber + 1) > pagination.totalElements ? 

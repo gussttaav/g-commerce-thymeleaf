@@ -8,7 +8,8 @@
                   <h5 class="card-title" th:text="${producto.nombre}">Product Name</h5>
                   <p class="card-text flex-grow-1" th:text="${producto.descripcion}">Product Description</p>
                   <div class="d-flex justify-content-between align-items-center mt-3">
-                      <h6 class="price-tag mb-0" th:text="'$' + ${#numbers.formatDecimal(producto.precio, 1, 2)}">$0.00</h6>
+                      <h6 class="price-tag mb-0" th:data-precio="${producto.precio}"
+                          th:text="'$' + ${#numbers.formatDecimal(producto.precio, 1, 'COMMA', 2, 'POINT')}">$0.00</h6>
                       <div class="input-group input-group-sm">
                           <button class="btn btn-outline-secondary quantity-btn" data-action="decrease">-</button>
                           <input type="number" class="form-control text-center quantity-input" value="1" min="1" max="99" readonly>

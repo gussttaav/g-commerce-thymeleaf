@@ -12,6 +12,10 @@
               </tr>
           </thead>
           <tbody>
+              <!-- Hidden via CSS once a product row is added to the table -->
+              <tr class="no-products-row" th:if="${#lists.isEmpty(productos)}">
+                  <td colspan="5" class="text-center text-muted">No products found.</td>
+              </tr>
               <tr th:each="producto : ${productos}"
                   th:insert="~{productos/lista-admin-row :: producto-row(producto=${producto})}">
               </tr>

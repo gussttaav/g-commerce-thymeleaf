@@ -80,6 +80,7 @@ class CartComponent {
             const currentItem = this.selectedProducts.get(product.id);
             this.selectedProducts.set(product.id, {
                 ...currentItem,
+                ...product,
                 quantity: currentItem.quantity + quantity
             });
         } else {
@@ -198,7 +199,7 @@ class CartComponent {
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td>${item.nombre}</td>
-                <td>$${item.precio}</td>
+                <td>$${item.precio.toFixed(2)}</td>
                 <td>
                     <div class="input-group input-group-sm" style="width: 120px">
                         <button class="btn btn-outline-secondary quantity-decrease" 
@@ -250,7 +251,7 @@ class CartComponent {
                 const product = {
                     id: productId,
                     nombre: card.querySelector('.card-title').textContent,
-                    precio: parseFloat(card.querySelector('.price-tag').textContent.replace('$', '')),
+                    precio: parseFloat(card.querySelector('.price-tag').dataset.precio),
                     descripcion: card.querySelector('.card-text').textContent
                 };
                 
