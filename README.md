@@ -2,7 +2,7 @@
 
 [![Build Status](https://img.shields.io/github/actions/workflow/status/gussttaav/g-commerce-thymeleaf/docker-build.yml?branch=main)](https://github.com/gussttaav/g-commerce-thymeleaf/actions)
 [![Docker Image](https://img.shields.io/docker/pulls/gussttaav/g-commerce-thymeleaf)](https://hub.docker.com/r/gussttaav/g-commerce-thymeleaf)
-[![Live Demo](https://img.shields.io/badge/demo-online-brightgreen)](https://g-commerce-thymeleaf-latest.onrender.com/)
+[![Live Demo](https://img.shields.io/badge/demo-online-brightgreen)](https://g-commerce.duckdns.org:8444/)
 
 A full-stack e-commerce web application built with **Spring Boot**, **Thymeleaf**, and **HTMX**. This project combines backend services and frontend presentation in a single monolithic application, providing a seamless user experience without the need for a separate frontend application.
 
@@ -320,10 +320,10 @@ Both Checkstyle and PMD are integrated into the Maven build lifecycle and will c
 
 A live demo of this application is available at:
 
-👉 [G-Commerce Thymeleaf Demo on Render](https://g-commerce-thymeleaf-latest.onrender.com/)
+👉 [G-Commerce Thymeleaf Demo](https://g-commerce.duckdns.org:8444/)
 
 **⚠️ Note:**  
-This demo is hosted on a **free Render.com plan**, which means the server spins down after periods of inactivity. The first request after a while might take **up to a minute or more** to load as the server starts up again. Be patient — it’s worth the wait!
+The demo runs as a Docker container on an AWS EC2 instance. It is for educational purposes only, so please don't enter real personal data.
 
 
 ## 📄 License

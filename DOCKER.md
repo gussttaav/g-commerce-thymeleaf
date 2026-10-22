@@ -282,4 +282,4 @@ This project is licensed under the MIT License.
 
 - **Source Code**: [GitHub Repository](https://github.com/gussttaav/g-commerce-thymeleaf)
 - **Issues**: [GitHub Issues](https://github.com/gussttaav/g-commerce-thymeleaf/issues)
-- **Live Demo**: [G-Commerce Demo on Render](https://g-commerce-thymeleaf-latest.onrender.com/)
+- **Live Demo**: [G-Commerce Thymeleaf Demo](https://g-commerce.duckdns.org:8444/)
